@@ -149,7 +149,6 @@
                                             {{ $kkpo->no_kkpo }}
                                         </option>
                                     @endforeach
-
                                 </select>
                             </div>
                             <div>
