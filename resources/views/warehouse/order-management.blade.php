@@ -29,18 +29,16 @@
 
             {{-- Table of orders --}}
             <div class="bg-white shadow rounded-lg overflow-hidden">
-
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead>
                         <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                No Surat Jalan</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                                 KKPO
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                                 Customer</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                No
-                                Surat Jalan</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                                 Qty
                             </th>
@@ -58,9 +56,9 @@
                         @if ($orders->count())
                             @foreach ($orders as $order)
                                 <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $order->no_surat_jalan }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">{{ $order->kkpo->no_kkpo }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">{{ $order->kkpo->customer->name }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $order->no_surat_jalan }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">{{ $order->qty }}</td>
 
                                     <td class="px-6 py-4 whitespace-nowrap">
@@ -154,7 +152,7 @@
                             <div>
                                 <label for="customer" class="block text-gray-700">Customer</label>
                                 <input type="text" name="customer" id="customer" required readonly
-                                    class="w-full border mt-1 border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    class="w-full border mt-1 border-gray-300 bg-gray-100 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                             </div>
                             <div>
                                 <label for="no_surat_jalan" class="block text-gray-700">No Surat Jalan</label>
@@ -213,8 +211,8 @@
                     <div class="grid grid-cols-2 gap-7-3 text-sm mb-6">
 
                         <div>
-                            <p class="text-gray-400 text-sm">No KKPO</p>
-                            <p id="detail_kkpo" class="font-semibold"></p>
+                            <p class="text-gray-400 text-sm">No Surat Jalan</p>
+                            <p id="detail_sj" class="font-semibold"></p>
                         </div>
 
                         <div>
@@ -229,11 +227,11 @@
                     {{-- DETAIL --}}
                     <div class="grid grid-cols-2 gap-y-3 text-sm">
 
-                        {{-- <span class="text-gray-500">KKPO</span>
-                        <span id="detail_kkpo"></span> --}}
+                        <span class="text-gray-500">KKPO</span>
+                        <span id="detail_kkpo"></span>
 
-                        <span class="text-gray-500">No Surat Jalan</span>
-                        <span id="detail_sj"></span>
+                        {{-- <span class="text-gray-500">No Surat Jalan</span>
+                        <span id="detail_sj"></span> --}}
 
                         <span class="text-gray-500">Customer</span>
                         <span id="detail_customer"></span>

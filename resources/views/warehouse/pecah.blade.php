@@ -183,19 +183,19 @@
                     <table class="w-full mb-4">
                         <thead>
                             <tr>
-                                <th class="text-left text-sm font-medium text-gray-700 px-3 py-2">
+                                <th class="text-left text-sm font-medium text-gray-700 pr-3 py-1">
                                     No Traveler
                                 </th>
 
-                                <th class="text-left text-sm font-medium text-gray-700 px-3 py-2">
+                                <th class="text-left text-sm font-medium text-gray-700 px-3 py-1">
                                     Qty Split
                                 </th>
 
-                                <th class="text-center text-sm font-medium text-gray-700 px-3 py-2">
+                                <th class="text-center text-sm font-medium text-gray-700 pr-3 py-1">
                                     Departemen Tujuan
                                 </th>
 
-                                <th class="text-center text-sm font-medium text-gray-700 w-10 px-3 py-2">
+                                <th class="text-center text-sm font-medium text-gray-700 w-10 pr-3 py-1">
                                 </th>
                             </tr>
                         </thead>
@@ -203,18 +203,18 @@
                         <tbody id="travelerBody">
 
                             <tr>
-                                <td class="px-3 py-2">
-                                    <input type="text" name="no_traveler[]" required
+                                <td class="pr-3">
+                                    <input type="text" name="no_traveler[]" required placeholder="TR-..."
                                         class="mt-1 block w-full border border-gray-300 rounded-md">
                                 </td>
 
-                                <td class="px-3 py-2">
+                                <td class="px-3">
                                     <input type="number" name="qty_split[]" required min="0"
                                         class="mt-1 block w-full border border-gray-300 rounded-md qty-input"
                                         oninput="calculateTotal()">
                                 </td>
 
-                                <td class="px-3 py-2">
+                                <td class="pr-3">
                                     <select name="dept_tujuan_id[]" required
                                         class="mt-1 block w-full border border-gray-300 rounded-md">
 
