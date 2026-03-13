@@ -40,7 +40,7 @@
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Departemen Tujuan
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                            {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th> --}}
                             {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Notes</th> --}}
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
                             {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
@@ -63,7 +63,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         {{ $traveler->tanggal ?? '-' }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $traveler->status }}</td>
+                                    {{-- <td class="px-6 py-4 whitespace-nowrap">{{ $traveler->status }}</td> --}}
                                     {{-- <td class="px-6 py-4 whitespace-nowrap">{{ $traveler->notes }}</td> --}}
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         {{-- <a href="{{ route('warehouse.list', $traveler->id) }}"
@@ -77,7 +77,7 @@
                                             data-color="{{ $traveler->suratJalan->kkpo->color->name ?? '-' }}"
                                             data-category="{{ $traveler->suratJalan->kkpo->category->name ?? '-' }}"
                                             {{-- data-dept="{{ $traveler->deptTujuan->name ?? '-' }}" --}} data-tanggal="{{ $traveler->tanggal }}"
-                                            data-status="{{ $traveler->status }}"
+                                            {{-- data-status="{{ $traveler->status }}" --}}
                                             data-notes="{{ $traveler->notes ?? '-' }}"
                                             class="text-blue-500 border border-blue-500 rounded-xl py-1 px-4 hover:bg-blue-50">
 
@@ -126,9 +126,9 @@
                         </div>
 
                         <div>
-                            <p class="text-gray-400 text-sm">Status</p>
+                            {{-- <p class="text-gray-400 text-sm">Status</p>
                             <span id="detail_status" class="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">
-                            </span>
+                            </span> --}}
                         </div>
 
                     </div>
@@ -189,7 +189,7 @@
             document.getElementById('detail_category').innerText = btn.dataset.category;
             // document.getElementById('detail_dept').innerText = btn.dataset.dept;
             document.getElementById('detail_tanggal').innerText = btn.dataset.tanggal;
-            document.getElementById('detail_status').innerText = btn.dataset.status;
+            // document.getElementById('detail_status').innerText = btn.dataset.status;
             document.getElementById('detail_notes').innerText = btn.dataset.notes;
         }
 
