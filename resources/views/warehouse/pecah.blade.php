@@ -70,7 +70,7 @@
                                     </td>
 
                                     @php
-                                        $sisaQty = $pecahTraveler->qty - ($pecahTraveler->travelers->sum('qty') ?? 0);
+                                        $sisaQty = $pecahTraveler->qty - $pecahTraveler->travelers->sum('qty');
                                     @endphp
 
                                     <td class="px-6 py-4 whitespace-nowrap">
@@ -78,9 +78,17 @@
                                     </td>
 
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        {{ $pecahTraveler->status ?? '-' }}
+                                        @if ($sisaQty <= 0)
+                                            <span class="px-2 py-1 bg-red-100 text-red-800 rounded-lg text-xs">
+                                                Closed
+                                            </span>
+                                        @else
+                                            <span class="px-2 py-1 bg-green-100 text-green-800 rounded-lg text-xs">
+                                                Open
+                                            </span>
+                                        @endif
+                                        {{-- {{ $pecahTraveler->status ?? '-' }} --}}
                                     </td>
-
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         @if ($sisaQty <= 0)
                                             <button disabled
@@ -88,9 +96,13 @@
                                                 Pecah Traveler
                                             </button>
                                         @else
-                                            <button onClick="openSplitTraveler({{ $pecahTraveler->id }})"
+                                            <button onclick="openSplitTraveler(this)" data-id="{{ $pecahTraveler->id }}"
+                                                data-surat="{{ $pecahTraveler->no_surat_jalan }}"
+                                                data-qty_awal="{{ $sisaQty }}" data-qty_sisa="{{ $sisaQty }}"
                                                 class="px-2 py-1 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">
+
                                                 Pecah Traveler
+
                                             </button>
                                         @endif
                                     </td>
@@ -171,28 +183,38 @@
                     <table class="w-full mb-4">
                         <thead>
                             <tr>
-                                <th class="text-left text-sm font-medium text-gray-700">No Traveler</th>
-                                <th class="text-left text-sm font-medium text-gray-700">Qty Split</th>
-                                <th class="text-center text-sm font-medium text-gray-700">Departemen Tujuan</th>
-                                <th class="text-center text-sm font-medium text-gray-700 w-10"></th>
+                                <th class="text-left text-sm font-medium text-gray-700 px-3 py-2">
+                                    No Traveler
+                                </th>
+
+                                <th class="text-left text-sm font-medium text-gray-700 px-3 py-2">
+                                    Qty Split
+                                </th>
+
+                                <th class="text-center text-sm font-medium text-gray-700 px-3 py-2">
+                                    Departemen Tujuan
+                                </th>
+
+                                <th class="text-center text-sm font-medium text-gray-700 w-10 px-3 py-2">
+                                </th>
                             </tr>
                         </thead>
 
                         <tbody id="travelerBody">
 
                             <tr>
-                                <td>
+                                <td class="px-3 py-2">
                                     <input type="text" name="no_traveler[]" required
                                         class="mt-1 block w-full border border-gray-300 rounded-md">
                                 </td>
 
-                                <td>
+                                <td class="px-3 py-2">
                                     <input type="number" name="qty_split[]" required min="0"
                                         class="mt-1 block w-full border border-gray-300 rounded-md qty-input"
                                         oninput="calculateTotal()">
                                 </td>
 
-                                <td>
+                                <td class="px-3 py-2">
                                     <select name="dept_tujuan_id[]" required
                                         class="mt-1 block w-full border border-gray-300 rounded-md">
 
@@ -207,8 +229,9 @@
                                     </select>
                                 </td>
 
-                                <td class="text-center">
-                                    <button type="button" class="text-green-600 text-xl font-bold" onclick="addTableRow()">
+                                <td class="text-center px-3 py-2">
+                                    <button type="button" class="text-green-600 text-xl font-bold"
+                                        onclick="addTableRow()">
                                         +
                                     </button>
                                 </td>
@@ -216,6 +239,9 @@
 
                         </tbody>
                     </table>
+                    <p id="qty-warning" class="text-red-500 text-sm mb-1 hidden">
+                        Qty melebihi sisa qty yang tersedia.
+                    </p>
 
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700">
@@ -255,7 +281,8 @@
                     </div>
 
                     <div class="flex justify-end">
-                        <button type="submit" class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
+                        <button type="submit" id="submit-button"
+                            class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
                             Simpan Traveler
                         </button>
                     </div>
@@ -267,33 +294,32 @@
     </div>
 
     <script>
-        const pecahTravelerData = @json($pecahTravelers->items());
+        function openSplitTraveler(btn) {
 
-        function openSplitTraveler(id) {
+            document.getElementById('addModal').classList.remove('hidden');
+            document.getElementById('addModal').classList.add('flex');
 
-            const selectedTraveler = pecahTravelerData.find(item => item.id == id);
+            document.getElementById('pecahTravelerForm').reset();
+            document.getElementById('submit-button').disabled = false;
+            document.getElementById('qty-warning').classList.add('hidden');
 
-            if (selectedTraveler) {
+            let id = btn.dataset.id;
+            let surat = btn.dataset.surat;
+            let qtyAwal = btn.dataset.qty_awal;
+            let qtySisa = btn.dataset.qty_sisa;
 
-                document.getElementById('addModal').classList.remove('hidden');
-                document.getElementById('addModal').classList.add('flex');
+            document.getElementById('modalTitle').textContent =
+                'Pecah Traveler - ' + surat;
 
-                document.getElementById('pecahTravelerForm').reset();
+            document.getElementById('surat_jalan_display').value = surat;
 
-                document.getElementById('modalTitle').textContent =
-                    'Pecah Traveler - ' + selectedTraveler.no_surat_jalan;
+            document.getElementById('surat_jalan_id').value = id;
 
-                document.getElementById('surat_jalan_display').value =
-                    selectedTraveler.no_surat_jalan;
+            document.getElementById('qty_awal').value = qtyAwal;
 
-                document.getElementById('surat_jalan_id').value =
-                    selectedTraveler.id;
+            document.getElementById('qty_sisa').value = qtySisa;
 
-                document.getElementById('qty_awal').value = selectedTraveler.qty;
-                document.getElementById('qty_sisa').value = selectedTraveler.qty;
-
-                calculateTotal();
-            }
+            calculateTotal();
         }
 
         function closeAddModal() {
@@ -310,9 +336,24 @@
                 totalSplit += parseInt(input.value) || 0;
             });
 
+            let warning = document.getElementById('qty-warning');
+            let submitButton = document.getElementById('submit-button');
+
             if (totalSplit > qtyAwal) {
-                alert('Total Qty Split tidak boleh lebih dari Qty Awal');
-                return;
+
+                warning.classList.remove('hidden');
+
+                submitButton.disabled = true;
+                submitButton.classList.add('bg-gray-400', 'cursor-not-allowed');
+                submitButton.classList.remove('bg-[#136566]', 'hover:bg-[#0f4f50]');
+
+            } else {
+
+                warning.classList.add('hidden');
+
+                submitButton.disabled = false;
+                submitButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                submitButton.classList.add('bg-[#136566]', 'hover:bg-[#0f4f50]');
             }
 
             document.getElementById('qty_sisa').value = qtyAwal - totalSplit;

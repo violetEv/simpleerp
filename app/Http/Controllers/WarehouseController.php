@@ -35,13 +35,14 @@ class WarehouseController extends Controller
             'tanggal' => 'required|date',
             'notes' => 'nullable|string',
         ]);
-
+        $status = $request->qty <= 0 ? 'closed' : 'open';
         SuratJalan::create([
             'kkpo_id' => $request->kkpo_id,
             'no_surat_jalan' => $request->no_surat_jalan,
             'qty' => $request->qty,
             'tanggal' => $request->tanggal,
             'notes' => $request->notes,
+            'status' => $status
         ]);
 
         return redirect()
@@ -119,6 +120,7 @@ class WarehouseController extends Controller
 
             'notes' => 'nullable|string'
         ]);
+        $status = $request->qty <= 0 ? 'closed' : 'open';
 
         foreach ($request->no_traveler as $index => $traveler) {
 
@@ -138,7 +140,8 @@ class WarehouseController extends Controller
                 'parent_traveler_id' => null,
 
                 'tanggal' => $request->tanggal,
-                'notes' => $request->notes
+                'notes' => $request->notes,
+                'status' => $status
             ]);
         }
 
