@@ -175,6 +175,10 @@
                                         Status
                                     </th>
 
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                        Actions
+                                    </th>
+
                                 </tr>
                             </thead>
 
@@ -199,6 +203,13 @@
                                             <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">
                                                 Rework
                                             </span>
+                                        </td>
+
+                                        <td class="px-6 py-4">
+                                            <a href="{{ route('warehouse.pecah.show', $traveler->id) }}"
+                                                class="px-2 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                                                View Details
+                                            </a>
                                         </td>
 
                                     </tr>

@@ -149,6 +149,37 @@ class WarehouseController extends Controller
             ->route('warehouse.pecah')
             ->with('success', 'Traveler berhasil dipecah');
     }
+
+    public function rework(Request $request)
+    {
+        $query = Traveler::with([
+            'suratJalan',
+            'deptAsal',
+            'deptTujuan'
+        ]);
+
+        if ($request->filled('search')) {
+
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+
+                $q->where('no_traveler', 'like', "%{$search}%")
+                    ->orWhereHas('suratJalan.kkpo.customer', function ($q2) use ($search) {
+                        $q2->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        $reworkTravelers = $query->paginate(10)->withQueryString();
+
+        return view('warehouse.rework', compact('reworkTravelers'));
+    }
+
+    public function reworkStore(Request $request){
+        
+    }
+
     public function list(Request $request)
     {
         $query = Traveler::with([

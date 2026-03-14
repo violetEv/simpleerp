@@ -115,6 +115,11 @@ Route::middleware('role:warehouse')->group(function () {
     Route::post('/warehouse/pecah', [WarehouseController::class, 'pecahStore'])->name('warehouse.pecah.store');
     Route::put('/warehouse/pecah/update/{id}', [WarehouseController::class, 'pecahUpdate'])->name('warehouse.pecah.update');
     Route::delete('/warehouse/pecah/delete/{id}', [WarehouseController::class, 'pecahDelete'])->name('warehouse.pecah.delete');
+
+    Route::get('/warehouse/rework', [WarehouseController::class, 'rework'])->name('warehouse.rework');
+    Route::post('/warehouse/rework', [WarehouseController::class, 'reworkStore'])->name('warehouse.rework.store');
+
+
     Route::get('/warehouse/list', [WarehouseController::class, 'list'])->name('warehouse.list');
 });
 
