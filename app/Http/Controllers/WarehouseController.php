@@ -4,7 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\SuratJalan;
 use App\Models\Traveler;
+use App\Models\TravelerMovement;
+use Illuminate\Container\Attributes\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth as FacadesAuth;
+use SebastianBergmann\FileIterator\Facade;
 
 class WarehouseController extends Controller
 {
@@ -132,7 +136,7 @@ class WarehouseController extends Controller
 
                 'surat_jalan_id' => $request->surat_jalan_id,
 
-                'dept_asal_id' => $request->dept_asal_id ?? null,
+                'dept_asal_id' => FacadesAuth::user()->department_id,
                 'dept_tujuan_id' => $deptTujuan,
 
                 'current_dept_id' => $deptTujuan,
@@ -152,7 +156,7 @@ class WarehouseController extends Controller
 
     public function rework(Request $request)
     {
-        $query = Traveler::with([
+        $query = TravelerMovement::with([
             'suratJalan',
             'deptAsal',
             'deptTujuan'
@@ -164,20 +168,45 @@ class WarehouseController extends Controller
 
             $query->where(function ($q) use ($search) {
 
-                $q->where('no_traveler', 'like', "%{$search}%")
-                    ->orWhereHas('suratJalan.kkpo.customer', function ($q2) use ($search) {
+                $q->where('type', 'rework')
+                    ->whereHas('traveler.suratJalan.kkpo.customer', function ($q2) use ($search) {
                         $q2->where('name', 'like', "%{$search}%");
                     });
             });
         }
-
         $reworkTravelers = $query->paginate(10)->withQueryString();
-
         return view('warehouse.rework', compact('reworkTravelers'));
     }
 
     public function reworkStore(Request $request){
-        
+        $request->validate([
+            'traveler_id' => 'required|exists:travelers,id',
+            'dept_asal_id' => 'required|exists:departments,id',
+            'dept_tujuan_id' => 'required|exists:departments,id',
+            'qty_in' => 'required|integer|min:1',
+            'qty_out' => 'required|integer|min:0',
+            'date_in' => 'required|date',
+            'date_out' => 'nullable|date|after_or_equal:date_in',
+            'notes' => 'nullable|string',
+            'machine_id' => 'nullable|exists:machines,id'
+        ]);
+
+        TravelerMovement::create([
+            'traveler_id' => $request->traveler_id,
+            'dept_asal_id' => $request->dept_asal_id,
+            'dept_tujuan_id' => $request->dept_tujuan_id,
+            'qty_in' => $request->qty_in,
+            'qty_out' => $request->qty_out,
+            'date_in' => $request->date_in,
+            'date_out' => $request->date_out,
+            'notes' => $request->notes,
+            'machine_id' => $request->machine_id,
+            'type' => 'rework'
+        ]);
+
+        return redirect()
+            ->route('warehouse.rework')
+            ->with('success', 'Rework traveler berhasil ditambahkan');
     }
 
     public function list(Request $request)

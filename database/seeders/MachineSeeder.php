@@ -12,12 +12,12 @@ class MachineSeeder extends Seeder
      */
     public function run(): void
     {
+        // Machine untuk dyeing dan washing
         $machines = [
-            ['name' => 'Machine 1', 'department_id' => 1],
-            ['name' => 'Machine 2', 'department_id' => 1],
-            ['name' => 'Machine 3', 'department_id' => 2],
-            ['name' => 'Machine 4', 'department_id' => 2],
-            ['name' => 'Machine 5', 'department_id' => 3],
+            ['name' => 'Dyeing Machine 1', 'department_id' => 27],
+            ['name' => 'Dyeing Machine 2', 'department_id' => 27],
+            ['name' => 'Washing Machine 1', 'department_id' => 26],
+            ['name' => 'Washing Machine 2', 'department_id' => 26],
         ];
 
         foreach ($machines as $machine) {

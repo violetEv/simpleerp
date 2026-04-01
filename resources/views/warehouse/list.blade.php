@@ -40,6 +40,7 @@
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Departemen Tujuan
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
                             {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th> --}}
                             {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Notes</th> --}}
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
@@ -62,6 +63,9 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         {{ $traveler->tanggal ?? '-' }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        {{ $traveler->type ?? '-' }}    
                                     </td>
                                     {{-- <td class="px-6 py-4 whitespace-nowrap">{{ $traveler->status }}</td> --}}
                                     {{-- <td class="px-6 py-4 whitespace-nowrap">{{ $traveler->notes }}</td> --}}

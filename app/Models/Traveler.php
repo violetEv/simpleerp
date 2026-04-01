@@ -16,6 +16,7 @@ class Traveler extends Model
         'qty',
         'dept_asal_id',
         'dept_tujuan_id',
+        'current_dept_id',
         'tanggal',
         'notes'
     ];
@@ -28,6 +29,11 @@ class Traveler extends Model
     public function parent()
     {
         return $this->belongsTo(Traveler::class, 'parent_traveler_id');
+    }
+
+    public function movements()
+    {
+        return $this->hasMany(TravelerMovement::class);
     }
 
     public function children()
@@ -43,5 +49,9 @@ class Traveler extends Model
     public function deptTujuan()
     {
         return $this->belongsTo(Departments::class, 'dept_tujuan_id');
+    }
+    public function currentDept()
+    {
+        return $this->belongsTo(Departments::class, 'current_dept_id');
     }
 }

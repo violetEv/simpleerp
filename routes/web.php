@@ -58,8 +58,12 @@ Route::middleware('role:manager')->group(function () {
         ->name('manager.dashboard');
     Route::get('/manager/monitoring', [ManagerController::class, 'monitoring'])
         ->name('manager.monitoring');
+    Route::get('/manager/monitoring/{id}', [ManagerController::class, 'detailMonitoring'])
+        ->name('manager.detailmonitoring');
     Route::get('/manager/report', [ManagerController::class, 'report'])
         ->name('manager.report');
+    Route::get('/manager/report/{id}', [ManagerController::class, 'detailReport'])
+        ->name('manager.detailreport');
 });
 
 /*
@@ -119,7 +123,6 @@ Route::middleware('role:warehouse')->group(function () {
     Route::get('/warehouse/rework', [WarehouseController::class, 'rework'])->name('warehouse.rework');
     Route::post('/warehouse/rework', [WarehouseController::class, 'reworkStore'])->name('warehouse.rework.store');
 
-
     Route::get('/warehouse/list', [WarehouseController::class, 'list'])->name('warehouse.list');
 });
 
@@ -130,13 +133,22 @@ Route::middleware('role:warehouse')->group(function () {
     */
 Route::middleware('role:produksi')->group(function () {
     Route::get('/produksi/dashboard', [ProductionController::class, 'dashboard'])->name('produksi.dashboard');
-    Route::get('/produksi/datain', [ProductionController::class, 'dataIn'])->name('produksi.datain');
-    Route::get('/produksi/dataout', [ProductionController::class, 'dataOut'])->name('produksi.dataout');
-    Route::get('/produksi/listapprove', [ProductionController::class, 'listapprove'])->name('produksi.listapprove');
-    Route::get('/produksi/listproblem', [ProductionController::class, 'listproblem'])->name('produksi.listproblem');
-    Route::get('/produksi/log', [ProductionController::class, 'log'])->name('produksi.log');
-});
 
+    Route::get('/produksi', [ProductionController::class, 'index'])->name('produksi.index');
+
+    Route::get('/produksi/log', [ProductionController::class, 'logProduction'])->name('produksi.logproduksi');
+    Route::get('/produksi/log/{id}', [ProductionController::class, 'logDetail'])->name('produksi.logdetail');
+    
+    Route::get('/produksi/{id}', [ProductionController::class, 'process'])->name('produksi.process');
+    Route::post('/produksi/in', [ProductionController::class, 'storeIn'])->name('produksi.in');
+    Route::post('/produksi/out', [ProductionController::class, 'storeOut'])->name('produksi.out');
+
+    // Route::get('/produksi/datain', [ProductionController::class, 'dataIn'])->name('produksi.datain');
+    // Route::get('/produksi/dataout', [ProductionController::class, 'dataOut'])->name('produksi.dataout');
+    // Route::get('/produksi/listapprove', [ProductionController::class, 'listapprove'])->name('produksi.listapprove');
+    // Route::get('/produksi/listproblem', [ProductionController::class, 'listproblem'])->name('produksi.listproblem');
+    
+});
 
 Route::middleware('auth')->group(function () {
 
