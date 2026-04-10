@@ -47,7 +47,8 @@
                     <option value="in_progress">In Progress</option>
                     <option value="overdue">Overdue</option>        
                 </select> --}}
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg">Filter</button>
+                <button type="submit" onClick="filterData()"
+                    class="px-4 py-2 bg-blue-600 text-white rounded-lg">Filter</button>
                 <button type="button" class="px-4 py-2 bg-green-600 text-white rounded-lg">Export</button>
             </div>
 
@@ -84,16 +85,16 @@
                         @foreach ($movements as $movement)
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    {{ $movement->traveler->suratJalan->kkpo->no_kkpo ?? '-' }}</td>
+                                    {{ $movement->traveler->suratJalan->kkpoManagement->kkpo->no_kkpo ?? '-' }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     {{ $movement->traveler->suratJalan->no_surat_jalan ?? '-' }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    {{ $movement->traveler->suratJalan->kkpo->customer->name ?? '-' }}</td>
+                                    {{ $movement->traveler->suratJalan->kkpoManagement->customer->name ?? '-' }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    {{ $movement->traveler->suratJalan->kkpo->category->name ?? '-' }}
+                                    {{ $movement->traveler->suratJalan->kkpoManagement->category->name ?? '-' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    {{ $movement->traveler->suratJalan->kkpo->style->name ?? '-' }}</td>
+                                    {{ $movement->traveler->suratJalan->kkpoManagement->style->name ?? '-' }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $movement->qty_in }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $movement->qty_out }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $movement->balance }}</td>
@@ -178,4 +179,27 @@
             </div>
         </div>
     </div>
+    <script>
+        function filterData() {
+            const search = document.getElementById('search').value;
+            const noSuratJalan = document.getElementById('no_surat_jalan').value;
+            const kkpo = document.getElementById('kkpo').value;
+            const customer = document.getElementById('customer').value;
+            const style = document.getElementById('style').value;
+            // const categoryProcess = document.getElementById('category_process').value;
+            // const status = document.getElementById('status').value;
+
+            let queryParams = [];
+            if (search) queryParams.push(`search=${encodeURIComponent(search)}`);
+            if (noSuratJalan) queryParams.push(`no_surat_jalan=${encodeURIComponent(noSuratJalan)}`);
+            if (kkpo) queryParams.push(`kkpo=${encodeURIComponent(kkpo)}`);
+            if (customer) queryParams.push(`customer=${encodeURIComponent(customer)}`);
+            if (style) queryParams.push(`style=${encodeURIComponent(style)}`);
+            // if (categoryProcess) queryParams.push(`category_process=${encodeURIComponent(categoryProcess)}`);
+            // if (status) queryParams.push(`status=${encodeURIComponent(status)}`);
+
+            const queryString = queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
+            window.location.href = `{{ route('manager.monitoring') }}${queryString}`;
+        }
+    </script>
 @endsection

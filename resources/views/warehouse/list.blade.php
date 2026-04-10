@@ -1,6 +1,8 @@
-@extends('layouts.app')
+{{-- @extends('layouts.app')
 
-@section('content')
+@section('content') --}}
+<x-app-layout>
+
     <h2 class="font-semibold text-xl text-gray-800 leading-tight">
         List Traveler
     </h2>
@@ -28,80 +30,189 @@
             </div>
             {{-- TABLE --}}
             {{-- <div class="overflow-x-auto"> --}}
-            <div class="bg-white shadow rounded-lg overflow-hidden">
-                <table class="min-w-full divide-y divide-gray-200">
+            <div class="bg-white shadow rounded-lg overflow-hidden p-6">
+                <div class="border-b border-gray-200 mb-4">
+                    <nav class="flex space-x-4">
 
-                    <thead>
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                No Traveler</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Surat Jalan</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Qty</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Departemen Tujuan
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-                            {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th> --}}
-                            {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Notes</th> --}}
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
-                            {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
+                        <button onclick="switchTab('baru')" id="tab-baru"
+                            class="tab-btn px-4 py-2 text-sm font-medium border-b-2 border-[#136566] text-[#136566]">
+                            Traveler Baru
+                        </button>
+
+                        <button onclick="switchTab('rework')" id="tab-rework"
+                            class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-700">
+                            Traveler Rework
+                        </button>
+
+                    </nav>
+                </div>
+                {{-- table baru --}}
+                <div id="tab-content-baru">
+                    <div class="bg-white shadow rounded-lg overflow-hidden">
+                        <table class="min-w-full divide-y divide-gray-200">
+
+                            <thead>
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                        No Traveler</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Surat
+                                        Jalan</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Qty</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                        Departemen Tujuan
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal
+                                        Out</th>
+                                    {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th> --}}
+                                    {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th> --}}
+                                    {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Notes</th> --}}
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action
+                                    </th>
+                                    {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
                     <th class="py-2 px-4 border-b">Dari</th>
                     <th class="py-2 px-4 border-b">Ke</th>
                     <th class="py-2 px-4 border-b">Notes</th> --}}
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @if ($travelers->count())
-                            @foreach ($travelers as $traveler)
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $traveler->no_traveler }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        {{ $traveler->suratJalan->no_surat_jalan ?? '-' }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $traveler->qty }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        {{ $traveler->deptTujuan->name ?? '-' }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        {{ $traveler->tanggal ?? '-' }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        {{ $traveler->type ?? '-' }}    
-                                    </td>
-                                    {{-- <td class="px-6 py-4 whitespace-nowrap">{{ $traveler->status }}</td> --}}
-                                    {{-- <td class="px-6 py-4 whitespace-nowrap">{{ $traveler->notes }}</td> --}}
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        {{-- <a href="{{ route('warehouse.list', $traveler->id) }}"
-                                    class="text-green-500 border-sm hover:underline ml-2">+ Buat turunan</a> --}}
-                                        <button onclick="openDetail(this)"
-                                            data-traveler="{{ $traveler->no_traveler ?? '-' }}"
-                                            data-customer="{{ $traveler->suratJalan->kkpo->customer->name ?? '-' }}"
-                                            data-sj="{{ $traveler->suratJalan->no_surat_jalan ?? '-' }}"
-                                            data-qty="{{ $traveler->qty }}"
-                                            data-style="{{ $traveler->suratJalan->kkpo->style->name ?? '-' }}"
-                                            data-color="{{ $traveler->suratJalan->kkpo->color->name ?? '-' }}"
-                                            data-category="{{ $traveler->suratJalan->kkpo->category->name ?? '-' }}"
-                                            {{-- data-dept="{{ $traveler->deptTujuan->name ?? '-' }}" --}} data-tanggal="{{ $traveler->tanggal }}"
-                                            {{-- data-status="{{ $traveler->status }}" --}}
-                                            data-notes="{{ $traveler->notes ?? '-' }}"
-                                            class="text-blue-500 border border-blue-500 rounded-xl py-1 px-4 hover:bg-blue-50">
-
-                                            Detail
-                                        </button>
-                                        {{-- <a href="{{ route('warehouse.list', $traveler->id) }}"
-                                            class="text-blue-500 border border-blue-500 rounded-xl py-1 px-4 hover:underline">Detail</a> --}}
-                                    </td>
                                 </tr>
-                            @endforeach
-                        @else
-                            <tr>
-                                <td colspan="8" class="py-2 px-4 border-b text-center">No travelers found.</td>
-                            </tr>
-                        @endif
-                    </tbody>
-                </table>        
-                {{-- PAGINATION --}}
-                <div class="mt-4 p-4">
-                    {{ $travelers->links() }}
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                @if ($travelers->count())
+                                    @foreach ($travelers as $traveler)
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                {{ $loop->iteration + ($travelers->currentPage() - 1) * $travelers->perPage() }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">{{ $traveler->no_traveler }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                {{ $traveler->suratJalan->no_surat_jalan ?? '-' }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap">{{ $traveler->qty }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                {{ $traveler->deptTujuan->name ?? '-' }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                {{-- format tanggal 12 Maret 2024 --}}
+                                                {{ \Carbon\Carbon::parse($traveler->tanggal)->format('d F Y') ?? '-' }}
+                                            </td>
+                                            {{-- <td class="px-6 py-4 whitespace-nowrap">
+                                        {{ $traveler->type ?? '-' }}
+                                    </td> --}}
+                                            {{-- <td class="px-6 py-4 whitespace-nowrap">{{ $traveler->status }}</td> --}}
+                                            {{-- <td class="px-6 py-4 whitespace-nowrap">{{ $traveler->notes }}</td> --}}
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                {{-- <a href="{{ route('warehouse.list', $traveler->id) }}"
+                                    class="text-green-500 border-sm hover:underline ml-2">+ Buat turunan</a> --}}
+                                                <button onclick="openDetail(this)"
+                                                    data-traveler="{{ $traveler->no_traveler ?? '-' }}"
+                                                    data-customer="{{ $traveler->suratJalan->kkpoManagement->customer->name ?? '-' }}"
+                                                    data-sj="{{ $traveler->suratJalan->no_surat_jalan ?? '-' }}"
+                                                    data-qty="{{ $traveler->qty }}"
+                                                    data-style="{{ $traveler->suratJalan->kkpoManagement->style->name ?? '-' }}"
+                                                    data-color="{{ $traveler->suratJalan->kkpoManagement->color->name ?? '-' }}"
+                                                    data-category="{{ $traveler->suratJalan->kkpoManagement->category->name ?? '-' }}"
+                                                    {{-- data-dept="{{ $traveler->deptTujuan->name ?? '-' }}" --}} data-tanggal="{{ $traveler->tanggal }}"
+                                                    {{-- data-status="{{ $traveler->status }}" --}} data-notes="{{ $traveler->notes ?? '-' }}"
+                                                    class="text-blue-500 border border-blue-500 rounded-xl py-1 px-4 hover:bg-blue-50">
+
+                                                    Detail
+                                                </button>
+                                                {{-- <a href="{{ route('warehouse.list', $traveler->id) }}"
+                                            class="text-blue-500 border border-blue-500 rounded-xl py-1 px-4 hover:underline">Detail</a> --}}
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @else
+                                    <tr>
+                                        <td colspan="8" class="py-2 px-4 border-b text-center">No travelers found.
+                                        </td>
+                                    </tr>
+                                @endif
+                            </tbody>
+                        </table>
+                        {{-- PAGINATION --}}
+                        <div class="mt-4 p-4">
+                            {{ $travelers->links() }}
+                        </div>
+                    </div>
+                </div>
+                {{-- table rework --}}
+                <div id="tab-content-rework" class="hidden">
+
+                    <div class="bg-white shadow rounded-lg overflow-hidden">
+
+                        <table class="min-w-full divide-y divide-gray-200">
+
+                            <thead>
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                        No Traveler
+                                    </th>
+
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                        Departemen Asal
+                                    </th>
+
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                        Qty
+                                    </th>
+
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                        Status
+                                    </th>
+
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                        Actions
+                                    </th>
+
+                                </tr>
+                            </thead>
+
+                            <tbody class="bg-white divide-y divide-gray-200">
+
+                                @forelse($reworkTravelers ?? [] as $traveler)
+                                    <tr>
+
+                                        <td class="px-6 py-4">
+                                            {{ $traveler->no_traveler }}
+                                        </td>
+
+                                        <td class="px-6 py-4">
+                                            {{ $traveler->deptAsal->name ?? '-' }}
+                                        </td>
+
+                                        <td class="px-6 py-4">
+                                            {{ $traveler->qty }}
+                                        </td>
+
+                                        <td class="px-6 py-4">
+                                            <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">
+                                                Rework
+                                            </span>
+                                        </td>
+
+                                        <td class="px-6 py-4">
+                                            <a href="{{ route('warehouse.pecah.show', $traveler->id) }}"
+                                                class="px-2 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                                                View Details
+                                            </a>
+                                        </td>
+
+                                    </tr>
+
+                                @empty
+
+                                    <tr>
+                                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                                            Data Traveler Rework Tidak Ada.
+                                        </td>
+                                    </tr>
+                                @endforelse
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
                 </div>
             </div>
             {{-- Modal Detail --}}
@@ -112,7 +223,7 @@
                     {{-- HEADER --}}
                     <div class="flex justify-between items-center mb-4 border-b pb-3">
                         <h3 class="text-lg font-semibold text-gray-700">
-                            Order Details
+                            Detail Traveler
                         </h3>
 
                         <button onclick="closeDetail()" class="text-gray-400 hover:text-gray-600 text-2xl">
@@ -192,7 +303,14 @@
             document.getElementById('detail_color').innerText = btn.dataset.color;
             document.getElementById('detail_category').innerText = btn.dataset.category;
             // document.getElementById('detail_dept').innerText = btn.dataset.dept;
-            document.getElementById('detail_tanggal').innerText = btn.dataset.tanggal;
+            // format tanggal 12 Maret 2024
+            const tanggal = new Date(btn.dataset.tanggal);
+            const options = {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric'
+            };
+            document.getElementById('detail_tanggal').innerText = tanggal.toLocaleDateString('id-ID', options);
             // document.getElementById('detail_status').innerText = btn.dataset.status;
             document.getElementById('detail_notes').innerText = btn.dataset.notes;
         }
@@ -201,7 +319,42 @@
             document.getElementById('detail-modal').classList.add('hidden');
             document.getElementById('detail-modal').classList.remove('flex');
         }
+
+        
+        function switchTab(tab) {
+
+            let tabBaru = document.getElementById('tab-content-baru');
+            let tabRework = document.getElementById('tab-content-rework');
+
+            let btnBaru = document.getElementById('tab-baru');
+            let btnRework = document.getElementById('tab-rework');
+
+            if (tab === 'baru') {
+
+                tabBaru.classList.remove('hidden');
+                tabRework.classList.add('hidden');
+
+                btnBaru.classList.add('border-[#136566]', 'text-[#136566]');
+                btnBaru.classList.remove('text-gray-500');
+
+                btnRework.classList.remove('border-[#136566]', 'text-[#136566]');
+                btnRework.classList.add('text-gray-500');
+
+            } else {
+
+                tabBaru.classList.add('hidden');
+                tabRework.classList.remove('hidden');
+
+                btnRework.classList.add('border-[#136566]', 'text-[#136566]');
+                btnRework.classList.remove('text-gray-500');
+
+                btnBaru.classList.remove('border-[#136566]', 'text-[#136566]');
+                btnBaru.classList.add('text-gray-500');
+            }
+
+        }
     </script>
 
 
-@endsection
+    {{-- @endsection --}}
+</x-app-layout>

@@ -29,7 +29,7 @@ class ManagerController extends Controller
 
     public function detailMonitoring($id)
     {
-        $movement = TravelerMovement::with('traveler', 'department')->findOrFail($id);
+        $movement = TravelerMovement::with('traveler', 'deptTujuan')->findOrFail($id);
         return view('manager.detailmonitoring', compact('movement'));
     }
 
@@ -45,7 +45,7 @@ class ManagerController extends Controller
                 }
             });
         // menampilkan data kkpo dan qty awal akhir pergerakan traveler
-        $query->with(['traveler.suratJalan.kkpo', 'traveler.movements' => function ($q) {
+        $query->with(['traveler.suratJalan.kkpoManagement', 'traveler.movements' => function ($q) {
             $q->orderBy('created_at', 'asc');
         }]);
         $movements = $query->paginate(10)->withQueryString();
@@ -56,7 +56,7 @@ class ManagerController extends Controller
     {
         // $movement = TravelerMovement::with('traveler', 'department')->findOrFail($id);
         // return view('manager.detailreport', compact('movement'));
-        $movement = TravelerMovement::with('traveler.suratJalan.kkpo.customer', 'traveler.suratJalan.kkpo.category', 'traveler.suratJalan.kkpo.style')
+        $movement = TravelerMovement::with('traveler.suratJalan.kkpoManagement.customer', 'traveler.suratJalan.kkpoManagement.category', 'traveler.suratJalan.kkpoManagement.style')
             ->where('traveler_id', $id)
             ->get();
         return view('manager.detailreport', compact('movement'));

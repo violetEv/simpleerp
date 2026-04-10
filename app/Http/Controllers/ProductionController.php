@@ -18,8 +18,15 @@ class ProductionController extends Controller
 
     public function index(Request $request)
     {
-        $query = Traveler::with('deptAsal', 'currentDept')
-            ->where('current_dept_id', Auth::user()->department_id); // 🔥 filter utama
+        $query = Traveler::with('deptAsal', 'deptTujuan', 'currentDept')
+            ->where('current_dept_id', Auth::user()->department_id);
+
+        // menampilkan traveler yang berasal dari dept user yang sedang login, atau yang tujuan dept nya user yang sedang login
+        $query->whereHas('deptAsal', function ($q) {
+            $q->where('dept_asal_id', Auth::user()->department_id);
+        })->orWhereHas('deptTujuan', function ($q) {
+            $q->where('dept_tujuan_id', Auth::user()->department_id);
+        });
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -31,6 +38,9 @@ class ProductionController extends Controller
                     })
                     ->orWhereHas('deptAsal', function ($q3) use ($search) {
                         $q3->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('deptTujuan', function ($q4) use ($search) {
+                        $q4->where('name', 'like', "%{$search}%");
                     });
             });
         }
@@ -107,22 +117,23 @@ class ProductionController extends Controller
 
         $qty_loss = $qty_in - ($qty_out + $qty_reject);
 
-        // UPDATE movement
+        // UPDATE movement: departmen tujuan yg diinput akan jadi departmen tujuan di movement, dan qty_out, qty_reject, qty_loss diupdate
+        $deptTujuan = $request->dept_tujuan_id ?? $movement->dept_tujuan_id;
         $movement->update([
             'qty_out' => $qty_out,
             'date_out' => now(),
             'qty_reject' => $qty_reject,
             'type_reject' => $request->type_reject,
             'qty_loss' => $qty_loss,
-            'dept_tujuan_id' => $request->dept_tujuan_id,
+            'dept_tujuan_id' => $deptTujuan,
             'notes' => $request->notes,
         ]);
 
         // 🔥 UPDATE TRAVELER PINDAH DEPT
-        if ($dept != 'send') {
+        if ($dept != 'Send') {
             Traveler::where('id', $request->traveler_id)
                 ->update([
-                    'current_dept_id' => $request->dept_tujuan_id,
+                    'dept_tujuan_id' => $deptTujuan,
                     'dept_asal_id' => Auth::user()->department_id,
                     'status' => 'in_progress'
                 ]);
@@ -167,19 +178,26 @@ class ProductionController extends Controller
 
         if ($request->filled('search')) {
             $search = $request->search;
-
-            $query->whereHas('traveler', function ($q) use ($search) {
-                $q->where('code', 'like', "%{$search}%");
-            })->orWhereHas('department', function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%");
-            })->orWhereHas('machine', function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%");
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('traveler', function ($q2) use ($search) {
+                    $q2->where('code', 'like', "%{$search}%");
+                })->orWhereHas('department', function ($q2) use ($search) {
+                    $q2->where('name', 'like', "%{$search}%");
+                })->orWhereHas('machine', function ($q2) use ($search) {
+                    $q2->where('name', 'like', "%{$search}%");
+                });
             });
         }
 
+        // hanya menampilkakan movement dari department user yang sedang login
+        $query->whereHas('department', function ($q) {
+            $q->where('id', Auth::user()->department_id);
+        });
+        $dept = Auth::user()->department->name;
+
         $movements = $query->latest()->paginate(10)->withQueryString();
 
-        return view('produksi.logproduksi', compact('movements'));
+        return view('produksi.logproduksi', compact('movements', 'dept'));
     }
 
     public function logDetail($id)

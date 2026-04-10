@@ -99,6 +99,11 @@ Route::middleware('role:ppic')->group(function () {
     Route::put('/ppic/kkpo/update/{id}', [PpicController::class, 'kkpoUpdate'])->name('ppic.kkpo.update');
     Route::delete('/ppic/kkpo/delete/{id}', [PpicController::class, 'kkpoDelete'])->name('ppic.kkpo.delete');
 
+    Route::get('/ppic/kkpomanagement', [PpicController::class, 'kkpoManagement'])->name('ppic.kkpomanagement');
+    Route::post('/ppic/kkpomanagement', [PpicController::class, 'kkpoManagementStore'])->name('ppic.kkpomanagement.store');
+    Route::put('/ppic/kkpomanagement/update/{id}', [PpicController::class, 'kkpoManagementUpdate'])->name('ppic.kkpomanagement.update');
+    Route::delete('/ppic/kkpomanagement/delete/{id}', [PpicController::class, 'kkpoManagementDelete'])->name('ppic.kkpomanagement.delete');
+
     Route::get('/ppic/monitoring', [PpicController::class, 'monitoring'])->name('ppic.monitoring');
 });
 

@@ -47,22 +47,44 @@
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             @if ($customers->count())
-                            @foreach ($customers as $customer)
-                                <tr>
-                                    {{-- <td class="px-6 py-4 whitespace-nowrap">{{ $customer->id }}</td> --}}
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $customer->name }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <button onClick="editCustomer({{ $customer->id }}, '{{ $customer->name }}')"
-                                            class="text-blue-500 hover:text-blue-700 mr-2">Edit</button>
-                                        <form action="{{ route('ppic.customer.delete', $customer->id) }}" method="POST"
-                                            class="inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" onclick="return confirm('Apakah Anda yakin ingin mengapus customer ini?')" class="text-red-500 hover:text-red-700">Delete</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @endforeach
+                                @foreach ($customers as $customer)
+                                    <tr>
+                                        {{-- <td class="px-6 py-4 whitespace-nowrap">{{ $customer->id }}</td> --}}
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ $customer->name }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <button onClick="editCustomer({{ $customer->id }}, '{{ $customer->name }}')" title="Edit"
+                                                class="mr-2">
+                                                {{-- Edit icon outline --}}
+                                                <svg class="w-6 h-6 text-blue-500 hover:text-blue-700 dark:text-white" aria-hidden="true"
+                                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    fill="none" viewBox="0 0 24 24">
+                                                    <path stroke="currentColor" stroke-linecap="round"
+                                                        stroke-linejoin="round" stroke-width="2"
+                                                        d="M10.779 17.779 4.36 19.918 6.5 13.5m4.279 4.279 8.364-8.643a3.027 3.027 0 0 0-2.14-5.165 3.03 3.03 0 0 0-2.14.886L6.5 13.5m4.279 4.279L6.499 13.5m2.14 2.14 6.213-6.504M12.75 7.04 17 11.28" />
+                                                </svg>
+
+                                            </button>
+                                            <form action="{{ route('ppic.customer.delete', $customer->id) }}" method="POST"
+                                                class="inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" title="Hapus Customer"
+                                                    onclick="return confirm('Apakah Anda yakin ingin mengapus customer ini?')"
+                                                    >
+                                                    {{-- Delete icon outline --}}
+                                                    <svg class="w-6 h-6 text-red-500 hover:text-red-700 dark:text-white" aria-hidden="true"
+                                                        xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                        fill="none" viewBox="0 0 24 24">
+                                                        <path stroke="currentColor" stroke-linecap="round"
+                                                            stroke-linejoin="round" stroke-width="2"
+                                                            d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
+                                                    </svg>
+
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endforeach
                             @else
                                 <tr>
                                     <td colspan="2" class="text-center py-4 text-gray-500">
@@ -110,7 +132,7 @@
             document.getElementById('addModal').classList.add('hidden');
             document.getElementById('addModal').classList.remove('flex');
         }
-        
+
         function openAddModal() {
             document.getElementById('modal-title').textContent = 'Add Customer';
             document.getElementById('submit-button').textContent = 'Add Customer';
@@ -128,7 +150,7 @@
         function editCustomer(id, name) {
             document.getElementById('modal-title').textContent = 'Edit Customer';
             document.getElementById('submit-button').textContent = 'Update Customer';
-            document.getElementById('crud-form').action = "{{route('ppic.customer.update', ':id')}}/".replace(':id', id);
+            document.getElementById('crud-form').action = "{{ route('ppic.customer.update', ':id') }}/".replace(':id', id);
 
             document.getElementById('form-method').value = 'PUT';
 

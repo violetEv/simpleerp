@@ -1,6 +1,7 @@
-@extends('layouts.app')
+{{-- @extends('layouts.app')
 
-@section('content')
+@section('content') --}}
+<x-app-layout>
     <h2 class="font-semibold text-xl text-gray-800 leading-tight">
         Split Traveler
     </h2>
@@ -30,24 +31,8 @@
             </div>
 
             {{-- TABLE --}}
-            <div class="bg-white shadow rounded-lg p-6">
+            {{-- <div class="bg-white shadow rounded-lg p-6"> --}}
                 {{-- TAB NAVIGATION --}}
-                <div class="border-b border-gray-200 mb-4">
-                    <nav class="flex space-x-4">
-
-                        <button onclick="switchTab('baru')" id="tab-baru"
-                            class="tab-btn px-4 py-2 text-sm font-medium border-b-2 border-[#136566] text-[#136566]">
-                            Traveler Baru
-                        </button>
-
-                        <button onclick="switchTab('rework')" id="tab-rework"
-                            class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-700">
-                            Traveler Rework
-                        </button>
-
-                    </nav>
-                </div>
-                {{-- table baru --}}
                 <div id="tab-content-baru">
 
                     <div class="bg-white shadow rounded-lg overflow-hidden">
@@ -86,7 +71,7 @@
                                             </td>
 
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                {{ $pecahTraveler->kkpo->customer->name ?? '-' }}
+                                                {{ $pecahTraveler->kkpoManagement->customer->name ?? '-' }}
                                             </td>
 
                                             @php
@@ -149,88 +134,7 @@
                         </div>
                     </div>
                 </div>
-
-                {{-- table rework --}}
-                <div id="tab-content-rework" class="hidden">
-
-                    <div class="bg-white shadow rounded-lg overflow-hidden">
-
-                        <table class="min-w-full divide-y divide-gray-200">
-
-                            <thead>
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                        No Traveler
-                                    </th>
-
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                        Departemen Asal
-                                    </th>
-
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                        Qty
-                                    </th>
-
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                        Status
-                                    </th>
-
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                        Actions
-                                    </th>
-
-                                </tr>
-                            </thead>
-
-                            <tbody class="bg-white divide-y divide-gray-200">
-
-                                @forelse($reworkTravelers ?? [] as $traveler)
-                                    <tr>
-
-                                        <td class="px-6 py-4">
-                                            {{ $traveler->no_traveler }}
-                                        </td>
-
-                                        <td class="px-6 py-4">
-                                            {{ $traveler->deptAsal->name ?? '-' }}
-                                        </td>
-
-                                        <td class="px-6 py-4">
-                                            {{ $traveler->qty }}
-                                        </td>
-
-                                        <td class="px-6 py-4">
-                                            <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">
-                                                Rework
-                                            </span>
-                                        </td>
-
-                                        <td class="px-6 py-4">
-                                            <a href="{{ route('warehouse.pecah.show', $traveler->id) }}"
-                                                class="px-2 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-                                                View Details
-                                            </a>
-                                        </td>
-
-                                    </tr>
-
-                                @empty
-
-                                    <tr>
-                                        <td colspan="4" class="px-6 py-4 text-center text-gray-500">
-                                            Data Traveler Rework Tidak Ada.
-                                        </td>
-                                    </tr>
-                                @endforelse
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
-
-                </div>
-            </div>
+            {{-- </div> --}}
         </div>
 
     </div>
@@ -316,7 +220,7 @@
                                     class="mt-1 block w-full border border-gray-300 rounded-md">
                             </td>
 
-                            <td class="px-3">
+                            <td class="pr-3">
                                 <input type="number" name="qty_split[]" required min="0"
                                     class="mt-1 block w-full border border-gray-300 rounded-md qty-input"
                                     oninput="calculateTotal()">
@@ -326,7 +230,7 @@
                                 <select name="dept_tujuan_id[]" required
                                     class="mt-1 block w-full border border-gray-300 rounded-md">
 
-                                    <option value="">Select Departemen</option>
+                                    <option value="">Pilih Departemen</option>
 
                                     @foreach (App\Models\Departments::all() as $departemen)
                                         <option value="{{ $departemen->id }}">
@@ -338,7 +242,8 @@
                             </td>
 
                             <td class="text-center px-3 py-2">
-                                <button type="button" class="text-green-600 text-xl font-bold" onclick="addTableRow()">
+                                <button type="button" class="text-green-600 text-xl font-bold"
+                                    onclick="addTableRow()">
                                     +
                                 </button>
                             </td>
@@ -352,7 +257,7 @@
 
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">
-                        Tanggal Pecah
+                        Tanggal Out
                     </label>
 
                     <input type="date" name="tanggal" id="tanggal" required
@@ -360,7 +265,7 @@
                 </div>
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">
-                        Notes
+                        Catatan
                     </label>
 
                     <textarea name="notes" id="notes" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md"></textarea>
@@ -453,18 +358,18 @@
             const row = document.createElement('tr');
 
             row.innerHTML = `
-        <td>
-            <input type="text" name="no_traveler[]" 
+        <td class="pr-3">
+            <input type="text" name="no_traveler[]" required placeholder="TR-..."
             class="mt-1 block w-full border border-gray-300 rounded-md">
         </td>
 
-        <td>
+        <td class="pr-3">
             <input type="number" name="qty_split[]" 
             class="mt-1 block w-full border border-gray-300 rounded-md qty-input"
             oninput="calculateTotal()">
         </td>
 
-        <td>
+        <td class="pr-3">
             <select name="dept_tujuan_id[]" required
                 class="mt-1 block w-full border border-gray-300 rounded-md">
 
@@ -495,38 +400,6 @@
             btn.closest('tr').remove();
             calculateTotal();
         }
-
-        function switchTab(tab) {
-
-            let tabBaru = document.getElementById('tab-content-baru');
-            let tabRework = document.getElementById('tab-content-rework');
-
-            let btnBaru = document.getElementById('tab-baru');
-            let btnRework = document.getElementById('tab-rework');
-
-            if (tab === 'baru') {
-
-                tabBaru.classList.remove('hidden');
-                tabRework.classList.add('hidden');
-
-                btnBaru.classList.add('border-[#136566]', 'text-[#136566]');
-                btnBaru.classList.remove('text-gray-500');
-
-                btnRework.classList.remove('border-[#136566]', 'text-[#136566]');
-                btnRework.classList.add('text-gray-500');
-
-            } else {
-
-                tabBaru.classList.add('hidden');
-                tabRework.classList.remove('hidden');
-
-                btnRework.classList.add('border-[#136566]', 'text-[#136566]');
-                btnRework.classList.remove('text-gray-500');
-
-                btnBaru.classList.remove('border-[#136566]', 'text-[#136566]');
-                btnBaru.classList.add('text-gray-500');
-            }
-
-        }
     </script>
-@endsection
+    {{-- @endsection --}}
+</x-app-layout>

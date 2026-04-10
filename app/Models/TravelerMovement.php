@@ -39,4 +39,14 @@ class TravelerMovement extends Model
         return $this->belongsTo(Machine::class);
     }
 
+    public function deptAsal()
+    {
+        return $this->belongsTo(Departments::class, 'dept_id');
+    }
+
+    public function deptTujuan()
+    {
+        return $this->belongsTo(Departments::class, 'dept_tujuan_id');
+    }
+
 }

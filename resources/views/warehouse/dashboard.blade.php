@@ -1,6 +1,7 @@
-@extends('layouts.app')
+    {{-- @extends('layouts.app')
 
-@section('content')
+    @section('content') --}}
+    <x-app-layout>
     <h2 class="font-semibold text-xl text-gray-800 leading-tight">
         {{ auth()->user()->department_id ? auth()->user()->department->name : 'No Department' }} Dashboard</h2>
 
@@ -79,4 +80,5 @@
             </ul>
         </div>
     </div>
-@endsection
+{{-- @endsection --}}
+</x-app-layout>

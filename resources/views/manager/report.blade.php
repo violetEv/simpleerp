@@ -84,16 +84,16 @@
                         @foreach ($movements as $movement)
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    {{ $movement->traveler->suratJalan->kkpo->no_kkpo ?? '-' }}</td>
+                                    {{ $movement->traveler->suratJalan->kkpoManagement->kkpo->no_kkpo ?? '-' }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     {{ $movement->traveler->suratJalan->no_surat_jalan ?? '-' }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    {{ $movement->traveler->suratJalan->kkpo->customer->name ?? '-' }}</td>
+                                    {{ $movement->traveler->suratJalan->kkpoManagement->customer->name ?? '-' }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    {{ $movement->traveler->suratJalan->kkpo->category->name ?? '-' }}
+                                    {{ $movement->traveler->suratJalan->kkpoManagement->category->name ?? '-' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    {{ $movement->traveler->suratJalan->kkpo->style->name ?? '-' }}</td>
+                                    {{ $movement->traveler->suratJalan->kkpoManagement->style->name ?? '-' }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $movement->qty_in }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $movement->qty_out }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $movement->balance }}</td>

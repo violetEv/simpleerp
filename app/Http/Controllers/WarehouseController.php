@@ -18,7 +18,7 @@ class WarehouseController extends Controller
     }
     public function order(Request $request)
     {
-        $query = SuratJalan::query();
+        $query = SuratJalan::with(['kkpoManagement.kkpo', 'kkpoManagement.customer', 'kkpoManagement.style', 'kkpoManagement.color', 'kkpoManagement.category']);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -33,7 +33,7 @@ class WarehouseController extends Controller
     public function orderStore(Request $request)
     {
         $request->validate([
-            'kkpo_id' => 'required|exists:kkpos,id',
+            'kkpo_management_id' => 'required|exists:kkpo_managements,id',
             'no_surat_jalan' => 'required|string|max:255',
             'qty' => 'required|integer',
             'tanggal' => 'required|date',
@@ -41,7 +41,7 @@ class WarehouseController extends Controller
         ]);
         $status = $request->qty <= 0 ? 'closed' : 'open';
         SuratJalan::create([
-            'kkpo_id' => $request->kkpo_id,
+            'kkpo_management_id' => $request->kkpo_management_id,
             'no_surat_jalan' => $request->no_surat_jalan,
             'qty' => $request->qty,
             'tanggal' => $request->tanggal,
@@ -58,7 +58,7 @@ class WarehouseController extends Controller
         $surat_jalan = SuratJalan::findOrFail($id);
 
         $request->validate([
-            'kkpo_id' => 'required|exists:kkpos,id',
+            'kkpo_management_id' => 'required|exists:kkpo_managements,id',
             'no_surat_jalan' => 'required|string|max:255',
             'qty' => 'required|integer',
             'tanggal' => 'required|date',
@@ -66,7 +66,7 @@ class WarehouseController extends Controller
         ]);
 
         $surat_jalan->update([
-            'kkpo_id' => $request->kkpo_id,
+            'kkpo_management_id' => $request->kkpo_management_id,
             'no_surat_jalan' => $request->no_surat_jalan,
             'qty' => $request->qty,
             'tanggal' => $request->tanggal,
@@ -82,13 +82,14 @@ class WarehouseController extends Controller
         $surat_jalan = SuratJalan::findOrFail($id);
         $surat_jalan->delete();
 
+        // return view('warehouse.delete', compact('surat_jalan'))->with('success', 'Order berhasil dihapus');
         return redirect()
             ->route('warehouse.order')
             ->with('success', 'Order berhasil dihapus');
     }
     public function pecah(Request $request)
     {
-        $query = SuratJalan::with(['kkpo.customer', 'travelers']);
+        $query = SuratJalan::with(['kkpoManagement.customer', 'travelers']);
 
         if ($request->filled('search')) {
 
@@ -97,7 +98,7 @@ class WarehouseController extends Controller
             $query->where(function ($q) use ($search) {
 
                 $q->where('no_surat_jalan', 'like', "%{$search}%")
-                    ->orWhereHas('kkpo.customer', function ($q2) use ($search) {
+                    ->orWhereHas('kkpoManagement.customer', function ($q2) use ($search) {
                         $q2->where('name', 'like', "%{$search}%");
                     });
             });
@@ -169,7 +170,7 @@ class WarehouseController extends Controller
             $query->where(function ($q) use ($search) {
 
                 $q->where('type', 'rework')
-                    ->whereHas('traveler.suratJalan.kkpo.customer', function ($q2) use ($search) {
+                    ->whereHas('traveler.suratJalan.kkpoManagement.customer', function ($q2) use ($search) {
                         $q2->where('name', 'like', "%{$search}%");
                     });
             });
@@ -224,7 +225,7 @@ class WarehouseController extends Controller
             $query->where(function ($q) use ($search) {
 
                 $q->where('no_traveler', 'like', "%{$search}%")
-                    ->orWhereHas('suratJalan.kkpo.customer', function ($q2) use ($search) {
+                    ->orWhereHas('suratJalan.kkpoManagement.customer', function ($q2) use ($search) {
                         $q2->where('name', 'like', "%{$search}%");
                     });
             });

@@ -51,7 +51,7 @@
                         @foreach ($menu['sub'] as $sub)
                             <a href="{{ route($sub['route']) }}"
                                 class="block px-3 py-2 text-sm rounded hover:bg-[#1b7a7b]
-{{ request()->routeIs($sub['route']) ? 'bg-[#0e4a4b] text-white' : '' }}">
+{{ request()->routeIs($sub['route']) ? 'bg-[#0b3f40] text-white' : '' }}">
                                 {{ $sub['name'] }}
                             </a>
                         @endforeach
@@ -60,7 +60,7 @@
             @else
                 <a href="{{ route($menu['route']) }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-[#1b7a7b]
-{{ request()->routeIs($menu['route']) ? 'bg-[#0e4a4b] text-white' : '' }}">
+{{ request()->routeIs($menu['route']) ? 'bg-[#0b3f40] text-white' : '' }}">
 
                     <i class="{{ $menu['icon'] }} w-5 text-center"></i>
 

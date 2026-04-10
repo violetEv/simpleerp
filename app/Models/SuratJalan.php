@@ -10,15 +10,15 @@ class SuratJalan extends Model
     use HasFactory;
     protected $fillable = [
         'no_surat_jalan',
-        'kkpo_id',
+        'kkpo_management_id',
         'qty',
         'tanggal',
         'notes',
     ];
 
-    public function kkpo()
+    public function kkpoManagement()
     {
-        return $this->belongsTo(Kkpo::class);
+        return $this->belongsTo(KkpoManagement::class, 'kkpo_management_id');
     }
     public function travelers()
     {

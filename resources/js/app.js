@@ -1,6 +1,8 @@
 import './bootstrap';
 import Alpine from 'alpinejs'
 import collapse from '@alpinejs/collapse'
+// preline
+import 'preline'
 
 window.Alpine = Alpine
 

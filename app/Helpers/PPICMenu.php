@@ -16,10 +16,12 @@ class PPICMenu
                     ['name' => 'Category Process', 'route' => 'ppic.category'],
                     ['name' => 'Style', 'route' => 'ppic.style'],
                     ['name' => 'Color', 'route' => 'ppic.color'],
+                    ['name' => 'KKPO', 'route' => 'ppic.kkpo']
                 ]
             ],
-            ['name' => 'KK / PO Management', 'route' => 'ppic.kkpo', 'icon' => 'fas fa-file-alt'],
-            ['name' => 'Monitoring Produksi', 'route' => 'ppic.monitoring', 'icon' => 'fas fa-industry']
+            ['name' => 'KK / PO Management', 'route' => 'ppic.kkpomanagement', 'icon' => 'fas fa-file-alt'],
+            ['name' => 'Monitoring & Report', 'route' => 'ppic.monitoring', 'icon' => 'fas fa-chart-bar'],
+            // ['name' => 'Report','route' => 'ppic.report', 'icon' => 'fas fa-chart-bar']
         ];
     }
 }

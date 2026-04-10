@@ -15,8 +15,8 @@
     @endif
     <div class="py-6">
         <div class="max-w-7xl mx-auto">
-            {{-- Search KKPO and add KKPO modal --}}
-            <div class="flex items-center justify-between mb-4 mt-4">
+            {{-- Search & Add KKPO Modal --}}
+            <div class="flex items-center justify-between mb-4">
                 <form action="{{ route('ppic.kkpo') }}" method="GET" class="flex items-center gap-2">
                     <input type="text" name="search" placeholder="Search KKPO..."
                         class="border border-gray-300 rounded-lg px-4 py-2" value="{{ request('search') }}">
@@ -30,37 +30,16 @@
                 </button>
             </div>
             {{-- KKPO Table --}}
-            <div class="bg-white shadow-sm sm:rounded-lg">
-                <div class="p-4 bg-white border-b border-gray-200 overflow-x-auto">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-4 bg-white border-b border-gray-200">
 
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead>
                             <tr>
+                                {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    ID</th> --}}
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    No KKPO
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Customer
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Category
-                                    Process
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Style
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Color
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Qty Total
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Price
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Reject Allowance
-                                </th>
+                                    Name</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Action
                                 </th>
@@ -70,32 +49,41 @@
                             @if ($kkpos->count())
                                 @foreach ($kkpos as $kkpo)
                                     <tr>
+                                        {{-- <td class="px-6 py-4 whitespace-nowrap">{{ $kkpo->id }}</td> --}}
                                         <td class="px-6 py-4 whitespace-nowrap">{{ $kkpo->no_kkpo }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $kkpo->customer->name }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $kkpo->category->name }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $kkpo->style->name }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $kkpo->color->name }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $kkpo->qty_total - $kkpo->suratJalan->sum('qty') }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $kkpo->price }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $kkpo->reject_allowance }}
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <button class="text-blue-500 hover:text-blue-700 mr-2"
-                                                onclick="openEditModal({{ $kkpo->id }})">Edit</button>
+                                            <button onClick="editKkpo({{ $kkpo->id }}, '{{ $kkpo->no_kkpo }}')"
+                                                class="mr-2" title="Edit">
+                                                <svg class="w-6 h-6 text-blue-500 hover:text-blue-700"
+                                                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
+                                                    height="24" fill="none" viewBox="0 0 24 24">
+                                                    <path stroke="currentColor" stroke-linecap="round"
+                                                        stroke-linejoin="round" stroke-width="2"
+                                                        d="M10.779 17.779 4.36 19.918 6.5 13.5m4.279 4.279 8.364-8.643a3.027 3.027 0 0 0-2.14-5.165 3.03 3.03 0 0 0-2.14.886L6.5 13.5m4.279 4.279L6.499 13.5m2.14 2.14 6.213-6.504M12.75 7.04 17 11.28" />
+                                                </svg>
+                                            </button>
                                             <form action="{{ route('ppic.kkpo.delete', $kkpo->id) }}" method="POST"
                                                 class="inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit"
-                                                    onclick="return confirm('Apakah Anda yakin ingin mengapus KKPO ini?')"
-                                                    class="text-red-500 hover:text-red-700">Delete</button>
+                                                <button type="submit" title="Delete"
+                                                    onclick="return confirm('Apakah Anda yakin ingin menghapus KKPO ini?')">
+                                                    <svg class="w-6 h-6 text-red-500 hover:text-red-700"
+                                                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
+                                                        height="24" fill="none" viewBox="0 0 24 24">
+                                                        <path stroke="currentColor" stroke-linecap="round"
+                                                            stroke-linejoin="round" stroke-width="2"
+                                                            d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
+                                                    </svg>
+                                                </button>
                                             </form>
                                         </td>
                                     </tr>
                                 @endforeach
                             @else
                                 <tr>
-                                    <td colspan="10" class="px-6 py-4 whitespace-nowrap text-center text-gray-500">
-                                        No KKPO found.
+                                    <td colspan="2" class="text-center py-4 text-gray-500">
+                                        No KKPO found
                                     </td>
                                 </tr>
                             @endif
@@ -107,8 +95,8 @@
                 </div>
             </div>
             {{-- Modal Add & Edit KKPO --}}
-            <div id="addModal" class="hidden fixed inset-0 bg-gray-600  bg-opacity-50 items-center justify-center z-50">
-                <div class="bg-white rounded-lg p-6 w-full max-w-md overflow-auto max-h-screen">
+            <div id="addModal" class="hidden fixed inset-0 z-50 bg-gray-600 bg-opacity-50 items-center justify-center">
+                <div class="bg-white rounded-lg p-6 w-full max-w-md">
                     <div class="flex justify-between items-center mb-4">
                         <h3 id="modal-title" class="text-lg font-medium">Add KKPO</h3>
                         <button onClick="closeAddModal()" class="text-gray-500 text-2xl hover:text-gray-700">
@@ -118,75 +106,18 @@
                     <form id="crud-form" action="{{ route('ppic.kkpo.store') }}" method="POST">
                         @csrf
                         <input type="hidden" name="_method" id="form-method" value="POST">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label for="no_kkpo" class="block text-gray-700">No KKPO</label>
-                                <input type="text" name="no_kkpo" id="no_kkpo"
-                                    class="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1" required>
-                            </div>
-                            <div>
-                                <label for="customer_id" class="block text-gray-700">Customer</label>
-                                <select name="customer_id" id="customer_id"
-                                    class="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1" required>
-                                    <option value="">Select Customer</option>
-                                    @foreach (App\Models\Customer::all() as $customer)
-                                        <option value="{{ $customer->id }}">{{ $customer->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div>
-                                <label for="category_id" class="block text-gray-700">Category Process</label>
-                                <select name="category_id" id="category_id"
-                                    class="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1" required>
-                                    <option value="">Select Category Process</option>
-                                    @foreach (App\Models\Category::all() as $category)
-                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div>
-                                <label for="style_id" class="block text-gray-700">Style</label>
-                                <select name="style_id" id="style_id"
-                                    class="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1" required>
-                                    <option value="">Select Style</option>
-                                    @foreach (App\Models\Style::all() as $style)
-                                        <option value="{{ $style->id }}">{{ $style->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div>
-                                <label for="color_id" class="block text-gray-700">Color</label>
-                                <select name="color_id" id="color_id"
-                                    class="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1" required>
-                                    <option value="">Select Color</option>
-                                    @foreach (App\Models\Color::all() as $color)
-                                        <option value="{{ $color->id }}">{{ $color->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div>
-                                <label for="qty_total" class="block text-gray-700">Qty Total</label>
-                                <input type="number" name="qty_total" id="qty_total" min="0"
-                                    class="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1" required>
-                            </div>
-                            <div>
-                                <label for="price" class="block text-gray-700">Price</label>
-                                <input type="number" name="price" id="price"
-                                    class="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1" required>
-                            </div>
-                            <div>
-                                <label for="reject_allowance" class="block text-gray-700">Reject Allowance</label>
-                                <input type="string" name="reject_allowance" id="reject_allowance"
-                                    class="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1" required>
-                            </div>
+                        <input type="hidden" name="kkpo_id" id="kkpo_id">
+                        <div class="mb-4">
+                            <label for="no_kkpo" class="block text-gray-700">No KKPO</label>
+                            <input type="text" name="no_kkpo" id="no_kkpo" required
+                                class="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1">
                         </div>
-                        <div class="mt-6">
-                            <button type="submit" id="submit-button"
-                                class="w-full px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
-                                Add KKPO
-                            </button>
-                        </div>
+                        <button type="submit" id="submit-button"
+                            class="bg-[#136566] text-white px-4 py-2 rounded-lg hover:bg-[#0f4f50]">
+                            Add KKPO
+                        </button>
                     </form>
+
                 </div>
             </div>
         </div>
@@ -201,47 +132,28 @@
             document.getElementById('modal-title').textContent = 'Add KKPO';
             document.getElementById('submit-button').textContent = 'Add KKPO';
             document.getElementById('crud-form').action = "{{ route('ppic.kkpo.store') }}";
+
             document.getElementById('form-method').value = 'POST';
 
+            document.getElementById('kkpo_id').value = '';
             document.getElementById('no_kkpo').value = '';
-            document.getElementById('customer_id').value = '';
-            document.getElementById('category_id').value = '';
-            document.getElementById('style_id').value = '';
-            document.getElementById('color_id').value = '';
-            document.getElementById('qty_total').value = '';
-            document.getElementById('price').value = '';
-            document.getElementById('reject_allowance').value = '';
 
             document.getElementById('addModal').classList.remove('hidden');
             document.getElementById('addModal').classList.add('flex');
         }
 
-        function openEditModal(id) {
-            // Fetch KKPO data by ID (you can use AJAX or pass data to the modal)
-            // For demonstration, let's assume you have the KKPO data available in a JavaScript object
-            const kkpoData = @json($kkpos->keyBy('id'));
+        function editKkpo(id, no_kkpo) {
+            document.getElementById('modal-title').textContent = 'Edit KKPO';
+            document.getElementById('submit-button').textContent = 'Update KKPO';
+            document.getElementById('crud-form').action = '{{ route('ppic.kkpo.update', ':id') }}/'.replace(':id',
+                id);
+            document.getElementById('form-method').value = 'PUT';
 
-            if (kkpoData[id]) {
-                const kkpo = kkpoData[id];
-                document.getElementById('modal-title').textContent = 'Edit KKPO';
-                document.getElementById('submit-button').textContent = 'Update KKPO';
-                document.getElementById('crud-form').action = '{{ route('ppic.kkpo.update', ':id') }}'.replace(':id', id);
-                document.getElementById('form-method').value = 'PUT';
+            document.getElementById('kkpo_id').value = id;
+            document.getElementById('no_kkpo').value = no_kkpo;
 
-                document.getElementById('no_kkpo').value = kkpo.no_kkpo;
-                document.getElementById('customer_id').value = kkpo.customer_id;
-                document.getElementById('category_id').value = kkpo.category_id;
-                document.getElementById('style_id').value = kkpo.style_id;
-                document.getElementById('color_id').value = kkpo.color_id;
-                document.getElementById('qty_total').value = kkpo.qty_total;
-                document.getElementById('price').value = kkpo.price;
-                document.getElementById('reject_allowance').value = kkpo.reject_allowance
-
-                document.getElementById('addModal').classList.remove('hidden');
-                document.getElementById('addModal').classList.add('flex');
-            } else {
-                alert('KKPO data not found!');
-            }
+            document.getElementById('addModal').classList.remove('hidden');
+            document.getElementById('addModal').classList.add('flex');
         }
     </script>
 @endsection

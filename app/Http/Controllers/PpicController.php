@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
-use App\Models\CategoryProcess;
 use App\Models\Color;
 use App\Models\Customer;
 use App\Models\Kkpo;
+use App\Models\KkpoManagement;
 use App\Models\Style;
 use Illuminate\Http\Request;
 
@@ -228,14 +228,83 @@ class PpicController extends Controller
             ->route('ppic.color')
             ->with('success', 'Color berhasil dihapus');
     }
+
+
+    // disini untuk set master kkpo
     public function kkpo()
     {
-        $query = Kkpo::with('customer', 'style', 'color', 'category', 'travelers');
+        $query = Kkpo::query();
+        if (request()->filled('search')) {
+            $search = request()->search;
+
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        $kkpos = $query->paginate(10)->withQueryString();
+        return view('ppic.kkpo', compact('kkpos'));
+        // $query = Kkpo::with('customer');
+
+        // if (request()->filled('search')) {
+        //     $search = request()->search;
+
+        //     $query->where('no_kkpo', 'like', "%{$search}%")
+        //         ->orWhereHas('customer', function ($q) use ($search) {
+        //             $q->where('name', 'like', "%{$search}%");
+        //         });
+        // }
+
+        // $kkpos = $query->paginate(10)->withQueryString();
+        // return view('ppic.kkpo', compact('kkpos'));
+    }
+
+
+    public function kkpoStore(Request $request)
+    {
+        $request->validate([
+            'no_kkpo' => 'required|string|max:255',
+        ]);
+
+        Kkpo::create([
+            'no_kkpo' => $request->no_kkpo,
+        ]);
+
+        return redirect()
+            ->route('ppic.kkpo')
+            ->with('success', 'KKPO berhasil ditambahkan');
+    }
+    public function kkpoUpdate(Request $request, $id)
+    {
+        $kkpo = Kkpo::findOrFail($id);
+        $request->validate([
+            'no_kkpo' => 'required|string|max:255',
+        ]);
+        $kkpo->update([
+            'no_kkpo' => $request->no_kkpo,
+        ]);
+        return redirect()
+            ->route('ppic.kkpo')
+            ->with('success', 'KKPO berhasil diupdate');
+    }
+    public function kkpoDelete($id)
+    {
+        $kkpo = Kkpo::findOrFail($id);
+        $kkpo->delete();
+        return redirect()
+            ->route('ppic.kkpo')
+            ->with('success', 'KKPO berhasil dihapus');
+    }
+
+
+    public function kkpoManagement()
+    {
+        $query = KkpoManagement::with('kkpo', 'customer', 'style', 'color', 'category', 'travelers');
 
         if (request()->filled('search')) {
             $search = request()->search;
 
-            $query->where('no_kkpo', 'like', "%{$search}%")
+            $query->whereHas('kkpo', function ($q) use ($search) {
+                $q->where('no_kkpo', 'like', "%{$search}%");
+            })
                 ->orWhereHas('customer', function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%");
                 })
@@ -250,15 +319,15 @@ class PpicController extends Controller
                 });
         }
 
-        $kkpos = $query->paginate(10)->withQueryString();
-        return view('ppic.kkpo', compact('kkpos'));
+        $kkpomanagements = $query->paginate(10)->withQueryString();
+        return view('ppic.kkpomanagement', compact('kkpomanagements'));
     }
 
-    public function kkpoStore(Request $request)
+    public function kkpoManagementStore(Request $request)
     {
         // Validasi input jika diperlukan
         $request->validate([
-            'no_kkpo' => 'required|string|max:255|unique:kkpos,no_kkpo',
+            'kkpo_id' => 'required|exists:kkpos,id',
             'style_id' => 'required|exists:styles,id',
             'color_id' => 'required|exists:colors,id',
             'category_id' => 'required|exists:categories,id',
@@ -269,8 +338,8 @@ class PpicController extends Controller
         ]);
 
         // Simpan data KKPO ke database
-        Kkpo::create([
-            'no_kkpo' => $request->no_kkpo,
+        KkpoManagement::create([
+            'kkpo_id' => $request->kkpo_id,
             'style_id' => $request->style_id,
             'color_id' => $request->color_id,
             'category_id' => $request->category_id,
@@ -281,17 +350,17 @@ class PpicController extends Controller
         ]);
 
         return redirect()
-            ->route('ppic.kkpo')
+            ->route('ppic.kkpomanagement')
             ->with('success', 'KKPO berhasil ditambahkan');
     }
 
-    public function kkpoUpdate(Request $request, $id)
+    public function kkpoManagementUpdate(Request $request, $id)
     {
-        $kkpo = Kkpo::findOrFail($id);
+        $kkpomanagement = KkpoManagement::findOrFail($id);
 
         // Validasi input jika diperlukan
         $request->validate([
-            'no_kkpo' => 'required|string|max:255|unique:kkpos,no_kkpo,' . $kkpo->id,
+            'kkpo_id' => 'required|exists:kkpos,id',
             'style_id' => 'required|exists:styles,id',
             'color_id' => 'required|exists:colors,id',
             'category_id' => 'required|exists:categories,id',
@@ -302,8 +371,8 @@ class PpicController extends Controller
         ]);
 
         // Update data KKPO di database
-        $kkpo->update([
-            'no_kkpo' => $request->no_kkpo,
+        $kkpomanagement->update([
+            'kkpo_id' => $request->kkpo_id,
             'style_id' => $request->style_id,
             'color_id' => $request->color_id,
             'category_id' => $request->category_id,
@@ -314,16 +383,16 @@ class PpicController extends Controller
         ]);
 
         return redirect()
-            ->route('ppic.kkpo')
+            ->route('ppic.kkpomanagement')
             ->with('success', 'KKPO berhasil diupdate');
     }
-    public function kkpoDelete($id)
+    public function kkpoManagementDelete($id)
     {
-        $kkpo = Kkpo::findOrFail($id);
-        $kkpo->delete();
+        $kkpomanagement = KkpoManagement::findOrFail($id);
+        $kkpomanagement->delete();
 
         return redirect()
-            ->route('ppic.kkpo')
+            ->route('ppic.kkpomanagement')
             ->with('success', 'KKPO berhasil dihapus');
     }
     public function monitoring()
