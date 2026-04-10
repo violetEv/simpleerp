@@ -160,6 +160,14 @@
                                     </th>
 
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                        Traveler Turunan
+                                    </th>
+
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                        Departemen Tujuan
+                                    </th>
+
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                                         Actions
                                     </th>
 
@@ -190,9 +198,18 @@
                                         </td>
 
                                         <td class="px-6 py-4">
+                                            <input type="text" value="{{ $traveler->no_traveler ?? '-' }}" readonly
+                                                class="border border-gray-300 rounded-lg px-2 py-1 w-full bg-gray-100 text-sm text-center">
+                                        </td>
+
+                                        <td class="px-6 py-4">
+                                            {{ $traveler->deptTujuan->name ?? '-' }}
+                                        </td>
+
+                                        <td class="px-6 py-4">
                                             <a href="{{ route('warehouse.pecah.show', $traveler->id) }}"
                                                 class="px-2 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-                                                View Details
+                                                Terbitkan
                                             </a>
                                         </td>
 
@@ -201,7 +218,7 @@
                                 @empty
 
                                     <tr>
-                                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                                        <td colspan="7" class="px-6 py-4 text-center text-gray-500">
                                             Data Traveler Rework Tidak Ada.
                                         </td>
                                     </tr>
