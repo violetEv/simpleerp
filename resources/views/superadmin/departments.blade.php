@@ -1,6 +1,4 @@
-@extends('layouts.app')
-
-@section('content')
+<x-app-layout>
     <h2 class="font-semibold text-xl text-gray-800 leading-tight">
         Departments
     </h2>
@@ -162,4 +160,4 @@
             document.getElementById('crud-modal').classList.remove('flex');
         }
     </script>
-@endsection
+</x-app-layout>

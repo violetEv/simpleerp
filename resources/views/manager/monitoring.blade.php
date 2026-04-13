@@ -1,6 +1,4 @@
-@extends('layouts.app')
-
-@section('content')
+<x-app-layout>
     <h2 class="font-semibold text-xl text-gray-800 leading-tight">
         Monitoring
     </h2>
@@ -202,4 +200,4 @@
             window.location.href = `{{ route('manager.monitoring') }}${queryString}`;
         }
     </script>
-@endsection
+</x-app-layout>

@@ -1,5 +1,3 @@
-@extends('layouts.app')
-
-@section('content')
+<x-app-layout>
  {{-- report page ppic --}}
- 
+</x-app-layout>

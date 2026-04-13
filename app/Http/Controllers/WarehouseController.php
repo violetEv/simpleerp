@@ -157,11 +157,9 @@ class WarehouseController extends Controller
 
     public function rework(Request $request)
     {
-        $query = TravelerMovement::with([
-            'suratJalan',
-            'deptAsal',
-            'deptTujuan'
-        ]);
+        $query = TravelerMovement::with(['traveler', 'deptAsal', 'deptTujuan'])
+            ->where('qty_reject', '>', 0)
+            ->orderBy('date_in', 'desc');
 
         if ($request->filled('search')) {
 
@@ -169,45 +167,58 @@ class WarehouseController extends Controller
 
             $query->where(function ($q) use ($search) {
 
-                $q->where('type', 'rework')
-                    ->whereHas('traveler.suratJalan.kkpoManagement.customer', function ($q2) use ($search) {
-                        $q2->where('name', 'like', "%{$search}%");
+                $q->whereHas('traveler', function ($q2) use ($search) {
+                    $q2->where('no_traveler', 'like', "%{$search}%");
+                })
+                    ->orWhereHas('deptAsal', function ($q3) use ($search) {
+                        $q3->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('deptTujuan', function ($q4) use ($search) {
+                        $q4->where('name', 'like', "%{$search}%");
                     });
             });
-        }
-        $reworkTravelers = $query->paginate(10)->withQueryString();
-        return view('warehouse.rework', compact('reworkTravelers'));
-    }
+        }   
+        $reworkTravelers = $query->paginate(10)->withQueryString(); 
+        return view('warehouse.list', compact('reworkTravelers'));
+    }   
 
-    public function reworkStore(Request $request){
+    // untuk membuat traveler turunan dari traveler yang dirework, dengan no_traveler_turunan yang diinputkan oleh user
+    public function reworkStore(Request $request, $id)
+    {
         $request->validate([
-            'traveler_id' => 'required|exists:travelers,id',
-            'dept_asal_id' => 'required|exists:departments,id',
+            'no_traveler_turunan' => 'required|string|unique:travelers,no_traveler',
             'dept_tujuan_id' => 'required|exists:departments,id',
-            'qty_in' => 'required|integer|min:1',
-            'qty_out' => 'required|integer|min:0',
-            'date_in' => 'required|date',
-            'date_out' => 'nullable|date|after_or_equal:date_in',
-            'notes' => 'nullable|string',
-            'machine_id' => 'nullable|exists:machines,id'
         ]);
 
-        TravelerMovement::create([
-            'traveler_id' => $request->traveler_id,
-            'dept_asal_id' => $request->dept_asal_id,
-            'dept_tujuan_id' => $request->dept_tujuan_id,
-            'qty_in' => $request->qty_in,
-            'qty_out' => $request->qty_out,
-            'date_in' => $request->date_in,
-            'date_out' => $request->date_out,
-            'notes' => $request->notes,
-            'machine_id' => $request->machine_id,
-            'type' => 'rework'
-        ]);
+        $travelerMovement = TravelerMovement::findOrFail($id);
 
-        return redirect()
-            ->route('warehouse.rework')
-            ->with('success', 'Rework traveler berhasil ditambahkan');
+        // nomor traveler turunan akan dibuat dengan format: no_traveler_ + no_traveler_turunan yang diinputkan user dipisahkan dengan - . contoh jika no_traveler yang dirework adalah TRV-001 dan user menginputkan no_traveler_turunan TRV-001-A, maka no_traveler turunan yang akan dibuat adalah TRV-001-A-1. jika user menginputkan no_traveler_turunan yang sama untuk traveler yang sama, maka nomor turunan akan bertambah 1. contoh jika user menginputkan no_traveler_turunan TRV-001-A untuk traveler yang sama, maka nomor turunan yang akan dibuat adalah TRV-001-A-2.
+        if ($travelerMovement->qty_reject > 0) {
+            Traveler::create([
+                'no_traveler' => $travelerMovement->traveler->no_traveler . '-' . $request->no_traveler_turunan,
+                'qty' => $travelerMovement->qty_reject,
+                'surat_jalan_id' => $travelerMovement->traveler->surat_jalan_id,
+                'dept_asal_id' => $travelerMovement->dept_id,
+                'dept_tujuan_id' => $request->dept_tujuan_id,
+                'current_dept_id' => $request->dept_tujuan_id,
+                'parent_traveler_id' => $travelerMovement->traveler_id,
+                'tanggal' => now(),
+                'notes' => 'Traveler hasil rework dari traveler ' . $travelerMovement->traveler->no_traveler,
+                'status' => 'open'
+            ]);
+            $travelerMovement->update([
+                'qty_reject' => 0,
+                'type_reject' => null,
+                'notes' => $travelerMovement->notes . ' | Traveler dirework dan dibuat traveler turunan dengan no_traveler ' . $request->no_traveler_turunan
+            ]);
+            return redirect()
+                ->route('warehouse.list')
+                ->with('success', 'Traveler turunan berhasil dibuat');
+         } else {
+            return redirect()
+                ->route('warehouse.list')
+                ->with('error', 'Traveler ini bukan hasil rework');
+         }
     }
 
     public function list(Request $request)
@@ -231,8 +242,9 @@ class WarehouseController extends Controller
             });
         }
 
-        $travelers = $query->paginate(10)->withQueryString();
-
-        return view('warehouse.list', compact('travelers'));
+        $travelers = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
+        $reworkTravelers = TravelerMovement::with('traveler')->where('qty_reject', '>', 0)->orderBy('date_in', 'desc')->
+            paginate(10)->withQueryString();
+        return view('warehouse.list', compact('travelers', 'reworkTravelers'));
     }
 }

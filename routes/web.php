@@ -125,10 +125,9 @@ Route::middleware('role:warehouse')->group(function () {
     Route::put('/warehouse/pecah/update/{id}', [WarehouseController::class, 'pecahUpdate'])->name('warehouse.pecah.update');
     Route::delete('/warehouse/pecah/delete/{id}', [WarehouseController::class, 'pecahDelete'])->name('warehouse.pecah.delete');
 
-    Route::get('/warehouse/rework', [WarehouseController::class, 'rework'])->name('warehouse.rework');
-    Route::post('/warehouse/rework', [WarehouseController::class, 'reworkStore'])->name('warehouse.rework.store');
-
     Route::get('/warehouse/list', [WarehouseController::class, 'list'])->name('warehouse.list');
+    // Route::get('/warehouse/rework', [WarehouseController::class, 'rework'])->name('warehouse.rework');
+    Route::post('/warehouse/rework/{id}', [WarehouseController::class, 'reworkStore'])->name('warehouse.rework.store');
 });
 
 /*
@@ -143,7 +142,7 @@ Route::middleware('role:produksi')->group(function () {
 
     Route::get('/produksi/log', [ProductionController::class, 'logProduction'])->name('produksi.logproduksi');
     Route::get('/produksi/log/{id}', [ProductionController::class, 'logDetail'])->name('produksi.logdetail');
-    
+
     Route::get('/produksi/{id}', [ProductionController::class, 'process'])->name('produksi.process');
     Route::post('/produksi/in', [ProductionController::class, 'storeIn'])->name('produksi.in');
     Route::post('/produksi/out', [ProductionController::class, 'storeOut'])->name('produksi.out');
@@ -152,7 +151,7 @@ Route::middleware('role:produksi')->group(function () {
     // Route::get('/produksi/dataout', [ProductionController::class, 'dataOut'])->name('produksi.dataout');
     // Route::get('/produksi/listapprove', [ProductionController::class, 'listapprove'])->name('produksi.listapprove');
     // Route::get('/produksi/listproblem', [ProductionController::class, 'listproblem'])->name('produksi.listproblem');
-    
+
 });
 
 Route::middleware('auth')->group(function () {

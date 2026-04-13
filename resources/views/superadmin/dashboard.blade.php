@@ -1,6 +1,4 @@
-@extends('layouts.app')
-
-@section('content')
+<x-app-layout>
     <h2 class="font-semibold text-xl text-gray-800 leading-tight mb-6">
         Super Admin Dashboard
     </h2>
@@ -82,5 +80,4 @@
             </li>
         </ul>
     </div>
-
-@endsection
+</x-app-layout>

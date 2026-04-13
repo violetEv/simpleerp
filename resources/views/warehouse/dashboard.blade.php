@@ -1,7 +1,7 @@
-    {{-- @extends('layouts.app')
+{{-- @extends('layouts.app')
 
-    @section('content') --}}
-    <x-app-layout>
+@section('content') --}}
+<x-app-layout>
     <h2 class="font-semibold text-xl text-gray-800 leading-tight">
         {{ auth()->user()->department_id ? auth()->user()->department->name : 'No Department' }} Dashboard</h2>
 
@@ -64,7 +64,8 @@
                         <p class="text-sm text-gray-600">Order #12345 was created.</p>
                         <p class="text-xs text-gray-400">2 hours ago</p>
                     </div>
-                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                    <span
+                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                         Completed
                     </span>
                 </li>
@@ -73,12 +74,13 @@
                         <p class="text-sm text-gray-600">Order #12346 was created.</p>
                         <p class="text-xs text-gray-400">1 hour ago</p>
                     </div>
-                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                    <span
+                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
                         Processing
                     </span>
                 </li>
             </ul>
         </div>
     </div>
-{{-- @endsection --}}
+    {{-- @endsection --}}
 </x-app-layout>

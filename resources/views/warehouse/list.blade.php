@@ -152,7 +152,7 @@
                                     </th>
 
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                        Qty
+                                        Qty Rework
                                     </th>
 
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
@@ -160,7 +160,7 @@
                                     </th>
 
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                        Traveler Turunan
+                                        No Turunan
                                     </th>
 
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
@@ -176,11 +176,11 @@
 
                             <tbody class="bg-white divide-y divide-gray-200">
 
-                                @forelse($reworkTravelers ?? [] as $traveler)
+                                @forelse($reworkTravelers as $traveler)
                                     <tr>
 
                                         <td class="px-6 py-4">
-                                            {{ $traveler->no_traveler }}
+                                            {{ $traveler->traveler->no_traveler ?? '-' }}
                                         </td>
 
                                         <td class="px-6 py-4">
@@ -188,7 +188,7 @@
                                         </td>
 
                                         <td class="px-6 py-4">
-                                            {{ $traveler->qty }}
+                                            {{ $traveler->qty_reject }}
                                         </td>
 
                                         <td class="px-6 py-4">
@@ -196,23 +196,35 @@
                                                 Rework
                                             </span>
                                         </td>
-
+                                        <form action="{{ route('warehouse.rework.store', $traveler->id) }}" method="POST">
+                                            @csrf
                                         <td class="px-6 py-4">
-                                            <input type="text" value="{{ $traveler->no_traveler ?? '-' }}" readonly
+                                            <input type="text" name="no_traveler_turunan" id="no_trav_turunan" placeholder="..."
                                                 class="border border-gray-300 rounded-lg px-2 py-1 w-full bg-gray-100 text-sm text-center">
                                         </td>
 
                                         <td class="px-6 py-4">
-                                            {{ $traveler->deptTujuan->name ?? '-' }}
+                                            <select name="dept_tujuan_id" required
+                                                class="mt-1 block w-full border border-gray-300 rounded-md">
+
+                                                <option value="">Pilih Departemen</option>
+
+                                                @foreach (App\Models\Departments::all() as $departemen)
+                                                    <option value="{{ $departemen->id }}">
+                                                        {{ $departemen->name }}
+                                                    </option>
+                                                @endforeach
+
+                                            </select>
+                                            {{-- {{ $traveler->deptTujuan->name ?? '-' }} --}}
                                         </td>
 
                                         <td class="px-6 py-4">
-                                            <a href="{{ route('warehouse.pecah.show', $traveler->id) }}"
-                                                class="px-2 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                                            <button type="submit" class="px-2 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
                                                 Terbitkan
-                                            </a>
+                                            </button>
                                         </td>
-
+                                        </form>
                                     </tr>
 
                                 @empty
@@ -337,7 +349,7 @@
             document.getElementById('detail-modal').classList.remove('flex');
         }
 
-        
+
         function switchTab(tab) {
 
             let tabBaru = document.getElementById('tab-content-baru');

@@ -1,6 +1,4 @@
-@extends('layouts.app')
-
-@section('content')
+<x-app-layout>
 
     @php
         $dept = auth()->user()->department->name;
@@ -154,5 +152,4 @@
 
         });
     </script>
-
-@endsection
+</x-app-layout>
