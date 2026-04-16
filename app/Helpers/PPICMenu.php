@@ -9,17 +9,20 @@ class PPICMenu
         return [
             ['name' => 'Dashboard', 'route' => 'dashboard', 'icon' => 'fas fa-tachometer-alt'],
             [
-                'name' => 'Master Management',
+                'name' => 'Master Data',
                 'icon' => 'fas fa-database',
                 'sub' => [
                     ['name' => 'Customer', 'route' => 'ppic.customer'],
                     ['name' => 'Category Process', 'route' => 'ppic.category'],
                     ['name' => 'Style', 'route' => 'ppic.style'],
                     ['name' => 'Color', 'route' => 'ppic.color'],
+                    ['name' => 'Item', 'route' => 'ppic.item'],
+                    ['name' => 'Brand', 'route' => 'ppic.brand'],
+                    ['name' => 'Satuan', 'route' => 'ppic.unit'],
                     ['name' => 'KKPO', 'route' => 'ppic.kkpo']
                 ]
             ],
-            ['name' => 'KK / PO Management', 'route' => 'ppic.kkpomanagement', 'icon' => 'fas fa-file-alt'],
+            ['name' => 'KK / PO', 'route' => 'ppic.kkpomanagement', 'icon' => 'fas fa-file-alt'],
             ['name' => 'Monitoring & Report', 'route' => 'ppic.monitoring', 'icon' => 'fas fa-chart-bar'],
             // ['name' => 'Report','route' => 'ppic.report', 'icon' => 'fas fa-chart-bar']
         ];

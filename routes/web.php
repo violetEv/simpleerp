@@ -94,6 +94,21 @@ Route::middleware('role:ppic')->group(function () {
     Route::put('/ppic/color/update/{id}', [PpicController::class, 'colorUpdate'])->name('ppic.color.update');
     Route::delete('/ppic/color/delete/{id}', [PpicController::class, 'colorDelete'])->name('ppic.color.delete');
 
+    Route::get('/ppic/item', [PpicController::class, 'item'])->name('ppic.item');
+    Route::post('/ppic/item', [PpicController::class, 'itemStore'])->name('ppic.item.store');
+    Route::put('/ppic/item/update/{id}', [PpicController::class, 'itemUpdate'])->name('ppic.item.update');
+    Route::delete('/ppic/item/delete/{id}', [PpicController::class, 'itemDelete'])->name('ppic.item.delete');
+
+    Route::get('/ppic/brand', [PpicController::class, 'brand'])->name('ppic.brand');
+    Route::post('/ppic/brand', [PpicController::class, 'brandStore'])->name('ppic.brand.store');
+    Route::put('/ppic/brand/update/{id}', [PpicController::class, 'brandUpdate'])->name('ppic.brand.update');
+    Route::delete('/ppic/brand/delete/{id}', [PpicController::class, 'brandDelete'])->name('ppic.brand.delete');
+
+    Route::get('/ppic/unit', [PpicController::class, 'unit'])->name('ppic.unit');
+    Route::post('/ppic/unit', [PpicController::class, 'unitStore'])->name('ppic.unit.store');
+    Route::put('/ppic/unit/update/{id}', [PpicController::class, 'unitUpdate'])->name('ppic.unit.update');
+    Route::delete('/ppic/unit/delete/{id}', [PpicController::class, 'unitDelete'])->name('ppic.unit.delete');
+
     Route::get('/ppic/kkpo', [PpicController::class, 'kkpo'])->name('ppic.kkpo');
     Route::post('/ppic/kkpo', [PpicController::class, 'kkpoStore'])->name('ppic.kkpo.store');
     Route::put('/ppic/kkpo/update/{id}', [PpicController::class, 'kkpoUpdate'])->name('ppic.kkpo.update');
@@ -101,6 +116,7 @@ Route::middleware('role:ppic')->group(function () {
 
     Route::get('/ppic/kkpomanagement', [PpicController::class, 'kkpoManagement'])->name('ppic.kkpomanagement');
     Route::post('/ppic/kkpomanagement', [PpicController::class, 'kkpoManagementStore'])->name('ppic.kkpomanagement.store');
+    Route::get('/ppic/kkpomanagement/detail/{id}', [PpicController::class, 'kkpoDetail'])->name('ppic.kkpomanagement.detail');
     Route::put('/ppic/kkpomanagement/update/{id}', [PpicController::class, 'kkpoManagementUpdate'])->name('ppic.kkpomanagement.update');
     Route::delete('/ppic/kkpomanagement/delete/{id}', [PpicController::class, 'kkpoManagementDelete'])->name('ppic.kkpomanagement.delete');
 
@@ -115,10 +131,10 @@ Route::middleware('role:ppic')->group(function () {
 Route::middleware('role:warehouse')->group(function () {
     Route::get('/warehouse/dashboard', [WarehouseController::class, 'dashboard'])->name('warehouse.dashboard');
 
-    Route::get('/warehouse/order', [WarehouseController::class, 'order'])->name('warehouse.order');
-    Route::post('/warehouse/order', [WarehouseController::class, 'orderStore'])->name('warehouse.order.store');
-    Route::put('/warehouse/order/update/{id}', [WarehouseController::class, 'orderUpdate'])->name('warehouse.order.update');
-    Route::delete('/warehouse/order/delete/{id}', [WarehouseController::class, 'orderDelete'])->name('warehouse.order.delete');
+    Route::get('/warehouse/order', [WarehouseController::class, 'order'])->name('warehouse.suratjalan');
+    Route::post('/warehouse/order', [WarehouseController::class, 'orderStore'])->name('warehouse.suratjalan.store');
+    Route::put('/warehouse/order/update/{id}', [WarehouseController::class, 'orderUpdate'])->name('warehouse.suratjalan.update');
+    Route::delete('/warehouse/order/delete/{id}', [WarehouseController::class, 'orderDelete'])->name('warehouse.suratjalan.delete');
 
     Route::get('/warehouse/pecah', [WarehouseController::class, 'pecah'])->name('warehouse.pecah');
     Route::post('/warehouse/pecah', [WarehouseController::class, 'pecahStore'])->name('warehouse.pecah.store');

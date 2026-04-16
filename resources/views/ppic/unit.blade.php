@@ -1,0 +1,136 @@
+<x-app-layout>
+    <h2 class="font-semibold text-xl text-gray-800 leading-tight mb-6">
+        Satuan
+    </h2>
+    <div class="py-6">
+        <div class="max-w-7xl mx-auto">
+            {{-- <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 bg-white border-b border-gray-200">
+                    <livewire:ppic.satuan />
+                </div>
+            </div> --}}
+            {{-- SEARCH & ADD SATUAN --}}
+            <div class="flex items-center justify-between mb-4">
+                <form action="{{ route('ppic.unit') }}" method="GET" class="flex items-center gap-2">
+                    <input type="text" name="search" placeholder="Search satuan..."
+                        class="border border-gray-300 rounded-lg px-4 py-2" value="{{ request('search') }}">
+                    <button type="submit" class="bg-[#136566] text-white px-4 py-2 rounded-lg hover:bg-[#0f4f50]">
+                        Search
+                    </button>
+                </form>
+                <button onClick="openAddModal()"
+                    class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
+                    + Tambah Satuan
+                </button>
+            </div>
+            {{-- SATUAN TABLE --}}
+            <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+                <div class="p-4 bg-white border-b border-gray-200">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead>
+                            <tr>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Nama</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Aksi
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @if ($units->count())
+                                @foreach ($units as $unit)
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ $unit->name }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <button onClick="editUnit({{ $unit->id }}, '{{ $unit->name }}')"
+                                                class="mr-2" title="Edit">
+                                                <svg class="w-6 h-6 text-blue-500 hover:text-blue-700"
+                                                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
+                                                    height="24" fill="none" viewBox="0 0 24 24">
+                                                    <path stroke="currentColor" stroke-linecap="round"
+                                                        stroke-linejoin="round" stroke-width="2"
+                                                        d="M10.779 17.779 4.36 19.918 6.5 13.5m4.279 4.279 8.364-8.643a3.027 3.027 0 0 0-2.14-5.165 3.03 3.03 0 0 0-2.14.886L6.5 13.5m4.279 4.279L6.499 13.5m2.14 2.14 6.213-6.504M12.75 7.04 17 11.28" />
+                                                </svg>
+                                            </button>
+                                            <form action="{{ route('ppic.unit.delete', $unit->id) }}" method="POST"
+                                                class="inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" title="Delete">
+                                                    <svg class="w-6 h-6 text-red-500 hover:text-red-700"
+                                                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                                        width="24" height="24" fill="none"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke="currentColor" stroke-linecap="round"
+                                                            stroke-linejoin="round" stroke-width="2"
+                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @else
+                                <tr>
+                                    <td colspan="2" class="px-6 py-4 whitespace-nowrap text-center text-gray-500">
+                                        Satuan tidak ditemukan.
+                                    </td>
+                                </tr>
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {{-- MODAL ADD & EDIT SATUAN --}}
+            <div id="satuanModal"
+                class="hidden fixed inset-0 z-50 bg-gray-600 bg-opacity-50 items-center justify-center">
+                <div class="bg-white rounded-lg p-6 w-full max-w-md">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 id="modal-title" class="text-lg font-medium">Tambah Satuan</h3>
+                        <button onClick="closeModal()" class="text-gray-500 text-2xl hover:text-gray-700">
+                            &times;
+                        </button>
+                    </div>
+                    <form id="satuanForm" method="POST" action="{{ route('ppic.unit.store') }}">
+                        @csrf
+                        <input type="hidden" name="id" id="unitId">
+                        <div class="mb-4">
+                            <label for="name" class="block text-gray-700">Nama Satuan:</label>
+                            <input type="text" name="name" id="unitName"
+                                class="w-full border border-gray-300 rounded-lg px-4 py-2" required>
+                        </div>
+                        <button type="submit" class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
+                            Save
+                        </button>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function openAddModal() {
+            document.getElementById('satuanModal').classList.remove('hidden');
+            document.getElementById('satuanModal').classList.add('flex');
+            document.getElementById('modal-title').textContent = 'Tambah Satuan';
+            document.getElementById('satuanForm').action = "{{ route('ppic.unit.store') }}";
+            document.getElementById('unitId').value = '';
+            document.getElementById('unitName').value = '';
+        }
+
+        function closeModal() {
+            document.getElementById('satuanModal').classList.add('hidden');
+            document.getElementById('satuanModal').classList.remove('flex');
+        }
+
+        function editUnit(id, name) {
+            openAddModal();
+            document.getElementById('modal-title').textContent = 'Edit Satuan';
+            document.getElementById('satuanForm').action = `/ppic/unit/${id}`;
+            document.getElementById('unitId').value = id;
+            document.getElementById('unitName').value = name;
+        }
+    </script>
+</x-app-layout>

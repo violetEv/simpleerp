@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class KkpoManagement extends Model
 {
     protected $table = 'kkpo_managements';
-    protected $fillable = ['kkpo_id', 'customer_id', 'category_id', 'style_id', 'color_id', 'kp_po', 'qty_total', 'price', 'reject_allowance'];
+    protected $fillable = ['kkpo_id', 'category_id', 'style_id', 'color_id', 'unit_id', 'brand_id', 'item_id', 'kp_po', 'qty_total', 'price', 'reject_allowance'];
 
     public function kkpo()
     {
@@ -15,19 +15,31 @@ class KkpoManagement extends Model
     }
     public function customer()
     {
-        return $this->belongsTo(Customer::class, 'customer_id');
+        return $this->belongsTo(Customer::class);
     }
     public function category()
     {
-        return $this->belongsTo(Category::class, 'category_id');
+        return $this->belongsTo(Category::class);
     }
     public function style()
     {
-        return $this->belongsTo(Style::class, 'style_id');
+        return $this->belongsTo(Style::class);
     }
     public function color()
     {
-        return $this->belongsTo(Color::class, 'color_id');
+        return $this->belongsTo(Color::class);
+    }
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class);
+    }
+    public function item()
+    {
+        return $this->belongsTo(Item::class);
+    }
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class);
     }
     public function suratJalan()
     {

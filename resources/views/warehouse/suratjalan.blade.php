@@ -3,7 +3,7 @@
 @section('content') --}}
 <x-app-layout>
     <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        Surat Jalan Management
+        Surat Jalan IN
     </h2>
     @if (session('success'))
         <div class="mt-4">
@@ -14,7 +14,7 @@
         <div class="max-w-7xl mx-auto">
             {{-- Search, filter section, button add order --}}
             <div class="flex items-center justify-between mb-4">
-                <form action="{{ route('warehouse.order') }}" method="GET" class="flex items-center gap-2">
+                <form action="{{ route('warehouse.suratjalan') }}" method="GET" class="flex items-center gap-2">
                     <input type="text" name="search" placeholder="Search orders..."
                         class="border border-gray-300 rounded-lg px-4 py-2" value="{{ request('search') }}">
                     <button type="submit" class="bg-[#136566] text-white px-4 py-2 rounded-lg hover:bg-[#0f4f50]">
@@ -24,7 +24,7 @@
 
                 <button onClick="openAddOrderModal()"
                     class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
-                    + Tambah Surat Jalan
+                    + Tambah Surat Jalan IN
                 </button>
             </div>
 
@@ -44,13 +44,13 @@
                                 Qty
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                Date</th>
+                                Tanggal</th>
                             {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                                 Status</th> --}}
                             {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                                 Last Updated</th> --}}
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                Actions</th>
+                                Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -61,7 +61,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         {{ $order->kkpoManagement->kkpo->no_kkpo ?? '-' }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        {{ $order->kkpoManagement->customer->name ?? '-' }}</td>
+                                        {{ $order->kkpoManagement->kkpo->customer->name ?? '-' }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">{{ $order->qty }}</td>
 
                                     <td class="px-6 py-4 whitespace-nowrap">
@@ -85,8 +85,8 @@
                                         {{-- <button onClick='openEditOrderModal(@json($order))'
                                                 class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Edit</button> --}}
                                         <button onclick="openDetail(this)" title="Lihat Detail"
-                                            data-kkpo="{{ $order->kkpoManagement->no_kkpo ?? '-' }}"
-                                            data-customer="{{ $order->kkpoManagement->customer->name ?? '-' }}"
+                                            data-kkpo="{{ $order->kkpoManagement->kkpo->no_kkpo ?? '-' }}"
+                                            data-customer="{{ $order->kkpoManagement->kkpo->customer->name ?? '-' }}"
                                             data-sj="{{ $order->no_surat_jalan ?? '-' }}"
                                             data-qty="{{ $order->qty }}"
                                             data-style="{{ $order->kkpoManagement->style->name ?? '-' }}"
@@ -107,7 +107,7 @@
                                             </svg>
 
                                         </button>
-                                        <form action="{{ route('warehouse.order.delete', ['id' => $order->id]) }}"
+                                        <form action="{{ route('warehouse.suratjalan.delete', ['id' => $order->id]) }}"
                                             method="POST" class="inline-block">
                                             @csrf
                                             @method('DELETE')
@@ -146,84 +146,42 @@
                 <div class="bg-white rounded-lg p-6 w-full max-w-2xl">
                     <div class="flex justify-between items-center mb-4">
                         <h3 id="modal-title" class="text-xl font-semibold">Tambah Surat Jalan</h3>
-                        <button type="button" onClick="closeModal()"
+                        <button type="button" onClick="closeModal()" title="Close"
                             class="text-gray-500 text-2xl hover:text-gray-700">&times;</button>
                     </div>
 
-                    <form id="order-form" action="{{ route('warehouse.order.store') }}" method="POST">
+                    <form id="order-form" action="{{ route('warehouse.suratjalan.store') }}" method="POST">
                         @csrf
                         <input type="hidden" name="_method" id="form-method" value="POST">
                         <input type="hidden" name="order_id" id="order_id">
                         <div class="mb-4">
-                            <label for="kkpo_management_id" class="block text-gray-700">KKPO - Customer -
-                                Style - Category - Color</label>
-                            <select name="kkpo_management_id" id="kkpo_management_id" required
-                                onchange="setCustomer(this)" class="hidden"
-                                data-hs-select='{
-                                                    "hasSearch": true,
-                                                    "searchPlaceholder": "Cari KKPO...",
-                                                    "placeholder": "Pilih KKPO...",
-                                                    "toggleClasses": "mt-1 relative py-2 px-3 flex w-full cursor-pointer bg-white border border-gray-300 rounded text-sm text-left",
-                                                    "dropdownClasses": "mt-2 max-h-60 overflow-y-auto w-full bg-white border border-gray-200 rounded-lg shadow-lg",
-                                                    "optionClasses": "px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 rounded",
-                                                    "searchWrapperClasses": "p-2 sticky top-0 bg-white",
-                                                    "searchClasses": "w-full px-2 py-1 border border-gray-300 rounded"
-                                                }'>
+                            <x-select-search label="KKPO - Customer - Category Process - Style - Color" name="kkpo_management_id" id="kkpo_management_id"
+                                :options="$kkpoManagements
+                                    ->map(function ($item) {
+                                        return [
+                                            'value' => $item->id,
+                                            'label' =>
+                                                ($item->kkpo?->no_kkpo ?? '-') .
+                                                ' - ' .
+                                                ($item->kkpo->customer?->name ?? '-') .
+                                                ' - ' .
+                                                ($item->category?->name ?? '-') .
+                                                ' - ' .
+                                                ($item->style?->name ?? '-') .
+                                                ' - ' .
+                                                ($item->color?->name ?? '-'),
+                                
+                                            'data' => [
+                                                'qty_total' => $item->qty_total,
+                                                'qty_used' => $item->suratJalan->sum('qty'),
+                                            ],
+                                        ];
+                                    })
+                                    ->toArray()" placeholder="Pilih KKPO Management"
+                                searchPlaceholder="Cari KKPO Management..." required />
 
-                                <option value="">Select KKPO</option>
-
-                                @foreach (App\Models\KkpoManagement::with(['category', 'customer', 'style', 'color', 'kkpo', 'suratJalan'])->get() as $kkpoManagement)
-                                    <option value="{{ $kkpoManagement->id }}"
-                                        data-customer="{{ $kkpoManagement->customer->name }}"
-                                        data-style="{{ $kkpoManagement->style->name }}"
-                                        data-color="{{ $kkpoManagement->color->name }}"
-                                        data-category="{{ $kkpoManagement->category->name }}"
-                                        data-qty_total="{{ $kkpoManagement->qty_total }}"
-                                        data-qty_used="{{ $kkpoManagement->suratJalan->sum('qty') }}"
-                                        data-hs-select-option='{
-                                            {{-- "description": "- {{ $kkpoManagement->customer->name }} - {{ $kkpoManagement->style->name }}" --}}
-                                        }'>
-
-                                        {{ $kkpoManagement->kkpo->no_kkpo }} - {{ $kkpoManagement->customer->name }} -
-                                        {{ $kkpoManagement->style->name }} - {{ $kkpoManagement->category->name }} -
-                                        {{ $kkpoManagement->color->name }}
-                                    </option>
-                                    {{-- <option value="{{ $kkpoManagement->id }}"
-                                            data-customer="{{ $kkpoManagement->customer->name ?? '' }}"
-                                            data-style="{{ $kkpoManagement->style->name ?? '' }}"
-                                            data-color="{{ $kkpoManagement->color->name ?? '' }}"
-                                            data-category="{{ $kkpoManagement->category->name ?? '' }}"
-                                            data-qty_total="{{ $kkpoManagement->qty_total }}"
-                                            data-qty_used="{{ $kkpoManagement->suratJalan->sum('qty') }}">
-                                            {{ $kkpoManagement->kkpo->no_kkpo }} - {{ $kkpoManagement->customer->name }}
-                                        </option> --}}
-                                @endforeach
-                            </select>
                         </div>
                         <div class="grid grid-cols-3 gap-4">
-
-
-                            {{-- <div>
-                                <label for="customer" class="block text-gray-700">Customer</label>
-                                <input type="text" name="customer" id="customer" required readonly
-                                    class="w-full border mt-1 border-gray-300 bg-gray-100 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-                            <div>
-                                <label for="category" class="block text-gray-700">Category Process</label>
-                                <input type="text" name="category" id="category" required readonly
-                                    class="w-full border mt-1 border-gray-300 bg-gray-100 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-
-                            <div>
-                                <label for="style" class="block text-gray-700">Style</label>
-                                <input type="text" name="style" id="style" required readonly
-                                    class="w-full border mt-1 border-gray-300 bg-gray-100 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-                            <div>
-                                <label for="color" class="block text-gray-700">Color</label>
-                                <input type="text" name="color" id="color" required readonly
-                                    class="w-full border mt-1 border-gray-300 bg-gray-100 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div> --}}
                             <div>
                                 <label for="no_surat_jalan" class="block text-gray-700">No Surat Jalan</label>
                                 <input type="text" name="no_surat_jalan" id="no_surat_jalan" required
@@ -241,7 +199,9 @@
                                 </p>
 
                                 <p class="text-gray-500 text-sm mt-1">
-                                    Sisa Qty KKPO : <span id="sisa_qty_text">0</span>
+                                    {{-- ambil qty dari KKPO Management yang dipilih --}}
+                                    Sisa Qty KKPO: <span id="sisa_qty_text">0</span>
+                                    {{-- Sisa Qty KKPO : <span id="sisa_qty_text">{{}}</span> --}}
                                 </p>
                             </div>
                             <div>
@@ -271,7 +231,8 @@
                             Detail Surat Jalan
                         </h3>
 
-                        <button onclick="closeDetail()" class="text-gray-400 hover:text-gray-600 text-2xl">
+                        <button onclick="closeDetail()" title="Close"
+                            class="text-gray-400 hover:text-gray-600 text-2xl">
                             &times;
                         </button>
                     </div>
@@ -338,13 +299,9 @@
             document.getElementById('modal-title').innerText = 'Tambah Surat Jalan';
             document.getElementById('submit-button').innerText = 'Tambah Surat Jalan';
             document.getElementById('form-method').value = 'POST';
-            document.getElementById('order-form').action = "{{ route('warehouse.order.store') }}";
+            document.getElementById('order-form').action = "{{ route('warehouse.suratjalan.store') }}";
             document.getElementById('order_id').value = '';
             document.getElementById('kkpo_management_id').value = '';
-            // document.getElementById('customer').value = '';
-            // document.getElementById('category').value = '';
-            // document.getElementById('style').value = '';
-            // document.getElementById('color').value = '';
             document.getElementById('no_surat_jalan').value = '';
             document.getElementById('qty').value = '';
             document.getElementById('tanggal').value = '';
@@ -353,12 +310,9 @@
 
             // reinit select
             setTimeout(() => {
-                window.HSStaticMethods.autoInit();
-
-                const select = document.getElementById('kkpo_management_id');
-                select.addEventListener('change', function() {
-                    setCustomer(this);
-                });
+                if (window.HSStaticMethods) {
+                    window.HSStaticMethods.autoInit();
+                }
             }, 100);
         }
 
@@ -373,7 +327,6 @@
             document.getElementById('detail_style').innerText = btn.dataset.style;
             document.getElementById('detail_color').innerText = btn.dataset.color;
             document.getElementById('detail_category').innerText = btn.dataset.category;
-            // document.getElementById('detail_dept').innerText = btn.dataset.dept;
             document.getElementById('detail_tanggal').innerText = btn.dataset.tanggal;
             document.getElementById('detail_status').innerText = btn.dataset.status;
             document.getElementById('detail_notes').innerText = btn.dataset.notes;
@@ -390,7 +343,7 @@
             document.getElementById('form-method').value = 'PUT';
 
             document.getElementById('order-form').action =
-                "{{ route('warehouse.order.update', ':id') }}".replace(':id', order.id);
+                "{{ route('warehouse.suratjalan.update', ':id') }}".replace(':id', order.id);
 
             document.getElementById('order_id').value = order.id;
             document.getElementById('kkpo_management_id').value = order.kkpo_management_id;
@@ -409,12 +362,9 @@
             document.getElementById('order-modal').classList.remove('hidden');
             document.getElementById('order-modal').classList.add('flex');
             setTimeout(() => {
-                window.HSStaticMethods.autoInit();
-
-                const select = document.getElementById('kkpo_management_id');
-                select.addEventListener('change', function() {
-                    setCustomer(this);
-                });
+                if (window.HSStaticMethods) {
+                    window.HSStaticMethods.autoInit();
+                }
             }, 100);
         }
 
@@ -425,27 +375,21 @@
 
         let sisaQty = 0;
 
-        function setCustomer(select) {
+        function setDataSelection(select) {
 
-            let selected = select.options[select.selectedIndex];
+            let selectedOption = select.options[select.selectedIndex];
 
-            let customer = selected.getAttribute('data-customer');
-            let style = selected.getAttribute('data-style');
-            let color = selected.getAttribute('data-color');
-            let category = selected.getAttribute('data-category');
+            if (!selectedOption) return;
 
-            let qtyTotal = selected.getAttribute('data-qty_total');
-            let qtyUsed = selected.getAttribute('data-qty_used');
+            let qtyTotal = selectedOption.getAttribute('data-qty_total');
+            let qtyUsed = selectedOption.getAttribute('data-qty_used');
 
-            // document.getElementById('customer').value = customer ?? '';
-            // document.getElementById('style').value = style ?? '';
-            // document.getElementById('color').value = color ?? '';
-            // document.getElementById('category').value = category ?? '';
+            qtyTotal = parseInt(qtyTotal) || 0;
+            qtyUsed = parseInt(qtyUsed) || 0;
 
-            if (qtyTotal) {
-                sisaQty = qtyTotal - qtyUsed;
-                document.getElementById('sisa_qty_text').innerText = sisaQty;
-            }
+            sisaQty = qtyTotal - qtyUsed;
+
+            document.getElementById('sisa_qty_text').innerText = sisaQty;
 
             checkQty();
         }
@@ -458,6 +402,7 @@
 
             let qty = parseInt(qtyInput.value) || 0;
 
+            // jika sisa qty lebih dari 0 dan sisa qty = 0, maka submit btn disable
             if (qty > sisaQty) {
 
                 warning.classList.remove('hidden');
@@ -473,6 +418,15 @@
                 submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
             }
         }
+        document.addEventListener('DOMContentLoaded', function() {
+            let select = document.getElementById('kkpo_management_id');
+
+            if (select) {
+                select.addEventListener('change', function() {
+                    setDataSelection(this);
+                });
+            }
+        });
     </script>
     {{-- @endsection --}}
 </x-app-layout>

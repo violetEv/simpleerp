@@ -1,58 +1,52 @@
 <x-app-layout>
-    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        Style
+    <h2 class="font-semibold text-xl text-gray-800 leading-tight mb-6">
+        Brand
     </h2>
-    @if (session('success'))
-        <div class="mt-4">
-            <x-alerts variant="success" title="Success" :message="session('success')" :showLink="false" />
-        </div>
-        {{-- @elseif (session('error'))
-        <div class="mt-4">
-            <x-alerts variant="danger" title="Error" :message="session('error')" :showLink="false" />
-        </div> --}}
-    @endif
     <div class="py-6">
         <div class="max-w-7xl mx-auto">
-            {{-- Search & Add Style Modal --}}
+            {{-- <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 bg-white border-b border-gray-200">
+                    <livewire:ppic.brand />
+                </div>
+            </div> --}}
+            {{-- SEARCH & ADD BRAND --}}
             <div class="flex items-center justify-between mb-4">
-                <form action="{{ route('ppic.style') }}" method="GET" class="flex items-center gap-2">
-                    <input type="text" name="search" placeholder="Search styles..."
+                <form action="{{ route('ppic.brand') }}" method="GET" class="flex items-center gap-2">
+                    <input type="text" name="search" placeholder="Search brands..."
                         class="border border-gray-300 rounded-lg px-4 py-2" value="{{ request('search') }}">
                     <button type="submit" class="bg-[#136566] text-white px-4 py-2 rounded-lg hover:bg-[#0f4f50]">
                         Search
                     </button>
                 </form>
-
                 <button onClick="openAddModal()"
                     class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
-                    + Tambah Style
+                    + Tambah Brand
                 </button>
             </div>
-            {{-- Style Table --}}
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            {{-- BRAND TABLE --}}
+            <div class="bg-white overflow-hidden shadow-sm rounded-lg">
                 <div class="p-4 bg-white border-b border-gray-200">
-
-                    <table class="min-w-full divide-y divide-gray-200">
+                    <table class="min-w-full divide-y divide-gray-200 mt-4">
                         <thead>
                             <tr>
                                 {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th> --}}
                                 <th
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Name</th>
+                                    Nama</th>
                                 <th
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Action
+                                    Aksi
                                 </th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
-                            @if ($styles->count())
-                                @foreach ($styles as $style)
+                            @if ($brands->count())
+                                @foreach ($brands as $brand)
                                     <tr>
-                                        {{-- <td class="px-6 py-4 whitespace-nowrap">{{ $style->id }}</td> --}}
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $style->name }}</td>
+                                        {{-- <td class="px-6 py-4 whitespace-nowrap">{{ $brand->id }}</td> --}}
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ $brand->name }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <button onClick="editStyle({{ $style->id }}, '{{ $style->name }}')"
+                                            <button onClick="editBrand({{ $brand->id }}, '{{ $brand->name }}')"
                                                 class="mr-2" title="Edit">
                                                 <svg class="w-6 h-6 text-blue-500 hover:text-blue-700"
                                                     aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
@@ -62,12 +56,12 @@
                                                         d="M10.779 17.779 4.36 19.918 6.5 13.5m4.279 4.279 8.364-8.643a3.027 3.027 0 0 0-2.14-5.165 3.03 3.03 0 0 0-2.14.886L6.5 13.5m4.279 4.279L6.499 13.5m2.14 2.14 6.213-6.504M12.75 7.04 17 11.28" />
                                                 </svg>
                                             </button>
-                                            <form action="{{ route('ppic.style.delete', $style->id) }}" method="POST"
-                                                class="inline">
+                                            <form action="{{ route('ppic.brand.delete', $brand->id) }}" method="POST"
+                                                class="inline"
+                                                onsubmit="return confirm('Are you sure you want to delete this brand?')">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" title="Delete"
-                                                    onclick="return confirm('Apakah Anda yakin ingin mengapus style ini?')">
+                                                <button type="submit" title="Delete">
                                                     <svg class="w-6 h-6 text-red-500 hover:text-red-700"
                                                         aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                                         width="24" height="24" fill="none"
@@ -84,39 +78,33 @@
                             @else
                                 <tr>
                                     <td colspan="2" class="px-6 py-4 whitespace-nowrap text-center text-gray-500">
-                                        No styles found.
+                                        Brand tidak ditemukan.
                                     </td>
                                 </tr>
                             @endif
                         </tbody>
-                    </table>
-                    <div class="mt-4 p-4">
-                        {{ $styles->links() }}
-                    </div>
+                        {{-- <livewire:ppic.brand /> --}}
                 </div>
             </div>
-            {{-- Modal Add & Edit Style --}}
-            <div id="addModal"
-                class="hidden fixed inset-0 bg-gray-600  bg-opacity-50 items-center justify-center z-50">
-                <div class="bg-white p-6 rounded-lg w-full max-w-md">
+            {{-- MODAL ADD & EDIT BRAND --}}
+            <div id="addModal" class="hidden fixed inset-0 z-50 bg-gray-600 bg-opacity-50 items-center justify-center">
+                <div class="bg-white rounded-lg p-6 w-full max-w-md">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 id="modal-title" class="text-lg font-medium">Add Style</h3>
+                        <h3 id="modal-title" class="text-lg font-medium">Tambah Brand</h3>
                         <button onClick="closeAddModal()" class="text-gray-500 text-2xl hover:text-gray-700">
                             &times;
                         </button>
                     </div>
-                    <form id="crud-form" action="{{ route('ppic.style.store') }}" method="POST">
+                    <form id="brandForm" method="POST" action="{{ route('ppic.brand.store') }}">
                         @csrf
-                        <input type="hidden" name="_method" id="form-method" value="POST">
-                        <input type="hidden" name="style_id" id="style_id">
                         <div class="mb-4">
-                            <label for="name" class="block text-gray-700">Style Name</label>
+                            <label for="name" class="block text-gray-700 font-medium mb-2">Nama Brand</label>
                             <input type="text" name="name" id="name" required
-                                class="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1">
+                                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#136566]">
                         </div>
                         <button type="submit" id="submit-button"
-                            class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
-                            Add Style
+                            class="bg-[#136566] text-white px-4 py-2 rounded-lg hover:bg-[#0f4f50]">
+                            Tambah Brand
                         </button>
                     </form>
                 </div>
@@ -126,32 +114,25 @@
     <script>
         function openAddModal() {
             document.getElementById('addModal').classList.remove('hidden');
-            document.getElementById('addModal').classList.add('flex')
-            document.getElementById('modal-title').textContent = 'Add Style';
-            document.getElementById('submit-button').textContent = 'Add Style';
-            document.getElementById('crud-form').action = "{{ route('ppic.style.store') }}";
-            document.getElementById('form-method').value = 'POST';
-            document.getElementById('style_id').value = '';
+            document.getElementById('addModal').classList.add('flex');
+            document.getElementById('modal-title').textContent = 'Tambah Brand';
+            document.getElementById('submit-button').textContent = 'Tambah Brand';
+            document.getElementById('brandForm').action = "{{ route('ppic.brand.store') }}";
             document.getElementById('name').value = '';
         }
 
         function closeAddModal() {
             document.getElementById('addModal').classList.add('hidden');
-            document.getElementById('addModal').classList.remove('flex')
+            document.getElementById('addModal').classList.remove('flex');
         }
 
-        function editStyle(id, name) {
+        function editBrand(id, name) {
             openAddModal();
-            document.getElementById('modal-title').textContent = 'Edit Style';
-            document.getElementById('submit-button').textContent = 'Update Style';
-            let url = "{{ route('ppic.style.update', ':id') }}";
+            document.getElementById('modal-title').textContent = 'Edit Brand';
+            document.getElementById('submit-button').textContent = 'Update Brand';
+            let url = "{{ route('ppic.brand.update', ':id') }}";
             url = url.replace(':id', id);
-
-            document.getElementById('crud-form').action = url;
-            // document.getElementById('crud-form').action = '{{ route('ppic.style.update', ':id') }}/'.replace(':id',
-            //     id);
-            document.getElementById('form-method').value = 'PUT';
-            document.getElementById('style_id').value = id;
+            document.getElementById('brandForm').action = url;
             document.getElementById('name').value = name;
         }
     </script>

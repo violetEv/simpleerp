@@ -55,7 +55,7 @@
     </div>
 
     {{-- RECENT ACTIVITY --}}
-    <div class="mt-6">
+    {{-- <div class="mt-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">Recent Activity</h3>
         <div class="bg-white shadow rounded-lg p-4">
             <ul class="divide-y divide-gray-200">
@@ -81,6 +81,6 @@
                 </li>
             </ul>
         </div>
-    </div>
+    </div> --}}
     {{-- @endsection --}}
 </x-app-layout>

@@ -6,5 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Customer extends Model
 {
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'address', 'phone', 'attention'];
+    public function kkpos()
+    {
+        return $this->hasMany(Kkpo::class);
+    }
 }

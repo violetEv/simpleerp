@@ -57,7 +57,7 @@
                                     </th>
 
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                        Actions
+                                        Aksi
                                     </th>
                                 </tr>
                             </thead>
@@ -71,7 +71,7 @@
                                             </td>
 
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                {{ $pecahTraveler->kkpoManagement->customer->name ?? '-' }}
+                                                {{ $pecahTraveler->kkpoManagement->kkpo->customer->name ?? '-' }}
                                             </td>
 
                                             @php
@@ -216,7 +216,7 @@
 
                         <tr>
                             <td class="pr-3">
-                                <input type="text" name="no_traveler[]" required placeholder="TR-..."
+                                <input type="text" name="no_traveler[]" required
                                     class="mt-1 block w-full border border-gray-300 rounded-md">
                             </td>
 

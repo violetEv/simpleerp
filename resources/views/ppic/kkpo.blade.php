@@ -23,8 +23,9 @@
                     </button>
                 </form>
 
-                <button onClick="openAddModal()" class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
-                    Add KKPO
+                <button onClick="openAddModal()"
+                    class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
+                    + Tambah KKPO
                 </button>
             </div>
             {{-- KKPO Table --}}
@@ -36,9 +37,14 @@
                             <tr>
                                 {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     ID</th> --}}
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Name</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    No KKPO</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Customer</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Action
                                 </th>
                             </tr>
@@ -49,6 +55,7 @@
                                     <tr>
                                         {{-- <td class="px-6 py-4 whitespace-nowrap">{{ $kkpo->id }}</td> --}}
                                         <td class="px-6 py-4 whitespace-nowrap">{{ $kkpo->no_kkpo }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ $kkpo->customer->name ?? '-' }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <button onClick="editKkpo({{ $kkpo->id }}, '{{ $kkpo->no_kkpo }}')"
                                                 class="mr-2" title="Edit">
@@ -67,8 +74,9 @@
                                                 <button type="submit" title="Delete"
                                                     onclick="return confirm('Apakah Anda yakin ingin menghapus KKPO ini?')">
                                                     <svg class="w-6 h-6 text-red-500 hover:text-red-700"
-                                                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
-                                                        height="24" fill="none" viewBox="0 0 24 24">
+                                                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                                        width="24" height="24" fill="none"
+                                                        viewBox="0 0 24 24">
                                                         <path stroke="currentColor" stroke-linecap="round"
                                                             stroke-linejoin="round" stroke-width="2"
                                                             d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
@@ -110,6 +118,15 @@
                             <input type="text" name="no_kkpo" id="no_kkpo" required
                                 class="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1">
                         </div>
+                        <div class="mb-4">
+                            <x-select-search name="customer_id" label="Customer" :options="$customers->map(
+                                fn($c) => [
+                                    'value' => $c->id,
+                                    'label' => $c->name,
+                                ],
+                            )"
+                                placeholder="Pilih Customer..." searchPlaceholder="Cari Customer..." required />
+                        </div>
                         <button type="submit" id="submit-button"
                             class="bg-[#136566] text-white px-4 py-2 rounded-lg hover:bg-[#0f4f50]">
                             Add KKPO
@@ -135,23 +152,39 @@
 
             document.getElementById('kkpo_id').value = '';
             document.getElementById('no_kkpo').value = '';
+            document.getElementById('customer_id').value = '';
 
             document.getElementById('addModal').classList.remove('hidden');
             document.getElementById('addModal').classList.add('flex');
+            setTimeout(() => {
+                if (window.HSStaticMethods) {
+                    window.HSStaticMethods.autoInit();
+                }
+            }, 100);
         }
 
-        function editKkpo(id, no_kkpo) {
+        function editKkpo(id, no_kkpo, customer_id) {
             document.getElementById('modal-title').textContent = 'Edit KKPO';
             document.getElementById('submit-button').textContent = 'Update KKPO';
-            document.getElementById('crud-form').action = '{{ route('ppic.kkpo.update', ':id') }}/'.replace(':id',
-                id);
+            let url = "{{ route('ppic.kkpo.update', ':id') }}";
+            url = url.replace(':id', id);
+
+            document.getElementById('crud-form').action = url;
+            // document.getElementById('crud-form').action = '{{ route('ppic.kkpo.update', ':id') }}/'.replace(':id',
+            //     id);
             document.getElementById('form-method').value = 'PUT';
 
             document.getElementById('kkpo_id').value = id;
             document.getElementById('no_kkpo').value = no_kkpo;
+            document.getElementById('customer_id').value = customer_id;
 
             document.getElementById('addModal').classList.remove('hidden');
             document.getElementById('addModal').classList.add('flex');
+            setTimeout(() => {
+                if (window.HSStaticMethods) {
+                    window.HSStaticMethods.autoInit();
+                }
+            }, 100);
         }
     </script>
 </x-app-layout>

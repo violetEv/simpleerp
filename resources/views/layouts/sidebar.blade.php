@@ -13,7 +13,7 @@
         $store.sidebar.isMobileOpen ? 'translate-x-0' : '-translate-x-full xl:translate-x-0'
     ]">
 
-    {{-- BRAND --}}
+    {{-- LOGO --}}
     <div class="h-16 flex items-center justify-center bg-[#136566] border-b border-[#1b7a7b]">
         <span x-show="$store.sidebar.isExpanded" x-transition class="text-white font-semibold">
             <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
@@ -23,6 +23,7 @@
         </span>
     </div>
 
+    {{-- <div class="no-scrollbar"> --}}
     <nav class="p-3 space-y-1 overflow-y-auto h-[calc(100vh-64px)]">
 
         @foreach ($menus as $menu)
@@ -72,4 +73,5 @@
         @endforeach
 
     </nav>
+    {{-- </div> --}}
 </aside>

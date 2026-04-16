@@ -8,9 +8,9 @@ class WarehouseMenu
     {
         return [
             ['name' => 'Dashboard', 'route' => 'warehouse.dashboard', 'icon' => 'fas fa-tachometer-alt'],
-            ['name' => 'Surat Jalan Management', 'route' => 'warehouse.order', 'icon' => 'fas fa-warehouse'], 
+            ['name' => 'Surat Jalan IN', 'route' => 'warehouse.suratjalan', 'icon' => 'fas fa-warehouse'], 
             [
-                'name' => 'Traveler Management',
+                'name' => 'Traveler',
                 'icon' => 'fas fa-boxes',
                 'sub' => [
                     ['name' => 'Split Traveler', 'route' => 'warehouse.pecah'],

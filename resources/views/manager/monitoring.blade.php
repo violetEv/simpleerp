@@ -87,7 +87,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     {{ $movement->traveler->suratJalan->no_surat_jalan ?? '-' }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    {{ $movement->traveler->suratJalan->kkpoManagement->customer->name ?? '-' }}</td>
+                                    {{ $movement->traveler->suratJalan->kkpoManagement->kkpo->customer->name ?? '-' }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     {{ $movement->traveler->suratJalan->kkpoManagement->category->name ?? '-' }}
                                 </td>

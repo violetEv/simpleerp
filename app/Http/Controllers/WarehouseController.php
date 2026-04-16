@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\KkpoManagement;
 use App\Models\SuratJalan;
 use App\Models\Traveler;
 use App\Models\TravelerMovement;
@@ -18,7 +19,7 @@ class WarehouseController extends Controller
     }
     public function order(Request $request)
     {
-        $query = SuratJalan::with(['kkpoManagement.kkpo', 'kkpoManagement.customer', 'kkpoManagement.style', 'kkpoManagement.color', 'kkpoManagement.category']);
+        $query = SuratJalan::with(['kkpoManagement.kkpo.customer', 'kkpoManagement.style', 'kkpoManagement.color', 'kkpoManagement.category']);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -27,8 +28,9 @@ class WarehouseController extends Controller
         }
 
         $orders = $query->paginate(10)->withQueryString();
+        $kkpoManagements = KkpoManagement::with(['category', 'customer', 'style', 'color', 'kkpo', 'suratJalan'])->get();
 
-        return view('warehouse.order-management', compact('orders'));
+        return view('warehouse.suratjalan', compact('orders', 'kkpoManagements'));
     }
     public function orderStore(Request $request)
     {
@@ -50,7 +52,7 @@ class WarehouseController extends Controller
         ]);
 
         return redirect()
-            ->route('warehouse.order')
+            ->route('warehouse.suratjalan')
             ->with('success', 'Order berhasil ditambahkan');
     }
     public function orderUpdate(Request $request, $id)
@@ -74,7 +76,7 @@ class WarehouseController extends Controller
         ]);
 
         return redirect()
-            ->route('warehouse.order')
+            ->route('warehouse.suratjalan')
             ->with('success', 'Order berhasil diperbarui');
     }
     public function orderDelete($id)
@@ -84,12 +86,12 @@ class WarehouseController extends Controller
 
         // return view('warehouse.delete', compact('surat_jalan'))->with('success', 'Order berhasil dihapus');
         return redirect()
-            ->route('warehouse.order')
+            ->route('warehouse.suratjalan')
             ->with('success', 'Order berhasil dihapus');
     }
     public function pecah(Request $request)
     {
-        $query = SuratJalan::with(['kkpoManagement.customer', 'travelers']);
+        $query = SuratJalan::with(['kkpoManagement.kkpo.customer', 'kkpoManagement.style', 'kkpoManagement.color', 'kkpoManagement.category', 'travelers']);
 
         if ($request->filled('search')) {
 
@@ -98,7 +100,7 @@ class WarehouseController extends Controller
             $query->where(function ($q) use ($search) {
 
                 $q->where('no_surat_jalan', 'like', "%{$search}%")
-                    ->orWhereHas('kkpoManagement.customer', function ($q2) use ($search) {
+                    ->orWhereHas('kkpoManagement.kkpo.customer', function ($q2) use ($search) {
                         $q2->where('name', 'like', "%{$search}%");
                     });
             });
@@ -177,10 +179,10 @@ class WarehouseController extends Controller
                         $q4->where('name', 'like', "%{$search}%");
                     });
             });
-        }   
-        $reworkTravelers = $query->paginate(10)->withQueryString(); 
+        }
+        $reworkTravelers = $query->paginate(10)->withQueryString();
         return view('warehouse.list', compact('reworkTravelers'));
-    }   
+    }
 
     // untuk membuat traveler turunan dari traveler yang dirework, dengan no_traveler_turunan yang diinputkan oleh user
     public function reworkStore(Request $request, $id)
@@ -195,7 +197,8 @@ class WarehouseController extends Controller
         // nomor traveler turunan akan dibuat dengan format: no_traveler_ + no_traveler_turunan yang diinputkan user dipisahkan dengan - . contoh jika no_traveler yang dirework adalah TRV-001 dan user menginputkan no_traveler_turunan TRV-001-A, maka no_traveler turunan yang akan dibuat adalah TRV-001-A-1. jika user menginputkan no_traveler_turunan yang sama untuk traveler yang sama, maka nomor turunan akan bertambah 1. contoh jika user menginputkan no_traveler_turunan TRV-001-A untuk traveler yang sama, maka nomor turunan yang akan dibuat adalah TRV-001-A-2.
         if ($travelerMovement->qty_reject > 0) {
             Traveler::create([
-                'no_traveler' => $travelerMovement->traveler->no_traveler . '-' . $request->no_traveler_turunan,
+                // 'no_traveler' => $travelerMovement->traveler->no_traveler . '-' . $request->no_traveler_turunan,
+                'no_traveler' => $request->no_traveler_turunan,
                 'qty' => $travelerMovement->qty_reject,
                 'surat_jalan_id' => $travelerMovement->traveler->surat_jalan_id,
                 'dept_asal_id' => $travelerMovement->dept_id,
@@ -214,11 +217,11 @@ class WarehouseController extends Controller
             return redirect()
                 ->route('warehouse.list')
                 ->with('success', 'Traveler turunan berhasil dibuat');
-         } else {
+        } else {
             return redirect()
                 ->route('warehouse.list')
                 ->with('error', 'Traveler ini bukan hasil rework');
-         }
+        }
     }
 
     public function list(Request $request)
@@ -243,8 +246,7 @@ class WarehouseController extends Controller
         }
 
         $travelers = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
-        $reworkTravelers = TravelerMovement::with('traveler')->where('qty_reject', '>', 0)->orderBy('date_in', 'desc')->
-            paginate(10)->withQueryString();
+        $reworkTravelers = TravelerMovement::with('traveler')->where('qty_reject', '>', 0)->orderBy('date_in', 'desc')->paginate(10)->withQueryString();
         return view('warehouse.list', compact('travelers', 'reworkTravelers'));
     }
 }

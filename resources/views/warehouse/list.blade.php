@@ -67,7 +67,7 @@
                                     {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th> --}}
                                     {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th> --}}
                                     {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Notes</th> --}}
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi
                                     </th>
                                     {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
                     <th class="py-2 px-4 border-b">Dari</th>
@@ -103,7 +103,7 @@
                                     class="text-green-500 border-sm hover:underline ml-2">+ Buat turunan</a> --}}
                                                 <button onclick="openDetail(this)"
                                                     data-traveler="{{ $traveler->no_traveler ?? '-' }}"
-                                                    data-customer="{{ $traveler->suratJalan->kkpoManagement->customer->name ?? '-' }}"
+                                                    data-customer="{{ $traveler->suratJalan->kkpoManagement->kkpo->customer->name ?? '-' }}"
                                                     data-sj="{{ $traveler->suratJalan->no_surat_jalan ?? '-' }}"
                                                     data-qty="{{ $traveler->qty }}"
                                                     data-style="{{ $traveler->suratJalan->kkpoManagement->style->name ?? '-' }}"
@@ -122,14 +122,15 @@
                                     @endforeach
                                 @else
                                     <tr>
-                                        <td colspan="8" class="py-2 px-4 border-b text-center">No travelers found.
+                                        <td colspan="7" class="px-6 py-4 text-center text-gray-500">
+                                            Data Traveler Baru Tidak Ada.
                                         </td>
                                     </tr>
                                 @endif
                             </tbody>
                         </table>
                         {{-- PAGINATION --}}
-                        <div class="mt-4 p-4">
+                        <div class="p-4">
                             {{ $travelers->links() }}
                         </div>
                     </div>
@@ -168,7 +169,7 @@
                                     </th>
 
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                        Actions
+                                        Aksi
                                     </th>
 
                                 </tr>
@@ -196,34 +197,44 @@
                                                 Rework
                                             </span>
                                         </td>
-                                        <form action="{{ route('warehouse.rework.store', $traveler->id) }}" method="POST">
+                                        <form action="{{ route('warehouse.rework.store', $traveler->id) }}"
+                                            method="POST">
                                             @csrf
-                                        <td class="px-6 py-4">
-                                            <input type="text" name="no_traveler_turunan" id="no_trav_turunan" placeholder="..."
-                                                class="border border-gray-300 rounded-lg px-2 py-1 w-full bg-gray-100 text-sm text-center">
-                                        </td>
+                                            <td class="px-6 py-4">
+                                                {{-- disamping input no traveler turunan, muncul no traveler asal dengan tambahan suffix -A (contoh: TRV-001-A) --}}
+                                                {{-- <span class="text-gray-500 text-sm">
+                                                {{ $traveler->traveler->no_traveler ?? '-' }}
+                                            </span>  --}}
+                                                <input type="text" name="no_traveler_turunan" id="no_trav_turunan"
+                                                    placeholder="-A" required
+                                                    class="border border-gray-300 rounded-lg px-2 py-1 w-full bg-gray-100 text-sm text-center">
 
-                                        <td class="px-6 py-4">
-                                            <select name="dept_tujuan_id" required
-                                                class="mt-1 block w-full border border-gray-300 rounded-md">
+                                                {{-- <input type="text" name="no_traveler_turunan" id="no_trav_turunan" placeholder="-A" required
+                                                class="border border-gray-300 rounded-lg px-2 py-1 w-full bg-gray-100 text-sm text-center"> --}}
+                                            </td>
 
-                                                <option value="">Pilih Departemen</option>
+                                            <td class="px-6 py-4">
+                                                <select name="dept_tujuan_id" required
+                                                    class="mt-1 block w-full border border-gray-300 rounded-md">
 
-                                                @foreach (App\Models\Departments::all() as $departemen)
-                                                    <option value="{{ $departemen->id }}">
-                                                        {{ $departemen->name }}
-                                                    </option>
-                                                @endforeach
+                                                    <option value="">Pilih Departemen</option>
 
-                                            </select>
-                                            {{-- {{ $traveler->deptTujuan->name ?? '-' }} --}}
-                                        </td>
+                                                    @foreach (App\Models\Departments::all() as $departemen)
+                                                        <option value="{{ $departemen->id }}">
+                                                            {{ $departemen->name }}
+                                                        </option>
+                                                    @endforeach
 
-                                        <td class="px-6 py-4">
-                                            <button type="submit" class="px-2 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-                                                Terbitkan
-                                            </button>
-                                        </td>
+                                                </select>
+                                                {{-- {{ $traveler->deptTujuan->name ?? '-' }} --}}
+                                            </td>
+
+                                            <td class="px-6 py-4">
+                                                <button type="submit"
+                                                    class="px-2 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                                                    Terbitkan
+                                                </button>
+                                            </td>
                                         </form>
                                     </tr>
 
@@ -239,6 +250,10 @@
                             </tbody>
 
                         </table>
+                        {{-- pagination --}}
+                        <div class="p-4">
+                            {{ $reworkTravelers->links() }}
+                        </div>
 
                     </div>
 

@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Color;
 use App\Models\Customer;
+use App\Models\Item;
 use App\Models\Kkpo;
 use App\Models\KkpoManagement;
 use App\Models\Style;
+use App\Models\Unit;
 use Illuminate\Http\Request;
 
 class PpicController extends Controller
@@ -39,10 +42,16 @@ class PpicController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+            'phone' => 'required|string|max:255',
+            'attention' => 'required|string|max:255',
         ]);
 
         Customer::create([
             'name' => $request->name,
+            'address' => $request->address,
+            'phone' => $request->phone,
+            'attention' => $request->attention,
         ]);
 
         return redirect()
@@ -55,10 +64,16 @@ class PpicController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+            'phone' => 'required|string|max:255',
+            'attention' => 'required|string|max:255',
         ]);
 
         $customer->update([
             'name' => $request->name,
+            'address' => $request->address,
+            'phone' => $request->phone,
+            'attention' => $request->attention,
         ]);
 
         return redirect()
@@ -229,32 +244,167 @@ class PpicController extends Controller
             ->with('success', 'Color berhasil dihapus');
     }
 
-
-    // disini untuk set master kkpo
-    public function kkpo()
+    public function item()
     {
-        $query = Kkpo::query();
+        $query = Item::query();
         if (request()->filled('search')) {
             $search = request()->search;
 
             $query->where('name', 'like', "%{$search}%");
         }
 
+        $items = $query->paginate(10)->withQueryString();
+        return view('ppic.item', compact('items'));
+    }
+    public function itemStore(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        Item::create([
+            'name' => $request->name,
+        ]);
+
+        return redirect()
+            ->route('ppic.item')
+            ->with('success', 'Item berhasil ditambahkan');
+    }
+    public function itemUpdate(Request $request, $id)
+    {
+        $item = Item::findOrFail($id);
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+        $item->update([
+            'name' => $request->name,
+        ]);
+        return redirect()
+            ->route('ppic.item')
+            ->with('success', 'Item berhasil diupdate');
+    }
+    public function itemDelete($id)
+    {
+        $item = Item::findOrFail($id);
+        $item->delete();
+        return redirect()
+            ->route('ppic.item')
+            ->with('success', 'Item berhasil dihapus');
+    }
+
+    public function brand()
+    {
+        $query = Brand::query();
+        if (request()->filled('search')) {
+            $search = request()->search;
+
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        $brands = $query->paginate(10)->withQueryString();
+        return view('ppic.brand', compact('brands'));
+    }
+    public function brandStore(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        Brand::create([
+            'name' => $request->name,
+        ]);
+
+        return redirect()
+            ->route('ppic.brand')
+            ->with('success', 'Brand berhasil ditambahkan');
+    }
+    public function brandUpdate(Request $request, $id)
+    {
+        $brand = Brand::findOrFail($id);
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+        $brand->update([
+            'name' => $request->name,
+        ]);
+        return redirect()
+            ->route('ppic.brand')
+            ->with('success', 'Brand berhasil diupdate');
+    }
+    public function brandDelete($id)
+    {
+        $brand = Brand::findOrFail($id);
+        $brand->delete();
+        return redirect()
+            ->route('ppic.brand')
+            ->with('success', 'Brand berhasil dihapus');
+    }
+
+    public function unit()
+    {
+        $query = Unit::query();
+        if (request()->filled('search')) {
+            $search = request()->search;
+
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        $units = $query->paginate(10)->withQueryString();
+        return view('ppic.unit', compact('units'));
+    }
+    public function unitStore(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        Unit::create([
+            'name' => $request->name,
+        ]);
+
+        return redirect()
+            ->route('ppic.unit')
+            ->with('success', 'Unit berhasil ditambahkan');
+    }
+    public function unitUpdate(Request $request, $id)
+    {
+        $unit = Unit::findOrFail($id);
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+        $unit->update([
+            'name' => $request->name,
+        ]);
+        return redirect()
+            ->route('ppic.unit')
+            ->with('success', 'Unit berhasil diupdate');
+    }
+    public function unitDelete($id)
+    {
+        $unit = Unit::findOrFail($id);
+        $unit->delete();
+        return redirect()
+            ->route('ppic.unit')
+            ->with('success', 'Unit berhasil dihapus');
+    }
+
+    // disini untuk set master kkpo
+    public function kkpo()
+    {
+        $query = Kkpo::with('customer');
+
+        if (request()->filled('search')) {
+            $search = request()->search;
+
+            $query->where('no_kkpo', 'like', "%{$search}%")
+                ->orWhereHas('customer', function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                });
+        }
+
         $kkpos = $query->paginate(10)->withQueryString();
-        return view('ppic.kkpo', compact('kkpos'));
-        // $query = Kkpo::with('customer');
-
-        // if (request()->filled('search')) {
-        //     $search = request()->search;
-
-        //     $query->where('no_kkpo', 'like', "%{$search}%")
-        //         ->orWhereHas('customer', function ($q) use ($search) {
-        //             $q->where('name', 'like', "%{$search}%");
-        //         });
-        // }
-
-        // $kkpos = $query->paginate(10)->withQueryString();
-        // return view('ppic.kkpo', compact('kkpos'));
+        $customers = Customer::all();
+        return view('ppic.kkpo', compact('kkpos', 'customers'));
     }
 
 
@@ -266,6 +416,7 @@ class PpicController extends Controller
 
         Kkpo::create([
             'no_kkpo' => $request->no_kkpo,
+            'customer_id' => $request->customer_id,
         ]);
 
         return redirect()
@@ -277,9 +428,11 @@ class PpicController extends Controller
         $kkpo = Kkpo::findOrFail($id);
         $request->validate([
             'no_kkpo' => 'required|string|max:255',
+            'customer_id' => 'required|exists:customers,id',
         ]);
         $kkpo->update([
             'no_kkpo' => $request->no_kkpo,
+            'customer_id' => $request->customer_id,
         ]);
         return redirect()
             ->route('ppic.kkpo')
@@ -320,7 +473,12 @@ class PpicController extends Controller
         }
 
         $kkpomanagements = $query->paginate(10)->withQueryString();
-        return view('ppic.kkpomanagement', compact('kkpomanagements'));
+        $kkpos = Kkpo::all();
+        $customers = Customer::all();
+        $categories = Category::all();
+        $styles = Style::all();
+        $colors = Color::all();
+        return view('ppic.kkpomanagement', compact('kkpomanagements', 'kkpos', 'customers', 'categories', 'styles', 'colors'));
     }
 
     public function kkpoManagementStore(Request $request)
@@ -331,7 +489,7 @@ class PpicController extends Controller
             'style_id' => 'required|exists:styles,id',
             'color_id' => 'required|exists:colors,id',
             'category_id' => 'required|exists:categories,id',
-            'customer_id' => 'required|exists:customers,id',
+            // 'customer_id' => 'required|exists:customers,id',
             'qty_total' => 'required|integer|min:0',
             'price' => 'required|numeric|min:0',
             'reject_allowance' => 'required|string'
@@ -343,7 +501,7 @@ class PpicController extends Controller
             'style_id' => $request->style_id,
             'color_id' => $request->color_id,
             'category_id' => $request->category_id,
-            'customer_id' => $request->customer_id,
+            // 'customer_id' => $request->customer_id,
             'qty_total' => $request->qty_total,
             'price' => $request->price,
             'reject_allowance' => $request->reject_allowance
@@ -364,7 +522,7 @@ class PpicController extends Controller
             'style_id' => 'required|exists:styles,id',
             'color_id' => 'required|exists:colors,id',
             'category_id' => 'required|exists:categories,id',
-            'customer_id' => 'required|exists:customers,id',
+            // 'customer_id' => 'required|exists:customers,id',
             'qty_total' => 'required|integer|min:1',
             'price' => 'required|numeric|min:0',
             'reject_allowance' => 'required|string'
@@ -376,7 +534,7 @@ class PpicController extends Controller
             'style_id' => $request->style_id,
             'color_id' => $request->color_id,
             'category_id' => $request->category_id,
-            'customer_id' => $request->customer_id,
+            // 'customer_id' => $request->customer_id,
             'qty_total' => $request->qty_total,
             'price' => $request->price,
             'reject_allowance' => $request->reject_allowance
@@ -395,8 +553,34 @@ class PpicController extends Controller
             ->route('ppic.kkpomanagement')
             ->with('success', 'KKPO berhasil dihapus');
     }
-    public function monitoring()
+    public function kkpoDetail($id)
     {
-        return view('ppic.monitoring');
+        $kkpo = KkpoManagement::with('kkpo', 'customer', 'style', 'color', 'category')->findOrFail($id);
+        return view('ppic.detailkkpo', compact('kkpo'));
+    }
+    public function monitoring(Request $request)
+    {
+        $query = KkpoManagement::with(['kkpo', 'style', 'color', 'category', 'suratJalan']);
+        if (request()->filled('search')) {
+            $search = request()->search;
+
+            $query->whereHas('kkpo', function ($q) use ($search) {
+                $q->where('no_kkpo', 'like', "%{$search}%");
+            })
+                ->orWhereHas('kkpo.customer', function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                })
+                ->orWhereHas('category', function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                })
+                ->orWhereHas('style', function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                })
+                ->orWhereHas('color', function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                });
+        }
+        $monitoring = $query->paginate(10);
+        return view('ppic.monitoring', compact('monitoring'));
     }
 }

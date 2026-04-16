@@ -8,4 +8,8 @@ class Category extends Model
 {
 
     protected $fillable = ['name'];
+    public function kkpoManagement()
+    {
+        return $this->hasMany(KkpoManagement::class);
+    }
 }

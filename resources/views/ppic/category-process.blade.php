@@ -19,7 +19,7 @@
                     </button>
                 </form>
                 <button onClick="openAddModal()" class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
-                    Add Category Process
+                    + Tambah Category Process
                 </button>
             </div>
             {{-- Category Process Table --}}
@@ -47,7 +47,7 @@
                                             <button
                                                 onClick="openEditModal({{ $categoryProcess->id }}, '{{ $categoryProcess->name }}')"
                                                 class="mr-2" title="Edit">
-                                                <svg class="w-6 h-6 text-blue-500 hover:text-blue-700 dark:text-white" aria-hidden="true"
+                                                <svg class="w-6 h-6 text-blue-500 hover:text-blue-700" aria-hidden="true"
                                                     xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                     fill="none" viewBox="0 0 24 24">
                                                     <path stroke="currentColor" stroke-linecap="round"
@@ -62,7 +62,7 @@
                                                 <button type="submit" title="Hapus"
                                                     onclick="return confirm('Apakah Anda yakin ingin mengapus category process ini?')">
                                                     <svg
-                                                        class="w-6 h-6 text-red-500 hover:text-red-700 dark:text-white"
+                                                        class="w-6 h-6 text-red-500 hover:text-red-700"
                                                         aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
                                                         height="24" fill="none" viewBox="0 0 24 24">
                                                         <path stroke="currentColor" stroke-linecap="round"
@@ -134,8 +134,10 @@
         openEditModal = (id, name) => {
             document.getElementById('modal-title').textContent = 'Edit Category Process';
             document.getElementById('submit-button').textContent = 'Update Category Process';
-            document.getElementById('crud-form').action = '{{ route('ppic.category.update', ':id') }}/'.replace(':id',
-                id);
+            let url = "{{ route('ppic.category.update', ':id') }}";
+url = url.replace(':id', id);
+
+            document.getElementById('crud-form').action = url;
 
             document.getElementById('form-method').value = 'PUT';
 

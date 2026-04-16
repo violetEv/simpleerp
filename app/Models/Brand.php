@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Style extends Model
+class Brand extends Model
 {
     protected $fillable = ['name'];
     public function kkpoManagement()

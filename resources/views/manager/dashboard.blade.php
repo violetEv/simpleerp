@@ -5,7 +5,7 @@
     {{-- CARD --}}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
         <div class="bg-white shadow rounded-lg p-6">
-            <h3 class="text-lg font-semibold text-gray-700">Total Employees</h3>
+            <h3 class="text-lg font-semibold text-gray-700">Total Orders</h3>
             <p class="text-3xl font-bold text-gray-900">171</p>
         </div>
         <div class="bg-white shadow rounded-lg p-6">
@@ -27,7 +27,7 @@
         </div>
     </div>
     {{-- Table of recent activities --}}
-    <div class="mt-8">
+    {{-- <div class="mt-8">
         <h3 class="text-xl font-semibold text-gray-700 mb-4">Recent Activities</h3>
         <div class="bg-white shadow rounded-lg overflow-hidden">
             <table class="min-w-full divide-y divide-gray-200">
@@ -53,6 +53,6 @@
                 </tbody>
             </table>
         </div>
-    </div>
+    </div> --}}
 
 </x-app-layout>

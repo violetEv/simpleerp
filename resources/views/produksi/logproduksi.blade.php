@@ -52,7 +52,13 @@
                                         <td class="px-6 py-4 whitespace-nowrap">{{ $movement->qty_reject }}</td>
                                     @endif
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        {{ $movement->traveler->deptTujuan->name ?? '-' }}</td>
+                                        {{-- jika belum mengisi qty out dan departemen tujuan, tampilkan tanda strip (-) --}}
+                                        @if (!$movement->date_out || !$movement->traveler->deptTujuan)
+                                            -
+                                        @else
+                                            {{ $movement->traveler->deptTujuan->name ?? '-' }}
+                                        @endif
+                                    </td>
                                     {{-- untuk departmen washing dan dyeing saja, muncul kolom machine --}}
                                     @if (in_array($dept, ['Dyeing', 'Washing']))
                                         <td class="px-6 py-4 whitespace-nowrap">

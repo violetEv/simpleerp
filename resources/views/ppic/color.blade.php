@@ -24,8 +24,9 @@
                     </button>
                 </form>
 
-                <button onClick="openAddModal()" class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
-                    Add Color
+                <button onClick="openAddModal()"
+                    class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
+                    + Tambah Color
                 </button>
             </div>
             {{-- Color Table --}}
@@ -36,9 +37,11 @@
                         <thead>
                             <tr>
                                 {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th> --}}
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Name</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Action
                                 </th>
                             </tr>
@@ -52,7 +55,7 @@
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <button onClick="editColor({{ $color->id }}, '{{ $color->name }}')"
                                                 class="mr-2" title="Edit">
-                                                <svg class="w-6 h-6 text-blue-500 hover:text-blue-700 dark:text-white"
+                                                <svg class="w-6 h-6 text-blue-500 hover:text-blue-700"
                                                     aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
                                                     height="24" fill="none" viewBox="0 0 24 24">
                                                     <path stroke="currentColor" stroke-linecap="round"
@@ -64,11 +67,11 @@
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" title="Hapus"
-                                                    onclick="return confirm('Apakah Anda yakin ingin mengapus color ini?')"
-                                                    >
-                                                    <svg class="w-6 h-6 text-red-500 hover:text-red-700 dark:text-white"
-                                                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
-                                                        height="24" fill="none" viewBox="0 0 24 24">
+                                                    onclick="return confirm('Apakah Anda yakin ingin mengapus color ini?')">
+                                                    <svg class="w-6 h-6 text-red-500 hover:text-red-700"
+                                                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                                        width="24" height="24" fill="none"
+                                                        viewBox="0 0 24 24">
                                                         <path stroke="currentColor" stroke-linecap="round"
                                                             stroke-linejoin="round" stroke-width="2"
                                                             d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
@@ -93,7 +96,8 @@
                 </div>
             </div>
             {{-- Modal Add & Edit Color --}}
-            <div id="addModal" class="hidden fixed inset-0 bg-gray-600  bg-opacity-50 items-center justify-center z-50">
+            <div id="addModal"
+                class="hidden fixed inset-0 bg-gray-600  bg-opacity-50 items-center justify-center z-50">
                 <div class="bg-white p-6 rounded-lg w-full max-w-md">
                     <div class="flex justify-between items-center mb-4">
                         <h3 id="modal-title" class="text-lg font-medium">Add Color</h3>
@@ -140,8 +144,10 @@
             openAddModal();
             document.getElementById('modal-title').textContent = 'Edit Color';
             document.getElementById('submit-button').textContent = 'Update Color';
-            document.getElementById('crud-form').action = '{{ route('ppic.color.update', ':id') }}/'.replace(':id',
-                id);
+            let url = "{{ route('ppic.color.update', ':id') }}";
+            url = url.replace(':id', id);
+
+            document.getElementById('crud-form').action = url;
             document.getElementById('form-method').value = 'PUT';
             document.getElementById('color_id').value = id;
             document.getElementById('name').value = name;
