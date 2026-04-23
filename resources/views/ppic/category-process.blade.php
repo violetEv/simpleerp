@@ -1,13 +1,5 @@
 <x-app-layout>
-    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        Category Process
-    </h2>
-    @if (session('success'))
-        <div class="mt-4">
-            <x-alerts variant="success" :message="session('success')" />
-        </div>
-    @endif
-    <div class="py-6">
+    <div class="py-3">
         <div class="max-w-7xl mx-auto">
             {{-- Search & Add Category Process Modal --}}
             <div class="flex items-center justify-between mb-4">
@@ -23,16 +15,16 @@
                 </button>
             </div>
             {{-- Category Process Table --}}
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-4 bg-white border-b border-gray-200">
+            <div class="bg-white overflow-hidden shadow rounded-lg p-2">
+                {{-- <div class="p-4 bg-white border-b border-gray-200"> --}}
 
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead>
+                    <table class="min-w-full table-fixed">
+                        <thead class="bg-gray-50">
                             <tr>
                                 {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th> --}}
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Name</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Action
                                 </th>
                             </tr>
@@ -42,8 +34,8 @@
                                 @foreach ($categories as $categoryProcess)
                                     <tr>
                                         {{-- <td class="px-6 py-4 whitespace-nowrap">{{ $categoryProcess->id }}</td> --}}
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $categoryProcess->name }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
+                                        <td class="px-4 py-2 whitespace-nowrap">{{ $categoryProcess->name }}</td>
+                                        <td class="px-4 py-2 whitespace-nowrap">
                                             <button
                                                 onClick="openEditModal({{ $categoryProcess->id }}, '{{ $categoryProcess->name }}')"
                                                 class="mr-2" title="Edit">
@@ -82,10 +74,10 @@
                             @endif
                         </tbody>
                     </table>
-                    <div class="mt-4 p-4">
+                    <div class="p-3">
                         {{ $categories->links() }}
                     </div>
-                </div>
+                {{-- </div> --}}
             </div>
         </div>
     </div>

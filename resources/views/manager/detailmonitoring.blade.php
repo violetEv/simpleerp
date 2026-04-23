@@ -1,7 +1,7 @@
 <x-app-layout>
-    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+    {{-- <h2 class="font-semibold text-xl text-gray-800 leading-tight">
         Detail Monitoring
-    </h2>
+    </h2> --}}
     {{-- card detail monitoring --}}
     <div class="mt-6 bg-white shadow rounded-lg p-6">
         <h3 class="text-lg font-medium text-gray-900 mb-4">Traveler: {{ $movement->traveler->no_traveler }}</h3>

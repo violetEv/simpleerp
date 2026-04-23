@@ -1,7 +1,7 @@
 <x-app-layout>
-    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+    {{-- <h2 class="font-semibold text-xl text-gray-800 leading-tight">
         Monitoring
-    </h2>
+    </h2> --}}
     {{-- Search & Filter--}}
     <div class="flex items-center justify-between mb-4 mt-4">
         <form action="{{ route('superadmin.monitoring') }}" method="GET" class="flex items-center gap-2">

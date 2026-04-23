@@ -19,7 +19,8 @@ class PPICMenu
                     ['name' => 'Item', 'route' => 'ppic.item'],
                     ['name' => 'Brand', 'route' => 'ppic.brand'],
                     ['name' => 'Satuan', 'route' => 'ppic.unit'],
-                    ['name' => 'KKPO', 'route' => 'ppic.kkpo']
+                    ['name' => 'Currency', 'route' => 'ppic.currency'],
+                    // ['name' => 'KKPO', 'route' => 'ppic.kkpo']
                 ]
             ],
             ['name' => 'KK / PO', 'route' => 'ppic.kkpomanagement', 'icon' => 'fas fa-file-alt'],

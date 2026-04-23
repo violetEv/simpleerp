@@ -11,22 +11,24 @@ use App\Models\Kkpo;
 use App\Models\KkpoManagement;
 use App\Models\Style;
 use App\Models\Unit;
+use App\Models\Currency;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 
 class PpicController extends Controller
 {
     public function dashboard()
     {
-        $totalKKPO = Kkpo::count();
+        // $totalKKPO = Kkpo::count();
         $totalColors = Color::count();
         $totalSizes = Style::count();
         $totalMaterials = Category::count();
 
-        return view('ppic.dashboard', compact('totalKKPO', 'totalColors', 'totalSizes', 'totalMaterials'));
+        return view('ppic.dashboard', compact('totalColors', 'totalSizes', 'totalMaterials'));
     }
     public function customer(Request $request)
     {
-        $query = Customer::query();
+        $query = Customer::query()->latest();
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -38,25 +40,28 @@ class PpicController extends Controller
 
         return view('ppic.customer', compact('customers'));
     }
+    // kolom selain name tidak harus required, jadi bisa nullable, dan di view ditampilkan '-' jika null
     public function customerStore(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
-            'phone' => 'required|string|max:255',
-            'attention' => 'required|string|max:255',
+            'address' => 'string|max:255|nullable',
+            'phone' => 'string|max:255|nullable',
+            'attention' => 'string|max:255|nullable',
         ]);
 
-        Customer::create([
-            'name' => $request->name,
-            'address' => $request->address,
-            'phone' => $request->phone,
-            'attention' => $request->attention,
-        ]);
+        try {
+            Customer::create($request->all());
 
-        return redirect()
-            ->route('ppic.customer')
-            ->with('success', 'Customer berhasil ditambahkan');
+            return redirect()
+                ->route('ppic.customer')
+                ->with('success', 'Customer berhasil ditambahkan');
+        } catch (QueryException $e) {
+            if ($e->errorInfo[1] == 1062) {
+                return back()->with('error', 'Nama customer sudah digunakan');
+            }
+            return back()->with('error', 'Gagal menambahkan Customer:' . $e->getMessage());
+        }
     }
     public function customerUpdate(Request $request, $id)
     {
@@ -64,35 +69,41 @@ class PpicController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
-            'phone' => 'required|string|max:255',
-            'attention' => 'required|string|max:255',
+            'address' => 'string|max:255|nullable',
+            'phone' => 'string|max:255|nullable',
+            'attention' => 'string|max:255|nullable',
         ]);
 
-        $customer->update([
-            'name' => $request->name,
-            'address' => $request->address,
-            'phone' => $request->phone,
-            'attention' => $request->attention,
-        ]);
+        try {
+            $customer->update($request->all());
 
-        return redirect()
-            ->route('ppic.customer')
-            ->with('success', 'Customer berhasil diupdate');
+            return redirect()
+                ->route('ppic.customer')
+                ->with('success', 'Customer berhasil diupdate');
+        } catch (QueryException $e) {
+            return back()->with('error', 'Gagal update customer');
+        }
     }
 
     public function customerDelete($id)
     {
         $customer = Customer::findOrFail($id);
-        $customer->delete();
+        try {
+            $customer->delete();
 
-        return redirect()
-            ->route('ppic.customer')
-            ->with('success', 'Customer berhasil dihapus');
+            return redirect()
+                ->route('ppic.customer')
+                ->with('success', 'Customer berhasil dihapus');
+        } catch (QueryException $e) {
+            if ($e->errorInfo[1] == 1451) {
+                return back()->with('error', 'Gagal menghapus customer karena masih digunakan di KKPO');
+            }
+            return back()->with('error', 'Gagal menghapus customer');
+        }
     }
     public function category()
     {
-        $query = Category::query();
+        $query = Category::query()->orderBy('name', 'asc');
         if (request()->filled('search')) {
             $search = request()->search;
 
@@ -107,14 +118,20 @@ class PpicController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
         ]);
+        try {
+            Category::create([
+                'name' => $request->name,
+            ]);
 
-        Category::create([
-            'name' => $request->name,
-        ]);
-
-        return redirect()
-            ->route('ppic.category')
-            ->with('success', 'Category Process berhasil ditambahkan');
+            return redirect()
+                ->route('ppic.category')
+                ->with('success', 'Category Process berhasil ditambahkan');
+        } catch (QueryException $e) {
+            if ($e->errorInfo[1] == 1062) {
+                return back()->with('error', 'Nama Category Process sudah digunakan');
+            }
+            return back()->with('error', 'Gagal menambahkan Category Process:' . $e->getMessage());
+        }
     }
     public function categoryUpdate(Request $request, $id)
     {
@@ -124,26 +141,37 @@ class PpicController extends Controller
             'name' => 'required|string|max:255',
         ]);
 
-        $category->update([
-            'name' => $request->name,
-        ]);
+        try {
+            $category->update([
+                'name' => $request->name,
+            ]);
 
-        return redirect()
-            ->route('ppic.category')
-            ->with('success', 'Category Process berhasil diupdate');
+            return redirect()
+                ->route('ppic.category')
+                ->with('success', 'Category Process berhasil diupdate');
+        } catch (QueryException $e) {
+            return back()->with('error', 'Gagal mengupdate Category Process');
+        }
     }
     public function categoryDelete($id)
     {
         $category = Category::findOrFail($id);
-        $category->delete();
+        try {
+            $category->delete();
 
-        return redirect()
-            ->route('ppic.category')
-            ->with('success', 'Category Process berhasil dihapus');
+            return redirect()
+                ->route('ppic.category')
+                ->with('success', 'Category Process berhasil dihapus');
+        } catch (QueryException $e) {
+            if ($e->errorInfo[1] == 1451) {
+                return back()->with('error', 'Gagal menghapus Category Process karena masih digunakan di KKPO');
+            }
+            return back()->with('error', 'Gagal menghapus Category Process');
+        }
     }
     public function style()
     {
-        $query = Style::query();
+        $query = Style::query()->orderBy('name', 'asc');
         if (request()->filled('search')) {
             $search = request()->search;
 
@@ -159,13 +187,20 @@ class PpicController extends Controller
             'name' => 'required|string|max:255',
         ]);
 
-        Style::create([
-            'name' => $request->name,
-        ]);
+        try {
+            Style::create([
+                'name' => $request->name,
+            ]);
 
-        return redirect()
-            ->route('ppic.style')
-            ->with('success', 'Style berhasil ditambahkan');
+            return redirect()
+                ->route('ppic.style')
+                ->with('success', 'Style berhasil ditambahkan');
+        } catch (QueryException $e) {
+            if ($e->errorInfo[1] == 1062) {
+                return back()->with('error', 'Nama Style sudah digunakan');
+            }
+            return back()->with('error', 'Gagal menambahkan Style:' . $e->getMessage());
+        }
     }
     public function styleUpdate(Request $request, $id)
     {
@@ -175,26 +210,37 @@ class PpicController extends Controller
             'name' => 'required|string|max:255',
         ]);
 
-        $style->update([
-            'name' => $request->name,
-        ]);
+        try {
+            $style->update([
+                'name' => $request->name,
+            ]);
 
-        return redirect()
-            ->route('ppic.style')
-            ->with('success', 'Style berhasil diupdate');
+            return redirect()
+                ->route('ppic.style')
+                ->with('success', 'Style berhasil diupdate');
+        } catch (QueryException $e) {
+            return back()->with('error', 'Gagal mengupdate Style');
+        }
     }
     public function styleDelete($id)
     {
         $style = Style::findOrFail($id);
-        $style->delete();
+        try {
+            $style->delete();
 
-        return redirect()
-            ->route('ppic.style')
-            ->with('success', 'Category Process berhasil dihapus');
+            return redirect()
+                ->route('ppic.style')
+                ->with('success', 'Style berhasil dihapus');
+        } catch (QueryException $e) {
+            if ($e->errorInfo[1] == 1451) {
+                return back()->with('error', 'Gagal menghapus Style karena masih digunakan di KKPO');
+            }
+            return back()->with('error', 'Gagal menghapus Style');
+        }
     }
     public function color()
     {
-        $query = Color::query();
+        $query = Color::query()->orderBy('name', 'asc');
         if (request()->filled('search')) {
             $search = request()->search;
 
@@ -210,13 +256,20 @@ class PpicController extends Controller
             'name' => 'required|string|max:255',
         ]);
 
-        Color::create([
-            'name' => $request->name,
-        ]);
+        try {
+            Color::create([
+                'name' => $request->name,
+            ]);
 
-        return redirect()
-            ->route('ppic.color')
-            ->with('success', 'Color berhasil ditambahkan');
+            return redirect()
+                ->route('ppic.color')
+                ->with('success', 'Color berhasil ditambahkan');
+        } catch (QueryException $e) {
+            if ($e->errorInfo[1] == 1062) {
+                return back()->with('error', 'Nama Color sudah digunakan');
+            }
+            return back()->with('error', 'Gagal menambahkan Color:' . $e->getMessage());
+        }
     }
     public function colorUpdate(Request $request, $id)
     {
@@ -226,27 +279,38 @@ class PpicController extends Controller
             'name' => 'required|string|max:255',
         ]);
 
-        $color->update([
-            'name' => $request->name,
-        ]);
+        try {
+            $color->update([
+                'name' => $request->name,
+            ]);
 
-        return redirect()
-            ->route('ppic.color')
-            ->with('success', 'Color berhasil diupdate');
+            return redirect()
+                ->route('ppic.color')
+                ->with('success', 'Color berhasil diupdate');
+        } catch (QueryException $e) {
+            return back()->with('error', 'Gagal mengupdate Color');
+        }
     }
     public function colorDelete($id)
     {
         $color = Color::findOrFail($id);
-        $color->delete();
+        try {
+            $color->delete();
 
-        return redirect()
-            ->route('ppic.color')
-            ->with('success', 'Color berhasil dihapus');
+            return redirect()
+                ->route('ppic.color')
+                ->with('success', 'Color berhasil dihapus');
+        } catch (QueryException $e) {
+            if ($e->errorInfo[1] == 1451) {
+                return back()->with('error', 'Gagal menghapus Color karena masih digunakan di KKPO');
+            }
+            return back()->with('error', 'Gagal menghapus Color');
+        }
     }
 
     public function item()
     {
-        $query = Item::query();
+        $query = Item::query()->orderBy('name', 'asc');
         if (request()->filled('search')) {
             $search = request()->search;
 
@@ -261,14 +325,20 @@ class PpicController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
         ]);
+        try {
+            Item::create([
+                'name' => $request->name,
+            ]);
 
-        Item::create([
-            'name' => $request->name,
-        ]);
-
-        return redirect()
-            ->route('ppic.item')
-            ->with('success', 'Item berhasil ditambahkan');
+            return redirect()
+                ->route('ppic.item')
+                ->with('success', 'Item berhasil ditambahkan');
+        } catch (QueryException $e) {
+            if ($e->errorInfo[1] == 1062) {
+                return back()->with('error', 'Nama Item sudah digunakan');
+            }
+            return back()->with('error', 'Gagal menambahkan Item:' . $e->getMessage());
+        }
     }
     public function itemUpdate(Request $request, $id)
     {
@@ -276,25 +346,37 @@ class PpicController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
         ]);
-        $item->update([
-            'name' => $request->name,
-        ]);
-        return redirect()
-            ->route('ppic.item')
-            ->with('success', 'Item berhasil diupdate');
+        try {
+            $item->update([
+                'name' => $request->name,
+            ]);
+
+            return redirect()
+                ->route('ppic.item')
+                ->with('success', 'Item berhasil diupdate');
+        } catch (QueryException $e) {
+            return back()->with('error', 'Gagal mengupdate Item');
+        }
     }
     public function itemDelete($id)
     {
         $item = Item::findOrFail($id);
-        $item->delete();
-        return redirect()
-            ->route('ppic.item')
-            ->with('success', 'Item berhasil dihapus');
-    }
+        try {
+            $item->delete();
 
+            return redirect()
+                ->route('ppic.item')
+                ->with('success', 'Item berhasil dihapus');
+        } catch (QueryException $e) {
+            if ($e->errorInfo[1] == 1451) {
+                return back()->with('error', 'Gagal menghapus Item karena masih digunakan di KKPO');
+            }
+            return back()->with('error', 'Gagal menghapus Item');
+        }
+    }
     public function brand()
     {
-        $query = Brand::query();
+        $query = Brand::query()->orderBy('name', 'asc');
         if (request()->filled('search')) {
             $search = request()->search;
 
@@ -310,13 +392,20 @@ class PpicController extends Controller
             'name' => 'required|string|max:255',
         ]);
 
-        Brand::create([
-            'name' => $request->name,
-        ]);
+        try {
+            Brand::create([
+                'name' => $request->name,
+            ]);
 
-        return redirect()
-            ->route('ppic.brand')
-            ->with('success', 'Brand berhasil ditambahkan');
+            return redirect()
+                ->route('ppic.brand')
+                ->with('success', 'Brand berhasil ditambahkan');
+        } catch (QueryException $e) {
+            if ($e->errorInfo[1] == 1062) {
+                return back()->with('error', 'Nama Brand sudah digunakan');
+            }
+            return back()->with('error', 'Gagal menambahkan Brand:' . $e->getMessage());
+        }
     }
     public function brandUpdate(Request $request, $id)
     {
@@ -324,25 +413,38 @@ class PpicController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
         ]);
-        $brand->update([
-            'name' => $request->name,
-        ]);
-        return redirect()
-            ->route('ppic.brand')
-            ->with('success', 'Brand berhasil diupdate');
+        try {
+            $brand->update([
+                'name' => $request->name,
+            ]);
+
+            return redirect()
+                ->route('ppic.brand')
+                ->with('success', 'Brand berhasil diupdate');
+        } catch (QueryException $e) {
+            return back()->with('error', 'Gagal mengupdate Brand');
+        }
     }
     public function brandDelete($id)
     {
         $brand = Brand::findOrFail($id);
-        $brand->delete();
-        return redirect()
-            ->route('ppic.brand')
-            ->with('success', 'Brand berhasil dihapus');
+        try {
+            $brand->delete();
+
+            return redirect()
+                ->route('ppic.brand')
+                ->with('success', 'Brand berhasil dihapus');
+        } catch (QueryException $e) {
+            if ($e->errorInfo[1] == 1451) {
+                return back()->with('error', 'Gagal menghapus Brand karena masih digunakan di KKPO');
+            }
+            return back()->with('error', 'Gagal menghapus Brand');
+        }
     }
 
     public function unit()
     {
-        $query = Unit::query();
+        $query = Unit::query()->orderBy('name', 'asc');
         if (request()->filled('search')) {
             $search = request()->search;
 
@@ -357,14 +459,20 @@ class PpicController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
         ]);
+        try {
+            Unit::create([
+                'name' => $request->name,
+            ]);
 
-        Unit::create([
-            'name' => $request->name,
-        ]);
-
-        return redirect()
-            ->route('ppic.unit')
-            ->with('success', 'Unit berhasil ditambahkan');
+            return redirect()
+                ->route('ppic.unit')
+                ->with('success', 'Unit berhasil ditambahkan');
+        } catch (QueryException $e) {
+            if ($e->errorInfo[1] == 1062) {
+                return back()->with('error', 'Nama unit sudah digunakan');
+            }
+            return back()->with('error', 'Gagal menambahkan Unit:' . $e->getMessage());
+        }
     }
     public function unitUpdate(Request $request, $id)
     {
@@ -372,26 +480,111 @@ class PpicController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
         ]);
-        $unit->update([
-            'name' => $request->name,
-        ]);
-        return redirect()
-            ->route('ppic.unit')
-            ->with('success', 'Unit berhasil diupdate');
+        try {
+            $unit->update([
+                'name' => $request->name,
+            ]);
+
+            return redirect()
+                ->route('ppic.unit')
+                ->with('success', 'Unit berhasil diupdate');
+        } catch (QueryException $e) {
+            return back()->with('error', 'Gagal mengupdate Unit');
+        }
     }
     public function unitDelete($id)
     {
         $unit = Unit::findOrFail($id);
-        $unit->delete();
-        return redirect()
-            ->route('ppic.unit')
-            ->with('success', 'Unit berhasil dihapus');
+        try {
+            $unit->delete();
+
+            return redirect()
+                ->route('ppic.unit')
+                ->with('success', 'Unit berhasil dihapus');
+        } catch (QueryException $e) {
+            if ($e->errorInfo[1] == 1451) {
+                return back()->with('error', 'Gagal menghapus Unit karena masih digunakan di KKPO');
+            }
+            return back()->with('error', 'Gagal menghapus Unit');
+        }
     }
 
+    public function currency()
+    {
+        $query = Currency::query()->orderBy('name', 'asc');
+        if (request()->filled('search')) {
+            $search = request()->search;
+
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhere('code', 'like', "%{$search}%");
+        }
+
+        $currencies = $query->paginate(10)->withQueryString();
+        return view('ppic.currency', compact('currencies'));
+    }
+    public function currencyStore(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'code' => 'required|string|max:10|unique:currencies,code',
+        ]);
+
+        try {
+            Currency::create([
+                'name' => $request->name,
+                'code' => $request->code,
+            ]);
+
+            return redirect()
+                ->route('ppic.currency')
+                ->with('success', 'Currency berhasil ditambahkan');
+        } catch (QueryException $e) {
+            if ($e->errorInfo[1] == 1062) {
+                return back()->with('error', 'Kode currency sudah digunakan');
+            }
+            return back()->with('error', 'Gagal menambahkan Currency:' . $e->getMessage());
+        }
+    }
+    public function currencyUpdate(Request $request, $id)
+    {
+        $currency = Currency::findOrFail($id);
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'code' => 'required|string|max:10|unique:currencies,code,' . $currency->id,
+        ]);
+        try {
+            $currency->update([
+                'name' => $request->name,
+                'code' => $request->code,
+            ]);
+
+            return redirect()
+                ->route('ppic.currency')
+                ->with('success', 'Currency berhasil diupdate');
+        } catch (QueryException $e) {
+            return back()->with('error', 'Gagal mengupdate Currency');
+        }
+    }
+    public function currencyDelete($id)
+    {
+        $currency = Currency::findOrFail($id);
+        try {
+            $currency->delete();
+
+            return redirect()
+                ->route('ppic.currency')
+                ->with('success', 'Currency berhasil dihapus');
+        } catch (QueryException $e) {
+            if ($e->errorInfo[1] == 1451) {
+                return back()->with('error', 'Gagal menghapus Currency karena masih digunakan di KKPO');
+            }
+            return back()->with('error', 'Gagal menghapus Currency');
+        }
+    }
     // disini untuk set master kkpo
     public function kkpo()
     {
-        $query = Kkpo::with('customer');
+        $query = Kkpo::with('customer')->orderBy('no_kkpo', 'asc');
 
         if (request()->filled('search')) {
             $search = request()->search;
@@ -441,23 +634,29 @@ class PpicController extends Controller
     public function kkpoDelete($id)
     {
         $kkpo = Kkpo::findOrFail($id);
-        $kkpo->delete();
-        return redirect()
-            ->route('ppic.kkpo')
-            ->with('success', 'KKPO berhasil dihapus');
+        try {
+            $kkpo->delete();
+
+            return redirect()
+                ->route('ppic.kkpo')
+                ->with('success', 'KKPO berhasil dihapus');
+        } catch (QueryException $e) {
+            if ($e->errorInfo[1] == 1451) {
+                return back()->with('error', 'Gagal menghapus KKPO karena masih digunakan di KKPO Management');
+            }
+            return back()->with('error', 'Gagal menghapus KKPO');
+        }
     }
 
 
     public function kkpoManagement()
     {
-        $query = KkpoManagement::with('kkpo', 'customer', 'style', 'color', 'category', 'travelers');
+        $query = KkpoManagement::with('customer', 'style', 'color', 'category', 'travelers')->latest();
 
         if (request()->filled('search')) {
             $search = request()->search;
 
-            $query->whereHas('kkpo', function ($q) use ($search) {
-                $q->where('no_kkpo', 'like', "%{$search}%");
-            })
+            $query->where('no_kkpo', 'like', "%{$search}%")
                 ->orWhereHas('customer', function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%");
                 })
@@ -473,43 +672,62 @@ class PpicController extends Controller
         }
 
         $kkpomanagements = $query->paginate(10)->withQueryString();
-        $kkpos = Kkpo::all();
+        // $kkpos = Kkpo::all();
         $customers = Customer::all();
         $categories = Category::all();
         $styles = Style::all();
         $colors = Color::all();
-        return view('ppic.kkpomanagement', compact('kkpomanagements', 'kkpos', 'customers', 'categories', 'styles', 'colors'));
+        $items = Item::all();
+        $brands = Brand::all();
+        $units = Unit::all();
+        $currencies = Currency::all();
+        return view('ppic.kkpomanagement', compact('kkpomanagements', 'customers', 'categories', 'styles', 'colors', 'items', 'brands', 'units', 'currencies'));
     }
 
     public function kkpoManagementStore(Request $request)
     {
         // Validasi input jika diperlukan
         $request->validate([
-            'kkpo_id' => 'required|exists:kkpos,id',
+            'no_kkpo' => 'required|string|max:255',
+            'customer_id' => 'required|exists:customers,id',
             'style_id' => 'required|exists:styles,id',
             'color_id' => 'required|exists:colors,id',
             'category_id' => 'required|exists:categories,id',
-            // 'customer_id' => 'required|exists:customers,id',
+            'kp_po' => 'required|string|max:255',
             'qty_total' => 'required|integer|min:0',
             'price' => 'required|numeric|min:0',
-            'reject_allowance' => 'required|string'
+            'reject_allowance' => 'required|string',
+            'item_id' => 'required|exists:items,id',
+            'brand_id' => 'required|exists:brands,id',
+            'unit_id' => 'required|exists:units,id',
+            'currency_id' => 'required|exists:currencies,id'
+
         ]);
 
         // Simpan data KKPO ke database
-        KkpoManagement::create([
-            'kkpo_id' => $request->kkpo_id,
-            'style_id' => $request->style_id,
-            'color_id' => $request->color_id,
-            'category_id' => $request->category_id,
-            // 'customer_id' => $request->customer_id,
-            'qty_total' => $request->qty_total,
-            'price' => $request->price,
-            'reject_allowance' => $request->reject_allowance
-        ]);
+        try {
+            KkpoManagement::create([
+                'no_kkpo' => $request->no_kkpo,
+                'customer_id' => $request->customer_id,
+                'style_id' => $request->style_id,
+                'color_id' => $request->color_id,
+                'category_id' => $request->category_id,
+                'kp_po' => $request->kp_po,
+                'item_id' => $request->item_id,
+                'brand_id' => $request->brand_id,
+                'unit_id' => $request->unit_id,
+                'qty_total' => $request->qty_total,
+                'price' => $request->price,
+                'reject_allowance' => $request->reject_allowance,
+                'currency_id' => $request->currency_id
+            ]);
 
-        return redirect()
-            ->route('ppic.kkpomanagement')
-            ->with('success', 'KKPO berhasil ditambahkan');
+            return redirect()
+                ->route('ppic.kkpomanagement')
+                ->with('success', 'KKPO berhasil ditambahkan');
+        } catch (QueryException $e) {
+            return back()->with('error', 'Gagal menambahkan KKPO');
+        }
     }
 
     public function kkpoManagementUpdate(Request $request, $id)
@@ -518,56 +736,80 @@ class PpicController extends Controller
 
         // Validasi input jika diperlukan
         $request->validate([
-            'kkpo_id' => 'required|exists:kkpos,id',
+            'no_kkpo' => 'required|exists:kkpo_managements,no_kkpo',
             'style_id' => 'required|exists:styles,id',
             'color_id' => 'required|exists:colors,id',
             'category_id' => 'required|exists:categories,id',
-            // 'customer_id' => 'required|exists:customers,id',
+            'customer_id' => 'required|exists:customers,id',
+            'kp_po' => 'required|string|max:255',
             'qty_total' => 'required|integer|min:1',
             'price' => 'required|numeric|min:0',
-            'reject_allowance' => 'required|string'
+            'reject_allowance' => 'required|string',
+            'item_id' => 'required|exists:items,id',
+            'brand_id' => 'required|exists:brands,id',
+            'unit_id' => 'required|exists:units,id',
+            'currency_id' => 'required|exists:currencies,id'
+
         ]);
 
-        // Update data KKPO di database
-        $kkpomanagement->update([
-            'kkpo_id' => $request->kkpo_id,
-            'style_id' => $request->style_id,
-            'color_id' => $request->color_id,
-            'category_id' => $request->category_id,
-            // 'customer_id' => $request->customer_id,
-            'qty_total' => $request->qty_total,
-            'price' => $request->price,
-            'reject_allowance' => $request->reject_allowance
-        ]);
+        try {
+            $kkpomanagement->update([
+                'no_kkpo' => $request->no_kkpo,
+                'customer_id' => $request->customer_id,
+                'style_id' => $request->style_id,
+                'color_id' => $request->color_id,
+                'category_id' => $request->category_id,
+                'kp_po' => $request->kp_po,
+                'item_id' => $request->item_id,
+                'brand_id' => $request->brand_id,
+                'unit_id' => $request->unit_id,
+                'qty_total' => $request->qty_total,
+                'price' => $request->price,
+                'reject_allowance' => $request->reject_allowance,
+                'currency_id' => $request->currency_id
+            ]);
 
-        return redirect()
-            ->route('ppic.kkpomanagement')
-            ->with('success', 'KKPO berhasil diupdate');
+            return redirect()
+                ->route('ppic.kkpomanagement')
+                ->with('success', 'KKPO berhasil diupdate');
+        } catch (QueryException $e) {
+            return back()->with('error', 'Gagal mengupdate KKPO');
+        }
     }
     public function kkpoManagementDelete($id)
     {
         $kkpomanagement = KkpoManagement::findOrFail($id);
-        $kkpomanagement->delete();
+        try {
+            $kkpomanagement->delete();
 
-        return redirect()
-            ->route('ppic.kkpomanagement')
-            ->with('success', 'KKPO berhasil dihapus');
+            return redirect()
+                ->route('ppic.kkpomanagement')
+                ->with('success', 'KKPO berhasil dihapus');
+        } catch (QueryException $e) {
+
+            return back()->with('error', 'Gagal menghapus KKPO');
+        }
+    }
+    public function kkpoManagementShow($id)
+    {
+        $kkpomanagement = KkpoManagement::with('customer', 'style', 'color', 'category', 'item', 'brand', 'unit', 'currency', 'travelers', 'suratJalan')->findOrFail($id);
+        return view('ppic.detailkkpo', compact('kkpomanagement'));
     }
     public function kkpoDetail($id)
     {
-        $kkpo = KkpoManagement::with('kkpo', 'customer', 'style', 'color', 'category')->findOrFail($id);
+        $kkpo = KkpoManagement::with('customer', 'style', 'color', 'category')->findOrFail($id);
         return view('ppic.detailkkpo', compact('kkpo'));
     }
     public function monitoring(Request $request)
     {
-        $query = KkpoManagement::with(['kkpo', 'style', 'color', 'category', 'suratJalan']);
+        $query = KkpoManagement::with(['customer', 'style', 'color', 'category', 'suratJalan'])->latest();
         if (request()->filled('search')) {
             $search = request()->search;
 
             $query->whereHas('kkpo', function ($q) use ($search) {
                 $q->where('no_kkpo', 'like', "%{$search}%");
             })
-                ->orWhereHas('kkpo.customer', function ($q) use ($search) {
+                ->orWhereHas('customer', function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%");
                 })
                 ->orWhereHas('category', function ($q) use ($search) {

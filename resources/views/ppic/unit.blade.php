@@ -1,8 +1,8 @@
 <x-app-layout>
-    <h2 class="font-semibold text-xl text-gray-800 leading-tight mb-6">
+    {{-- <h2 class="font-semibold text-xl text-gray-800 leading-tight mb-6">
         Satuan
-    </h2>
-    <div class="py-6">
+    </h2> --}}
+    <div class="py-3">
         <div class="max-w-7xl mx-auto">
             {{-- <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
@@ -24,16 +24,16 @@
                 </button>
             </div>
             {{-- SATUAN TABLE --}}
-            <div class="bg-white overflow-hidden shadow-sm rounded-lg">
-                <div class="p-4 bg-white border-b border-gray-200">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead>
+            <div class="bg-white overflow-hidden shadow rounded-lg p-2">
+                {{-- <div class="p-4 bg-white border-b border-gray-200"> --}}
+                    <table class="min-w-full table-fixed">
+                        <thead class="bg-gray-50">
                             <tr>
                                 <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Nama</th>
                                 <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Aksi
                                 </th>
                             </tr>
@@ -42,8 +42,8 @@
                             @if ($units->count())
                                 @foreach ($units as $unit)
                                     <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $unit->name }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
+                                        <td class="px-4 py-2 whitespace-nowrap">{{ $unit->name }}</td>
+                                        <td class="px-4 py-2 whitespace-nowrap">
                                             <button onClick="editUnit({{ $unit->id }}, '{{ $unit->name }}')"
                                                 class="mr-2" title="Edit">
                                                 <svg class="w-6 h-6 text-blue-500 hover:text-blue-700"
@@ -74,14 +74,18 @@
                                 @endforeach
                             @else
                                 <tr>
-                                    <td colspan="2" class="px-6 py-4 whitespace-nowrap text-center text-gray-500">
+                                    <td colspan="2" class="px-4 py-2 whitespace-nowrap text-center text-gray-500">
                                         Satuan tidak ditemukan.
                                     </td>
                                 </tr>
                             @endif
                         </tbody>
                     </table>
-                </div>
+                    <div class="p-3">
+                        {{ $units->links() }}
+                    </div>
+
+                {{-- </div> --}}
             </div>
             {{-- MODAL ADD & EDIT SATUAN --}}
             <div id="satuanModal"
@@ -95,14 +99,15 @@
                     </div>
                     <form id="satuanForm" method="POST" action="{{ route('ppic.unit.store') }}">
                         @csrf
-                        <input type="hidden" name="id" id="unitId">
+                        <input type="hidden" name="_method" id="unitMethod" value="POST">
+                        <input type="hidden" name="unit_id" id="unitId">
                         <div class="mb-4">
                             <label for="name" class="block text-gray-700">Nama Satuan:</label>
                             <input type="text" name="name" id="unitName"
                                 class="w-full border border-gray-300 rounded-lg px-4 py-2" required>
                         </div>
                         <button type="submit" class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
-                            Save
+                            Simpan
                         </button>
 
                     </form>
@@ -116,6 +121,7 @@
             document.getElementById('satuanModal').classList.add('flex');
             document.getElementById('modal-title').textContent = 'Tambah Satuan';
             document.getElementById('satuanForm').action = "{{ route('ppic.unit.store') }}";
+            document.getElementById('unitMethod').value = 'POST';
             document.getElementById('unitId').value = '';
             document.getElementById('unitName').value = '';
         }
@@ -128,7 +134,10 @@
         function editUnit(id, name) {
             openAddModal();
             document.getElementById('modal-title').textContent = 'Edit Satuan';
-            document.getElementById('satuanForm').action = `/ppic/unit/${id}`;
+            let url = "{{ route('ppic.unit.update', ':id') }}";
+            url = url.replace(':id', id);
+            document.getElementById('satuanForm').action = url;
+            document.getElementById('unitMethod').value = 'PUT';
             document.getElementById('unitId').value = id;
             document.getElementById('unitName').value = name;
         }

@@ -1,7 +1,7 @@
 <x-app-layout>
-    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+    {{-- <h2 class="font-semibold text-xl text-gray-800 leading-tight">
         Monitoring & Report PPIC
-    </h2>
+    </h2> --}}
     <div class="py-6">
         <div class="max-w-7xl mx-auto">
             {{-- Search --}}
@@ -55,7 +55,7 @@
             </div>
             {{-- Table --}}
             <div class="bg-white shadow rounded-lg overflow-hidden p-2">
-                <table class="min-w-full table-auto">
+                <table class="min-w-full table-fixed">
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -87,8 +87,8 @@
                             @foreach ($monitoring as $item)
                                 <tr>
                                     <td class="px-4 py-2 whitespace-nowrap">{{ $loop->iteration }}</td>
-                                    <td class="px-4 py-2 whitespace-nowrap">{{ $item->kkpo->no_kkpo ?? '-' }}</td>
-                                    <td class="px-4 py-2 whitespace-nowrap">{{ $item->kkpo->customer?->name ?? '-' }}
+                                    <td class="px-4 py-2 whitespace-nowrap">{{ $item->no_kkpo ?? '-' }}</td>
+                                    <td class="px-4 py-2 whitespace-nowrap">{{ $item->customer?->name ?? '-' }}
                                     </td>
                                     <td class="px-4 py-2 whitespace-nowrap">{{ $item->category?->name ?? '-' }}</td>
                                     <td class="px-4 py-2 whitespace-nowrap">{{ $item->style?->name ?? '-' }}</td>
@@ -112,7 +112,7 @@
                             @endforeach
                         @else
                             <tr>
-                                <td colspan="9" class="px-4 py-2 text-center text-gray-500">No monitoring data found.
+                                <td colspan="11" class="px-4 py-2 text-center text-gray-500">Monitoring data tidak ditemukan.
                                 </td>
                             </tr>
                         @endif

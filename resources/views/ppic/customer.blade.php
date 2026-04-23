@@ -1,17 +1,8 @@
 <x-app-layout>
-    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        Customer
-    </h2>
-    @if (session('success'))
-        <div class="mt-4">
-            <x-alerts variant="success" title="Success" :message="session('success')" :showLink="false" />
-        </div>
-    @elseif (session('error'))
-        <div class="mt-4">
-            <x-alerts variant="danger" title="Error" :message="session('error')" :showLink="false" />
-        </div>
-    @endif
-    <div class="py-6">
+{{-- <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+    Customer
+</h2> --}}
+    <div class="py-3">
         <div class="max-w-7xl mx-auto">
             {{-- Search & Add Customer Modal --}}
             <div class="flex items-center justify-between mb-4">
@@ -29,25 +20,25 @@
                 </button>
             </div>
             {{-- Customer Table --}}
-            <div class="bg-white overflow-hidden shadow-sm rounded-lg">
-                <div class="p-4 bg-white border-b border-gray-200">
+            <div class="bg-white shadow overflow-hidden p-2 rounded-lg">
+                {{-- <div class="p-4 bg-white border-b border-gray-200"> --}}
 
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead>
+                    <table class="min-w-full table-fixed">
+                        <thead class="bg-gray-50">
                             <tr>
                                 {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     ID</th> --}}
                                 <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Nama Customer</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Alamat</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Telepon</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Nama PIC</th>
                                 <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Aksi
                                 </th>
                             </tr>
@@ -57,11 +48,11 @@
                                 @foreach ($customers as $customer)
                                     <tr>
                                         {{-- <td class="px-6 py-4 whitespace-nowrap">{{ $customer->id }}</td> --}}
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $customer->name ?? '-' }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $customer->address ?? '-' }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $customer->phone ?? '-' }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $customer->attention ?? '-' }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
+                                        <td class="px-4 py-2 whitespace-wrap">{{ $customer->name ?? '-' }}</td>
+                                        <td class="px-4 py-2 whitespace-wrap">{{ $customer->address ?? '-' }}</td>
+                                        <td class="px-4 py-2 whitespace-nowrap">{{ $customer->phone ?? '-' }}</td>
+                                        <td class="px-4 py-2 whitespace-nowrap">{{ $customer->attention ?? '-' }}</td>
+                                        <td class="px-4 py-2 whitespace-nowrap">
                                             <button onClick="editCustomer({{ $customer->id }}, '{{ $customer->name }}', '{{ $customer->address }}', '{{ $customer->phone }}', '{{ $customer->attention }}')"
                                                 title="Edit" class="mr-2">
                                                 {{-- Edit icon outline --}}
@@ -107,7 +98,7 @@
                     <div class="mt-4 p-4">
                         {{ $customers->links() }}
                     </div>
-                </div>
+                {{-- </div> --}}
             </div>
             {{-- Modal Add & Edit Customer --}}
             <div id="addModal" class="hidden fixed inset-0 z-50 bg-gray-600 bg-opacity-50 items-center justify-center">
@@ -144,7 +135,7 @@
                         </div>
                         <button type="submit" id="submit-button"
                             class="bg-[#136566] text-white px-4 py-2 rounded-lg hover:bg-[#0f4f50]">
-                            Tambah Customer
+                            Simpan Customer
                         </button>
                     </form>
 
@@ -160,7 +151,7 @@
 
         function openAddModal() {
             document.getElementById('modal-title').textContent = 'Tambah Customer';
-            document.getElementById('submit-button').textContent = 'Tambah Customer';
+            document.getElementById('submit-button').textContent = 'Simpan Customer';
             document.getElementById('crud-form').action = "{{ route('ppic.customer.store') }}";
 
             document.getElementById('form-method').value = 'POST';

@@ -3,11 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Departments;
+use App\Models\KkpoManagement;
 use App\Models\Machine;
+use App\Models\SuratJalan;
+use App\Models\SuratJalanOut;
 use App\Models\Traveler;
 use App\Models\TravelerMovement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ProductionController extends Controller
 {
@@ -15,25 +19,74 @@ class ProductionController extends Controller
     {
         return view('produksi.dashboard');
     }
+    public function suratjalanout(Request $request)
+    {
+        $query = SuratJalanOut::with(['suratJalanIn', 'kkpoManagement.customer', 'kkpoManagement.style', 'kkpoManagement.color', 'kkpoManagement.item', 'kkpoManagement.category']);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $query->where('no_surat_jalan', 'like', "%{$search}%");
+        }
+
+        $orders = $query->paginate(10)->withQueryString();
+        $kkpoManagements = KkpoManagement::with(['category', 'customer', 'style', 'color', 'item'])->get();
+        $suratJalanIns = SuratJalan::with('kkpoManagement')->get();
+        $travelers = Traveler::with('suratJalan')->get();
+
+        return view('produksi.suratjalanout.index', compact('orders', 'kkpoManagements', 'suratJalanIns', 'travelers'));
+    }
+    public function suratJalanOutStore(Request $request)
+    {
+        $request->validate([
+            'kkpo_management_id' => 'required|exists:kkpo_managements,id',
+            'surat_jalan_in_id' => 'required|exists:surat_jalans,id',
+            'no_surat_jalan' => 'required|string|max:255',
+            'qty' => 'required|integer',
+            'tanggal' => 'required|date',
+            'notes' => 'nullable|string',
+        ]);
+        $status = $request->qty <= 0 ? 'closed' : 'open';
+        SuratJalanOut::create([
+            'kkpo_management_id' => $request->kkpo_management_id,
+            'surat_jalan_in_id' => $request->surat_jalan_in_id,
+            'no_surat_jalan' => $request->no_surat_jalan,
+            'qty' => $request->qty,
+            'tanggal' => $request->tanggal,
+            'notes' => $request->notes,
+            'status' => $status
+        ]);
+
+        return redirect()
+            ->route('produksi.suratjalanout.index')
+            ->with('success', 'Order berhasil ditambahkan');
+    }
+
+    public function createSuratJalanOut($id)
+    {
+        $traveler = Traveler::findOrFail($id);
+        $kkpoManagements = KkpoManagement::with(['category', 'customer', 'style', 'color', 'item'])->get();
+        $suratJalanIns = SuratJalan::with('kkpoManagement')->get();
+        return view('produksi.suratjalanout.create', compact('traveler', 'kkpoManagements', 'suratJalanIns'));
+    }
 
     public function index(Request $request)
     {
-        $query = Traveler::with('deptAsal', 'deptTujuan', 'currentDept')
-            ->where('current_dept_id', Auth::user()->department_id);
 
-        // menampilkan traveler yang berasal dari dept user yang sedang login, atau yang tujuan dept nya user yang sedang login
-        $query->whereHas('deptAsal', function ($q) {
-            $q->where('dept_asal_id', Auth::user()->department_id);
-        })->orWhereHas('deptTujuan', function ($q) {
-            $q->where('dept_tujuan_id', Auth::user()->department_id);
-        });
+        $query = Traveler::with([
+            'latestMovement.deptAsal',
+            'deptTujuan',
+            'currentDepartment'
+        ])
+            ->where('status', '!=', 'done')
+            ->where('current_dept_id', Auth::user()->department_id);
 
         if ($request->filled('search')) {
             $search = $request->search;
 
             $query->where(function ($q) use ($search) {
                 $q->where('no_traveler', 'like', "%{$search}%")
-                    ->orWhereHas('currentDept', function ($q2) use ($search) {
+                    ->orWhereHas('currentDepartment', function ($q2) use ($search) {
                         $q2->where('name', 'like', "%{$search}%");
                     })
                     ->orWhereHas('deptAsal', function ($q3) use ($search) {
@@ -47,44 +100,83 @@ class ProductionController extends Controller
 
         $travelers = $query->paginate(10)->withQueryString();
 
-        return view('produksi.index', compact('travelers'));
+        return view('produksi.proses.index', compact('travelers'));
     }
-
 
     public function process($id)
     {
         $traveler = Traveler::findOrFail($id);
-        $movement = TravelerMovement::where('traveler_id', $id)
-            ->where('dept_id', Auth::user()->department_id)
-            ->latest()->first();
+        // 🔹 movement yang BELUM OUT (aktif)
+        $movementActive = TravelerMovement::where('traveler_id', $id)
+            ->where('current_dept_id', Auth::user()->department_id)
+            ->whereNull('date_out')
+            ->latest()
+            ->first();
+
+        // 🔹 movement terakhir (untuk ambil expected qty)
+        $lastMovement = TravelerMovement::where('traveler_id', $id)
+            ->whereNotNull('date_out')
+            ->latest()
+            ->first();
 
         $machines = Machine::where('department_id', Auth::user()->department_id)->get();
         $departments = Departments::all();
-        return view('produksi.process', compact('traveler', 'movement', 'machines', 'departments'));
+        return view('produksi.proses.process', compact('traveler', 'movementActive', 'lastMovement', 'machines', 'departments'));
     }
 
     public function storeIn(Request $request)
     {
         $request->validate([
-            'traveler_id' => 'required',
+            'traveler_id' => 'required|exists:travelers,id',
+            'created_by' => 'nullable|string|max:255',
             'qty_in' => 'required|integer|min:1',
             'machine_id' => 'nullable|exists:machines,id',
             'notes' => 'nullable|string'
         ]);
 
-        TravelerMovement::create([
-            'traveler_id' => $request->traveler_id,
-            'dept_id' => Auth::user()->department_id,
-            'qty_in' => $request->qty_in,
-            'date_in' => now(),
-            'created_by' => Auth::id(),
-            'machine_id' => $request->machine_id,
-            'notes' => $request->notes,
-        ]);
-        Traveler::where('id', $request->traveler_id)
-            ->update([
-                'status' => 'in_progress'
+        DB::transaction(function () use ($request) {
+
+            $traveler = Traveler::lockForUpdate()->findOrFail($request->traveler_id);
+
+            // ambil movement terakhir yang OUT
+            $lastMovement = TravelerMovement::where('traveler_id', $traveler->id)
+                ->whereNotNull('date_out')
+                ->latest()
+                ->first();
+
+            $expected = $lastMovement?->qty_out ?? 0;
+            $actual = (int) $request->qty_in;
+
+            // 🔥 SELISIH (bisa minus atau plus)
+            $selisih = $expected - $actual;
+
+            // status lebih clean
+            $statusCase = $selisih == 0 ? 'normal' : 'selisih';
+
+            // asal dept aman fallback
+            $deptAsal = $lastMovement?->dept_tujuan_id ?? $traveler->current_dept_id;
+
+            TravelerMovement::create([
+                'traveler_id' => $traveler->id,
+                'created_by' => $request->created_by,
+                'dept_asal_id' => $deptAsal,
+                'current_dept_id' => Auth::user()->department_id,
+                'dept_tujuan_id' => null,
+                'qty_in' => $actual,
+                'date_in' => now(),
+                'machine_id' => $request->machine_id,
+                'notes' => $request->notes,
+                'qty_loss' => abs($selisih),
+                'status_case' => $statusCase,
             ]);
+
+            // 🔥 UPDATE STATUS TRAVELER (ini versi aman)
+            $traveler->update([
+                'status' => 'in_progress',
+                'current_dept_id' => Auth::user()->department_id
+            ]);
+        });
+
         return back()->with('success', 'Qty IN berhasil disimpan');
     }
 
@@ -92,8 +184,9 @@ class ProductionController extends Controller
     {
         $request->validate([
             'traveler_id' => 'required',
+            'updated_by' => 'nullable|string|max:255',
             'qty_out' => 'required|integer|min:0',
-            'dept_tujuan_id' => 'nullable|exists:departments,id',
+            'dept_tujuan_id' => 'required|exists:departments,id',
             'type_reject' => 'nullable|string',
             'qty_reject' => 'nullable|integer|min:0',
             'notes' => 'nullable|string'
@@ -102,7 +195,8 @@ class ProductionController extends Controller
         $dept = Auth::user()->department->name;
 
         $movement = TravelerMovement::where('traveler_id', $request->traveler_id)
-            ->where('dept_id', Auth::user()->department_id)
+            ->where('current_dept_id', Auth::user()->department_id)
+            ->whereNull('date_out')
             ->latest()
             ->first();
 
@@ -110,17 +204,27 @@ class ProductionController extends Controller
             return back()->with('error', 'Harus input IN dulu');
         }
 
-        // HITUNG SELISIH
         $qty_in = $movement->qty_in;
         $qty_out = $request->qty_out;
         $qty_reject = $request->qty_reject ?? 0;
 
         $qty_loss = $qty_in - ($qty_out + $qty_reject);
 
-        // UPDATE movement: departmen tujuan yg diinput akan jadi departmen tujuan di movement, dan qty_out, qty_reject, qty_loss diupdate
-        $deptTujuan = $request->dept_tujuan_id ?? $movement->dept_tujuan_id;
+        // ❌ invalid
+        if (($qty_out + $qty_reject) > $qty_in) {
+            return back()->with('error', 'Qty OUT & Reject melebihi Qty IN');
+        }
+
+        // 🔥 WAJIB ISI ALASAN kalau ada loss
+        if ($qty_loss > 0 && empty($request->notes)) {
+            return back()->with('error', 'Ada selisih qty, wajib isi keterangan!');
+        }
+        $deptTujuan = $request->dept_tujuan_id;
+
+        // ✅ UPDATE movement
         $movement->update([
             'qty_out' => $qty_out,
+            'updated_by' => $request->updated_by,
             'date_out' => now(),
             'qty_reject' => $qty_reject,
             'type_reject' => $request->type_reject,
@@ -129,12 +233,12 @@ class ProductionController extends Controller
             'notes' => $request->notes,
         ]);
 
-        // 🔥 UPDATE TRAVELER PINDAH DEPT
-        if ($dept != 'Send') {
+        // ✅ UPDATE traveler (INI YANG PENTING)
+        if ($dept != 'Warehouse Send') {
             Traveler::where('id', $request->traveler_id)
                 ->update([
-                    'dept_tujuan_id' => $deptTujuan,
-                    'dept_asal_id' => Auth::user()->department_id,
+                    'current_dept_id' => $deptTujuan,
+                    'dept_tujuan_id' => $deptTujuan, // 🔥 TAMBAHAN PENTING
                     'status' => 'in_progress'
                 ]);
         } else {
@@ -144,7 +248,7 @@ class ProductionController extends Controller
                 ]);
         }
 
-        return redirect()->route('produksi.index')
+        return redirect()->route('produksi.proses.index')
             ->with('success', 'Qty OUT berhasil disimpan');
     }
 
@@ -172,7 +276,9 @@ class ProductionController extends Controller
         // return view('produksi.logproduksi');
         $query = TravelerMovement::with([
             'traveler',
-            'department',
+            'currentDepartment',
+            'deptAsal',
+            'deptTujuan',
             'machine'
         ]);
 
@@ -181,7 +287,7 @@ class ProductionController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->whereHas('traveler', function ($q2) use ($search) {
                     $q2->where('code', 'like', "%{$search}%");
-                })->orWhereHas('department', function ($q2) use ($search) {
+                })->orWhereHas('currentDepartment', function ($q2) use ($search) {
                     $q2->where('name', 'like', "%{$search}%");
                 })->orWhereHas('machine', function ($q2) use ($search) {
                     $q2->where('name', 'like', "%{$search}%");
@@ -190,7 +296,7 @@ class ProductionController extends Controller
         }
 
         // hanya menampilkakan movement dari department user yang sedang login
-        $query->whereHas('department', function ($q) {
+        $query->whereHas('currentDepartment', function ($q) {
             $q->where('id', Auth::user()->department_id);
         });
         $dept = Auth::user()->department->name;
@@ -204,8 +310,11 @@ class ProductionController extends Controller
     {
         $movement = TravelerMovement::with([
             'traveler',
-            'department',
-            'machine'
+            'currentDepartment',
+            'deptAsal',
+            'deptTujuan',
+            'machine',
+            'createdBy'
         ])->findOrFail($id);
 
         return view('produksi.logdetail', compact('movement'));

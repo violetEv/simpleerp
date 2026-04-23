@@ -14,7 +14,7 @@ class WarehouseMenu
                 'icon' => 'fas fa-boxes',
                 'sub' => [
                     ['name' => 'Split Traveler', 'route' => 'warehouse.pecah'],
-                    ['name' => 'List Travelers', 'route' => 'warehouse.list'],
+                    ['name' => 'Daftar Traveler', 'route' => 'warehouse.list'],
                 ]
             ],
         ];

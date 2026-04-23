@@ -1,7 +1,7 @@
 <x-app-layout>
-    <h2 class="font-semibold text-xl text-gray-800 leading-tight mb-6">
+    {{-- <h2 class="font-semibold text-xl text-gray-800 leading-tight mb-6">
         Super Admin Dashboard
-    </h2>
+    </h2> --}}
 
     <!-- CARD TOTAL -->
     <div class="grid grid-cols-12 gap-6 mb-8">

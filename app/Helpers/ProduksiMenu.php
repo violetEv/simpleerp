@@ -8,8 +8,9 @@ class ProduksiMenu
     {
         return [
             ['name' => 'Dashboard', 'route' => 'dashboard', 'icon' => 'fas fa-tachometer-alt'],
-            ['name' => 'Produksi', 'route' => 'produksi.index', 'icon' => 'fas fa-cogs'],
+            ['name' => 'Proses Traveler', 'route' => 'produksi.proses.index', 'icon' => 'fas fa-cogs'],
             ['name' => 'Log Produksi', 'route' => 'produksi.logproduksi', 'icon' => 'fas fa-clipboard-list'],
+            
             // [
             //     'name' => 'Traveler Process',
             //     'icon' => 'fas fa-sync',

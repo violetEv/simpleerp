@@ -7,6 +7,7 @@ use App\Models\SuratJalan;
 use App\Models\Traveler;
 use App\Models\TravelerMovement;
 use Illuminate\Container\Attributes\Auth;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
 use SebastianBergmann\FileIterator\Facade;
@@ -19,7 +20,7 @@ class WarehouseController extends Controller
     }
     public function order(Request $request)
     {
-        $query = SuratJalan::with(['kkpoManagement.kkpo.customer', 'kkpoManagement.style', 'kkpoManagement.color', 'kkpoManagement.category']);
+        $query = SuratJalan::with(['kkpoManagement.customer', 'kkpoManagement.style', 'kkpoManagement.color', 'kkpoManagement.category']);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -28,7 +29,7 @@ class WarehouseController extends Controller
         }
 
         $orders = $query->paginate(10)->withQueryString();
-        $kkpoManagements = KkpoManagement::with(['category', 'customer', 'style', 'color', 'kkpo', 'suratJalan'])->get();
+        $kkpoManagements = KkpoManagement::with(['category', 'customer', 'style', 'color', 'suratJalan'])->get();
 
         return view('warehouse.suratjalan', compact('orders', 'kkpoManagements'));
     }
@@ -42,18 +43,24 @@ class WarehouseController extends Controller
             'notes' => 'nullable|string',
         ]);
         $status = $request->qty <= 0 ? 'closed' : 'open';
-        SuratJalan::create([
-            'kkpo_management_id' => $request->kkpo_management_id,
-            'no_surat_jalan' => $request->no_surat_jalan,
-            'qty' => $request->qty,
-            'tanggal' => $request->tanggal,
-            'notes' => $request->notes,
-            'status' => $status
-        ]);
+        try {
+            SuratJalan::create([
+                'kkpo_management_id' => $request->kkpo_management_id,
+                'no_surat_jalan' => $request->no_surat_jalan,
+                'qty' => $request->qty,
+                'tanggal' => $request->tanggal,
+                'notes' => $request->notes,
+                'status' => $status
+            ]);
 
-        return redirect()
-            ->route('warehouse.suratjalan')
-            ->with('success', 'Order berhasil ditambahkan');
+            return redirect()
+                ->route('warehouse.suratjalan')
+                ->with('success', 'Order berhasil dibuat');
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('warehouse.suratjalan')
+                ->with('error', 'Gagal membuat surat jalan: ' . $e->getMessage());
+        }
     }
     public function orderUpdate(Request $request, $id)
     {
@@ -67,31 +74,45 @@ class WarehouseController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $surat_jalan->update([
-            'kkpo_management_id' => $request->kkpo_management_id,
-            'no_surat_jalan' => $request->no_surat_jalan,
-            'qty' => $request->qty,
-            'tanggal' => $request->tanggal,
-            'notes' => $request->notes,
-        ]);
+        try {
+            $status = $request->qty <= 0 ? 'closed' : 'open';
 
-        return redirect()
-            ->route('warehouse.suratjalan')
-            ->with('success', 'Order berhasil diperbarui');
+            $surat_jalan->update([
+                'kkpo_management_id' => $request->kkpo_management_id,
+                'no_surat_jalan' => $request->no_surat_jalan,
+                'qty' => $request->qty,
+                'tanggal' => $request->tanggal,
+                'notes' => $request->notes,
+                'status' => $status
+            ]);
+
+            return redirect()
+                ->route('warehouse.suratjalan')
+                ->with('success', 'Order berhasil diperbarui');
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('warehouse.suratjalan')
+                ->with('error', 'Gagal memperbarui surat jalan: ' . $e->getMessage());
+        }
     }
     public function orderDelete($id)
     {
         $surat_jalan = SuratJalan::findOrFail($id);
-        $surat_jalan->delete();
+        try {
+            $surat_jalan->delete();
 
-        // return view('warehouse.delete', compact('surat_jalan'))->with('success', 'Order berhasil dihapus');
-        return redirect()
-            ->route('warehouse.suratjalan')
-            ->with('success', 'Order berhasil dihapus');
+            return redirect()
+                ->route('warehouse.suratjalan')
+                ->with('success', 'Order berhasil dihapus');
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('warehouse.suratjalan')
+                ->with('error', 'Gagal menghapus surat jalan: ' . $e->getMessage());
+        }
     }
     public function pecah(Request $request)
     {
-        $query = SuratJalan::with(['kkpoManagement.kkpo.customer', 'kkpoManagement.style', 'kkpoManagement.color', 'kkpoManagement.category', 'travelers']);
+        $query = SuratJalan::with(['kkpoManagement.customer', 'kkpoManagement.style', 'kkpoManagement.color', 'kkpoManagement.category', 'travelers']);
 
         if ($request->filled('search')) {
 
@@ -100,7 +121,7 @@ class WarehouseController extends Controller
             $query->where(function ($q) use ($search) {
 
                 $q->where('no_surat_jalan', 'like', "%{$search}%")
-                    ->orWhereHas('kkpoManagement.kkpo.customer', function ($q2) use ($search) {
+                    ->orWhereHas('kkpoManagement.customer', function ($q2) use ($search) {
                         $q2->where('name', 'like', "%{$search}%");
                     });
             });
@@ -133,30 +154,44 @@ class WarehouseController extends Controller
 
             $deptTujuan = $request->dept_tujuan_id[$index] ?? null;
 
-            Traveler::create([
-                'no_traveler' => $traveler,
-                'qty' => $request->qty_split[$index],
-
-                'surat_jalan_id' => $request->surat_jalan_id,
-
-                'dept_asal_id' => FacadesAuth::user()->department_id,
-                'dept_tujuan_id' => $deptTujuan,
-
-                'current_dept_id' => $deptTujuan,
-
-                'parent_traveler_id' => null,
-
-                'tanggal' => $request->tanggal,
-                'notes' => $request->notes,
-                'status' => $status
-            ]);
+            try {
+                $travelerBaru = Traveler::create([
+                    'no_traveler' => $traveler,
+                    'qty' => $request->qty_split[$index],
+                    'surat_jalan_id' => $request->surat_jalan_id,
+                    'dept_asal_id' => FacadesAuth::user()->department_id,
+                    'dept_tujuan_id' => $deptTujuan,
+                    'current_dept_id' => $deptTujuan,
+                    // 'parent_traveler_id' => null,
+                    'tanggal' => $request->tanggal,
+                    'notes' => $request->notes,
+                    'status' => $status
+                ]);
+                // 🔥 TAMBAHAN WAJIB
+                TravelerMovement::create([
+                    'traveler_id' => $travelerBaru->id,
+                    'dept_asal_id' => FacadesAuth::user()->department_id,
+                    'current_dept_id' => $deptTujuan,
+                    'dept_tujuan_id' => $deptTujuan,
+                    'qty_out' => $request->qty_split[$index],
+                    'date_out' => now(),
+                ]);
+            } catch (QueryException $e) {
+                if ($e->errorInfo[1] == 1062) {
+                    return redirect()
+                        ->route('warehouse.pecah')
+                        ->with('error', 'No traveler sudah ada: ' . $traveler);
+                } else {
+                    return redirect()
+                        ->route('warehouse.pecah')
+                        ->with('error', 'Gagal membuat traveler: ' . $e->getMessage());
+                }
+            }
         }
-
         return redirect()
             ->route('warehouse.pecah')
-            ->with('success', 'Traveler berhasil dipecah');
+            ->with('success', 'Traveler berhasil dibuat');
     }
-
     public function rework(Request $request)
     {
         $query = TravelerMovement::with(['traveler', 'deptAsal', 'deptTujuan'])
@@ -191,36 +226,30 @@ class WarehouseController extends Controller
             'no_traveler_turunan' => 'required|string|unique:travelers,no_traveler',
             'dept_tujuan_id' => 'required|exists:departments,id',
         ]);
+        try {
+            $movement = TravelerMovement::findOrFail($id);
+            $traveler = $movement->traveler;
 
-        $travelerMovement = TravelerMovement::findOrFail($id);
-
-        // nomor traveler turunan akan dibuat dengan format: no_traveler_ + no_traveler_turunan yang diinputkan user dipisahkan dengan - . contoh jika no_traveler yang dirework adalah TRV-001 dan user menginputkan no_traveler_turunan TRV-001-A, maka no_traveler turunan yang akan dibuat adalah TRV-001-A-1. jika user menginputkan no_traveler_turunan yang sama untuk traveler yang sama, maka nomor turunan akan bertambah 1. contoh jika user menginputkan no_traveler_turunan TRV-001-A untuk traveler yang sama, maka nomor turunan yang akan dibuat adalah TRV-001-A-2.
-        if ($travelerMovement->qty_reject > 0) {
             Traveler::create([
-                // 'no_traveler' => $travelerMovement->traveler->no_traveler . '-' . $request->no_traveler_turunan,
                 'no_traveler' => $request->no_traveler_turunan,
-                'qty' => $travelerMovement->qty_reject,
-                'surat_jalan_id' => $travelerMovement->traveler->surat_jalan_id,
-                'dept_asal_id' => $travelerMovement->dept_id,
+                'qty' => $movement->qty_reject,
+                'surat_jalan_id' => $traveler->surat_jalan_id,
+                'dept_asal_id' => $movement->dept_tujuan_id,
                 'dept_tujuan_id' => $request->dept_tujuan_id,
                 'current_dept_id' => $request->dept_tujuan_id,
-                'parent_traveler_id' => $travelerMovement->traveler_id,
+                'parent_traveler_id' => $traveler->id,
                 'tanggal' => now(),
-                'notes' => 'Traveler hasil rework dari traveler ' . $travelerMovement->traveler->no_traveler,
+                'notes' => 'Rework dari traveler ' . $traveler->no_traveler . ' (Movement ID: ' . $movement->id . ')',
                 'status' => 'open'
             ]);
-            $travelerMovement->update([
-                'qty_reject' => 0,
-                'type_reject' => null,
-                'notes' => $travelerMovement->notes . ' | Traveler dirework dan dibuat traveler turunan dengan no_traveler ' . $request->no_traveler_turunan
-            ]);
+
             return redirect()
-                ->route('warehouse.list')
-                ->with('success', 'Traveler turunan berhasil dibuat');
-        } else {
+                ->route('warehouse.rework')
+                ->with('success', 'Traveler rework berhasil dibuat');
+        } catch (\Exception $e) {
             return redirect()
-                ->route('warehouse.list')
-                ->with('error', 'Traveler ini bukan hasil rework');
+                ->route('warehouse.rework')
+                ->with('error', 'Gagal membuat traveler rework: ' . $e->getMessage());
         }
     }
 

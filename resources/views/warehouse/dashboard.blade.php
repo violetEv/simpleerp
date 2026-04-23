@@ -2,8 +2,8 @@
 
 @section('content') --}}
 <x-app-layout>
-    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        {{ auth()->user()->department_id ? auth()->user()->department->name : 'No Department' }} Dashboard</h2>
+    {{-- <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        {{ auth()->user()->department_id ? auth()->user()->department->name : 'No Department' }} Dashboard</h2> --}}
 
     {{-- CARD STATISTIC --}}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">

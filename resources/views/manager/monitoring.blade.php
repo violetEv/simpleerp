@@ -1,9 +1,9 @@
 <x-app-layout>
-    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+    {{-- <h2 class="font-semibold text-xl text-gray-800 leading-tight">
         Monitoring
-    </h2>
+    </h2> --}}
 
-    <div class="py-6">
+    <div class="py-3">
         <div class="max-w-7xl mx-auto">
             {{-- SEARCH & FILTER SECTION --}}
             <div class="mb-4 flex items-center space-x-4">
@@ -17,7 +17,7 @@
                 </select>
                 <select name="kkpo" id="kkpo" class="px-4 py-2 border rounded-lg">
                     <option value="">All KKPO</option>
-                    @foreach (App\Models\Kkpo::pluck('no_kkpo')->unique() as $no_kkpo)
+                    @foreach (App\Models\KkpoManagement::pluck('no_kkpo')->unique() as $no_kkpo)
                         <option value="{{ $no_kkpo }}">{{ $no_kkpo }}</option>
                     @endforeach
                 </select>
@@ -51,30 +51,30 @@
             </div>
 
             {{-- Tabel report akan ditampilkan di sini setelah implementasi filter dan pencarian selesai. --}}
-            <div class="bg-white shadow rounded-lg overflow-hidden">
-                <table class="min-w-full divide-y divide-gray-200">
+            <div class="bg-white shadow rounded-lg overflow-hidden p-2">
+                <table class="min-w-full table-fixed">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">KKPO
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">KKPO
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No
                                 Surat
                                 Jalan</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Customer</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Category Process</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Style
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Style
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Qty
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Qty
                                 In
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Qty
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Qty
                                 Out
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Balance</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Action</th>
                         </tr>
                     </thead>
@@ -82,21 +82,21 @@
                         {{-- Data report akan di-looping di sini dan hanya menampilkan satu data per kkpo --}}
                         @foreach ($movements as $movement)
                             <tr>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    {{ $movement->traveler->suratJalan->kkpoManagement->kkpo->no_kkpo ?? '-' }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="px-4 py-2 whitespace-nowrap">
+                                    {{ $movement->traveler->suratJalan->kkpoManagement->no_kkpo ?? '-' }}</td>
+                                <td class="px-4 py-2 whitespace-nowrap">
                                     {{ $movement->traveler->suratJalan->no_surat_jalan ?? '-' }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    {{ $movement->traveler->suratJalan->kkpoManagement->kkpo->customer->name ?? '-' }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="px-4 py-2 whitespace-nowrap">
+                                    {{ $movement->traveler->suratJalan->kkpoManagement->customer->name ?? '-' }}</td>
+                                <td class="px-4 py-2 whitespace-nowrap">
                                     {{ $movement->traveler->suratJalan->kkpoManagement->category->name ?? '-' }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="px-4 py-2 whitespace-nowrap">
                                     {{ $movement->traveler->suratJalan->kkpoManagement->style->name ?? '-' }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $movement->qty_in }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $movement->qty_out }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $movement->balance }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="px-4 py-2 whitespace-nowrap">{{ $movement->qty_in }}</td>
+                                <td class="px-4 py-2 whitespace-nowrap">{{ $movement->qty_out }}</td>
+                                <td class="px-4 py-2 whitespace-nowrap">{{ $movement->balance }}</td>
+                                <td class="px-4 py-2 whitespace-nowrap">
                                     <a href="{{ route('manager.detailmonitoring', $movement->id) }}"
                                         class="px-3 py-1 bg-blue-600 text-white rounded-lg">View Detail</a>
                                 </td>
@@ -115,21 +115,21 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr> --}}
-                {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No
+                {{-- <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No
                                 Traveler
                             </th> --}}
-                {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">KKPO
+                {{-- <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">KKPO
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No
                                 Surat
                                 Jalan</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Customer</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Category Process</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Style
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Style
                             </th> --}}
-                {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {{-- <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Current Department</th> --}}
                 {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Status</th>

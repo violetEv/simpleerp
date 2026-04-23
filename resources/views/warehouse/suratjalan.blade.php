@@ -2,15 +2,11 @@
 
 @section('content') --}}
 <x-app-layout>
-    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+    {{-- <h2 class="font-semibold text-xl text-gray-800 leading-tight">
         Surat Jalan IN
-    </h2>
-    @if (session('success'))
-        <div class="mt-4">
-            <x-alerts variant="success" :message="session('success')" />
-        </div>
-    @endif
-    <div class="py-6">
+    </h2> --}}
+
+    <div class="py-2">
         <div class="max-w-7xl mx-auto">
             {{-- Search, filter section, button add order --}}
             <div class="flex items-center justify-between mb-4">
@@ -29,27 +25,27 @@
             </div>
 
             {{-- Table of orders --}}
-            <div class="bg-white shadow rounded-lg overflow-hidden">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead>
+            <div class="bg-white shadow rounded-lg overflow-hidden p-2">
+                <table class="min-w-full table-fixed">
+                    <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                No Surat Jalan</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                                No Surat Jalan IN</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                                 KKPO
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                                 Customer</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                                 Qty
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                                 Tanggal</th>
-                            {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            {{-- <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                                 Status</th> --}}
-                            {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            {{-- <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                                 Last Updated</th> --}}
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                                 Aksi</th>
                         </tr>
                     </thead>
@@ -57,18 +53,18 @@
                         @if ($orders->count())
                             @foreach ($orders as $order)
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $order->no_surat_jalan }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        {{ $order->kkpoManagement->kkpo->no_kkpo ?? '-' }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        {{ $order->kkpoManagement->kkpo->customer->name ?? '-' }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $order->qty }}</td>
+                                    <td class="px-4 py-2 whitespace-nowrap">{{ $order->no_surat_jalan }}</td>
+                                    <td class="px-4 py-2 whitespace-nowrap">
+                                        {{ $order->kkpoManagement->no_kkpo ?? '-' }}</td>
+                                    <td class="px-4 py-2 whitespace-nowrap">
+                                        {{ $order->kkpoManagement->customer->name ?? '-' }}</td>
+                                    <td class="px-4 py-2 whitespace-nowrap">{{ $order->qty }}</td>
 
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="px-4 py-2 whitespace-nowrap">
                                         {{-- format tanggal 12 Maret 2024 --}}
                                         {{ \Carbon\Carbon::parse($order->tanggal)->format('d F Y') }}
                                     </td>
-                                    {{-- <td class="px-6 py-4 whitespace-nowrap">
+                                    {{-- <td class="px-4 py-2 whitespace-nowrap">
                                         @if ($order->status == 'open')
                                             <span
                                                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
@@ -79,14 +75,14 @@
                                                 {{ $order->status }}</span>
                                         @endif
                                     </td> --}}
-                                    {{-- <td class="px-6 py-4 whitespace-nowrap">
+                                    {{-- <td class="px-4 py-2 whitespace-nowrap">
                                         {{ $order->updated_at->format('Y-m-d') }}</td> --}}
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="px-4 py-2 whitespace-nowrap">
                                         {{-- <button onClick='openEditOrderModal(@json($order))'
                                                 class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Edit</button> --}}
                                         <button onclick="openDetail(this)" title="Lihat Detail"
-                                            data-kkpo="{{ $order->kkpoManagement->kkpo->no_kkpo ?? '-' }}"
-                                            data-customer="{{ $order->kkpoManagement->kkpo->customer->name ?? '-' }}"
+                                            data-kkpo="{{ $order->kkpoManagement->no_kkpo ?? '-' }}"
+                                            data-customer="{{ $order->kkpoManagement->customer->name ?? '-' }}"
                                             data-sj="{{ $order->no_surat_jalan ?? '-' }}"
                                             data-qty="{{ $order->qty }}"
                                             data-style="{{ $order->kkpoManagement->style->name ?? '-' }}"
@@ -97,7 +93,7 @@
                                             data-notes="{{ $order->notes ?? '-' }}">
 
                                             {{-- icon detail --}}
-                                            <svg class="w-6 h-6 text-gray-500 hover:text-gray-700" aria-hidden="true"
+                                            <svg class="w-6 h-6 text-blue-500 hover:text-blue-700" aria-hidden="true"
                                                 xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                 fill="none" viewBox="0 0 24 24">
                                                 <path stroke="currentColor" stroke-width="2"
@@ -128,16 +124,16 @@
                             @endforeach
                         @else
                             <tr>
-                                <td colspan="8" class="px-6 py-4 whitespace-nowrap text-center text-gray-500">
+                                <td colspan="6" class="px-4 py-2 whitespace-nowrap text-center text-gray-500">
                                     Surat Jalan tidak ditemukan.
                                 </td>
                             </tr>
                         @endif
                     </tbody>
-                    <div class="px-6 py-4">
-                        {{ $orders->links() }}
-                    </div>
                 </table>
+                <div class="p-3">
+                    {{ $orders->links() }}
+                </div>
             </div>
 
             {{-- Modal Add & Edit Order --}}
@@ -145,7 +141,7 @@
                 class="hidden fixed inset-0 z-50 bg-gray-600 bg-opacity-50 items-center justify-center">
                 <div class="bg-white rounded-lg p-6 w-full max-w-2xl">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 id="modal-title" class="text-xl font-semibold">Tambah Surat Jalan</h3>
+                        <h3 id="modal-title" class="text-xl font-semibold">Input Surat Jalan IN</h3>
                         <button type="button" onClick="closeModal()" title="Close"
                             class="text-gray-500 text-2xl hover:text-gray-700">&times;</button>
                     </div>
@@ -155,21 +151,23 @@
                         <input type="hidden" name="_method" id="form-method" value="POST">
                         <input type="hidden" name="order_id" id="order_id">
                         <div class="mb-4">
-                            <x-select-search label="KKPO - Customer - Category Process - Style - Color" name="kkpo_management_id" id="kkpo_management_id"
-                                :options="$kkpoManagements
+                            <x-select-search label="KKPO - Customer - Category Process - Style - Color - KP/PO"
+                                name="kkpo_management_id" id="kkpo_management_id" :options="$kkpoManagements
                                     ->map(function ($item) {
                                         return [
                                             'value' => $item->id,
                                             'label' =>
-                                                ($item->kkpo?->no_kkpo ?? '-') .
+                                                ($item->no_kkpo ?? '-') .
                                                 ' - ' .
-                                                ($item->kkpo->customer?->name ?? '-') .
+                                                ($item->customer?->name ?? '-') .
                                                 ' - ' .
                                                 ($item->category?->name ?? '-') .
                                                 ' - ' .
                                                 ($item->style?->name ?? '-') .
                                                 ' - ' .
-                                                ($item->color?->name ?? '-'),
+                                                ($item->color?->name ?? '-') .
+                                                ' - ' .
+                                                ($item->kp_po ?? '-'),
                                 
                                             'data' => [
                                                 'qty_total' => $item->qty_total,
@@ -177,8 +175,9 @@
                                             ],
                                         ];
                                     })
-                                    ->toArray()" placeholder="Pilih KKPO Management"
-                                searchPlaceholder="Cari KKPO Management..." required />
+                                    ->toArray()"
+                                placeholder="Pilih KKPO Management" searchPlaceholder="Cari KKPO Management..." required
+                                onChange="setDataSelection" />
 
                         </div>
                         <div class="grid grid-cols-3 gap-4">
@@ -375,17 +374,12 @@
 
         let sisaQty = 0;
 
-        function setDataSelection(select) {
+        function setDataSelection(option) {
 
-            let selectedOption = select.options[select.selectedIndex];
+            if (!option) return;
 
-            if (!selectedOption) return;
-
-            let qtyTotal = selectedOption.getAttribute('data-qty_total');
-            let qtyUsed = selectedOption.getAttribute('data-qty_used');
-
-            qtyTotal = parseInt(qtyTotal) || 0;
-            qtyUsed = parseInt(qtyUsed) || 0;
+            let qtyTotal = parseInt(option.data?.qty_total) || 0;
+            let qtyUsed = parseInt(option.data?.qty_used) || 0;
 
             sisaQty = qtyTotal - qtyUsed;
 

@@ -24,4 +24,8 @@ class SuratJalan extends Model
     {
         return $this->hasMany(Traveler::class);
     }
+    public function suratJalanOut()
+    {
+        return $this->hasOne(SuratJalanOut::class);
+    }
 }

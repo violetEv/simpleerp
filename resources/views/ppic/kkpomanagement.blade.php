@@ -1,8 +1,8 @@
 <x-app-layout>
-    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+    {{-- <h2 class="font-semibold text-xl text-gray-800 leading-tight">
         KKPO
-    </h2>
-    @if (session('success'))
+    </h2> --}}
+    {{-- @if (session('success'))
         <div class="mt-4">
             <x-alerts variant="success" title="Success" :message="session('success')" :showLink="false" />
         </div>
@@ -10,8 +10,8 @@
         <div class="mt-4">
             <x-alerts variant="danger" title="Error" :message="session('error')" :showLink="false" />
         </div>
-    @endif
-    <div class="py-6">
+    @endif --}}
+    <div class="py-2">
         <div class="max-w-7xl mx-auto">
             {{-- Search KKPO and add KKPO modal --}}
             <div class="flex items-center justify-between mb-4 mt-4 space-x-4">
@@ -29,45 +29,54 @@
                 </button>
             </div>
             {{-- KKPO Table --}}
-            <div class="bg-white shadow rounded-lg overflow-hidden">
+            <div class="bg-white shadow rounded-lg overflow-hidden p-2">
                 {{-- <div class="p-4 bg-white border-b border-gray-200 overflow-x-auto"> --}}
 
-                <table class="min-w-full divide-y divide-gray-200">
+                <table class="min-w-full table-fixed">
                     <thead class="bg-gray-50">
                         <tr>
                             {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 No
                             </th> --}}
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {{-- buat agar No KKPO dan Customer dalam 1 kolom aja, posisi No KKPO di atas Customer dengan font lebih tebal, dan jika data tidak ada tampilkan '-' --}}
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 No KKPO
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <br>
                                 Customer
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Category
-                                Process
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Category Process
+                                <br>
+                                {{-- </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"> --}}
                                 Style
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Color
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Item
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 KP / PO
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Color
+                            </th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Qty Total
+                                <br>
+                                {{-- </th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"> --}}
+                                Unit
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Price (IDR)
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Price
+                                <br>
+                                Curr
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {{-- <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Reject Allowance
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Action
+                            </th> --}}
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Aksi
                             </th>
                         </tr>
                     </thead>
@@ -76,28 +85,45 @@
                             @foreach ($kkpomanagements as $kkpomanagement)
                                 <tr>
                                     {{-- <td class="px-6 py-4 whitespace-nowrap">{{ $loop->iteration }}</td> --}}
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $kkpomanagement->kkpo->no_kkpo ?? '-' }}
+                                    <td class="px-4 py-2 whitespace-nowrap">
+                                        <strong>{{ $kkpomanagement->no_kkpo ?? '-' }}</strong>
+                                        <br>
+                                        {{ $kkpomanagement->customer->name ?? '-' }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        {{ $kkpomanagement->kkpo->customer->name ?? '-' }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $kkpomanagement->category->name ?? '-' }}
+                                    <td class="px-4 py-2 whitespace-nowrap">
+                                        <strong>{{ $kkpomanagement->category->name ?? '-' }}</strong>
+                                        <br>
+                                        {{-- </td>
+                                    <td class="px-4 py-2 whitespace-nowrap"> --}}
+                                        {{ $kkpomanagement->style->name ?? '-' }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $kkpomanagement->style->name ?? '-' }}
+                                    <td class="px-4 py-2 whitespace-nowrap">{{ $kkpomanagement->item->name ?? '-' }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $kkpomanagement->color->name ?? '-' }}
+                                    <td class="px-4 py-2 whitespace-nowrap">{{ $kkpomanagement->kp_po ?? '-' }}</td>
+                                    <td class="px-4 py-2 whitespace-nowrap">{{ $kkpomanagement->color->name ?? '-' }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $kkpomanagement->kp_po ?? '-' }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        {{ $kkpomanagement->qty_total - $kkpomanagement->suratJalan->sum('qty') }}</td>
-                                    {{-- fomrat harga dengan ribuan separator --}}
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        {{ number_format($kkpomanagement->price, 0, ',', '.') }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        {{ $kkpomanagement->reject_allowance ?? '-' }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="px-4 py-2 whitespace-nowrap">
+                                        {{-- <strong>{{ $kkpomanagement->qty_total - $kkpomanagement->suratJalan->sum('qty') }}</strong>
+                                        <br> --}}
+                                        <strong>{{ $kkpomanagement->qty_total ?? '-' }}</strong>
+                                        <br>
+
+                                        {{-- </td>
+                                    <td class="px-4 py-2 whitespace-nowrap"> --}}
+                                        {{ $kkpomanagement->unit->name ?? '-' }}
+                                    </td>
+                                    {{-- format harga dengan ribuan separator --}}
+                                    <td class="px-4 py-2 whitespace-nowrap">
+                                        <strong>{{ number_format($kkpomanagement->price, 0, ',', '.') }}</strong>
+                                        <br>
+                                        {{ $kkpomanagement->currency->code ?? '-' }}
+                                    </td>
+                                    {{-- <td class="px-4 py-2 whitespace-nowrap">
+                                        {{ $kkpomanagement->reject_allowance ?? '-' }}</td> --}}
+                                    <td class="px-4 py-2 whitespace-nowrap">
                                         {{-- Detail --}}
                                         <button class="mr-2" title="Detail KKPO"
-                                            onclick="window.location='{{ route('ppic.kkpomanagement.detail', $kkpomanagement->id) }}'">
+                                            onclick="window.location='{{ route('ppic.kkpomanagement.show', $kkpomanagement->id) }}'">
                                             {{-- icon detail --}}
                                             <svg class="w-6 h-6 text-green-500 hover:text-green-700" aria-hidden="true"
                                                 xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -110,8 +136,8 @@
                                                     d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                             </svg>
                                         </button>
-                                        <button class="mr-2" title="Edit Order"
-                                            onclick="openEditModal({{ $kkpomanagement->id }})">
+                                        <button class="mr-2" title="Edit"
+                                            onclick='openEditModal(@json($kkpomanagement))'>
                                             {{-- icon edit --}}
                                             <svg class="w-6 h-6 text-blue-500 hover:text-blue-700" aria-hidden="true"
                                                 xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -159,51 +185,79 @@
                 <div class="bg-white rounded-lg p-6 w-full max-w-2xl overflow-auto max-h-[90vh] ">
                     <div class="flex justify-between items-center mb-4">
                         <h3 id="modal-title" class="text-lg font-medium">Tambah KKPO</h3>
-                        <button onClick="closeAddModal()" class="text-gray-500 text-2xl hover:text-gray-700">
+                        <button onClick="closeModal()" title="Close"
+                            class="text-gray-500 text-2xl hover:text-gray-700">
                             &times;
                         </button>
                     </div>
                     <form id="crud-form" action="{{ route('ppic.kkpomanagement.store') }}" method="POST">
                         @csrf
                         <input type="hidden" name="_method" id="form-method" value="POST">
+
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <x-select-search name="kkpo_id" label="KKPO - Customer" :options="$kkpos->map(
-                                    fn($kkpo) => [
-                                        'value' => $kkpo->id,
-                                        'label' => $kkpo->no_kkpo . ' - ' . ($kkpo->customer->name ?? '-'),
-                                    ],
-                                )"
-                                    placeholder="Pilih KKPO..." searchPlaceholder="Cari KKPO..." required />
+                                <label for="no_kkpo" class="block text-gray-700">No KKPO</label>
+                                <input type="text" name="no_kkpo" id="no_kkpo"
+                                    class="w-full border border-gray-300 rounded px-3 py-2 mt-1" required>
                             </div>
                             <div>
-                                <x-select-search name="category_id" label="Category Process" :options="$categories->map(
-                                    fn($category) => [
-                                        'value' => $category->id,
-                                        'label' => $category->name,
-                                    ],
-                                )"
-                                    placeholder="Pilih Category Process..."
+                                <x-select-search name="customer_id" id="customer_id" label="Customer"
+                                    :options="$customers->map(
+                                        fn($customer) => [
+                                            'value' => $customer->id,
+                                            'label' => $customer->name,
+                                        ],
+                                    )" placeholder="Pilih Customer"
+                                    searchPlaceholder="Cari Customer..." required />
+                            </div>
+                            <div>
+                                <x-select-search name="category_id" id="category_id" label="Category Process"
+                                    :options="$categories->map(
+                                        fn($category) => [
+                                            'value' => $category->id,
+                                            'label' => $category->name,
+                                        ],
+                                    )" placeholder="Pilih Category Process"
                                     searchPlaceholder="Cari Category Process..." required />
                             </div>
                             <div>
-                                <x-select-search name="style_id" label="Style" :options="$styles->map(
+                                <x-select-search name="style_id" id="style_id" label="Style" :options="$styles->map(
                                     fn($style) => [
                                         'value' => $style->id,
                                         'label' => $style->name,
                                     ],
                                 )"
-                                    placeholder="Pilih Style..." searchPlaceholder="Cari Style..." required />
+                                    placeholder="Pilih Style" searchPlaceholder="Cari Style..." required />
                             </div>
                             <div>
-                                <x-select-search name="color_id" label="Color" :options="$colors->map(
+                                <x-select-search name="color_id" id="color_id" label="Color" :options="$colors->map(
                                     fn($color) => [
                                         'value' => $color->id,
                                         'label' => $color->name,
                                     ],
                                 )"
-                                    placeholder="Pilih Color..." searchPlaceholder="Cari Color..." required />
+                                    placeholder="Pilih Color" searchPlaceholder="Cari Color..." required />
                             </div>
+                            {{-- item --}}
+                            <div>
+                                <x-select-search name="item_id" id="item_id" label="Item" :options="$items->map(
+                                    fn($item) => [
+                                        'value' => $item->id,
+                                        'label' => $item->name,
+                                    ],
+                                )"
+                                    placeholder="Pilih Item" searchPlaceholder="Cari Item..." required />
+                            </div>
+                            <div>
+                                <x-select-search name="brand_id" id="brand_id" label="Brand" :options="$brands->map(
+                                    fn($brand) => [
+                                        'value' => $brand->id,
+                                        'label' => $brand->name,
+                                    ],
+                                )"
+                                    placeholder="Pilih Brand" searchPlaceholder="Cari Brand..." required />
+                            </div>
+
                             <div>
                                 <label for="kp_po" class="block text-gray-700">KP / PO</label>
                                 <input type="text" name="kp_po" id="kp_po"
@@ -218,8 +272,28 @@
                                 <input type="number" name="qty_total" id="qty_total" min="0"
                                     class="w-full border border-gray-300 rounded px-3 py-2 mt-1" required>
                             </div>
+
                             <div>
-                                <label for="price" class="block text-gray-700">Price (IDR)</label>
+                                <x-select-search name="unit_id" id="unit_id" label="Satuan" :options="$units->map(
+                                    fn($unit) => [
+                                        'value' => $unit->id,
+                                        'label' => $unit->name,
+                                    ],
+                                )"
+                                    placeholder="Pilih Satuan" searchPlaceholder="Cari Satuan..." required />
+                            </div>
+                            <div>
+                                <x-select-search name="currency_id" id="currency_id" label="Currency"
+                                    :options="$currencies->map(
+                                        fn($currency) => [
+                                            'value' => $currency->id,
+                                            'label' => $currency->name . ' (' . $currency->code . ')',
+                                        ],
+                                    )" placeholder="Pilih Currency"
+                                    searchPlaceholder="Cari Currency..." required />
+                            </div>
+                            <div>
+                                <label for="price" class="block text-gray-700">Price</label>
                                 <input type="number" name="price" id="price" min="0"
                                     class="w-full border border-gray-300 rounded px-3 py-2 mt-1" required>
                             </div>
@@ -242,72 +316,84 @@
         </div>
     </div>
     <script>
-        function closeAddModal() {
-            document.getElementById('addModal').classList.add('hidden');
-            document.getElementById('addModal').classList.remove('flex');
+        const modal = document.getElementById('addModal')
+        const form = document.getElementById('crud-form')
+
+        function openModal() {
+            modal.classList.remove('hidden')
+            modal.classList.add('flex')
+        }
+
+        function closeModal() {
+            modal.classList.add('hidden')
+            modal.classList.remove('flex')
+        }
+
+        function resetForm() {
+            form.reset()
+
+            // reset semua select Alpine
+            document.querySelectorAll('[x-data]').forEach(el => {
+                if (el.__x) {
+                    el.__x.$data.selected = ''
+                }
+            })
+        }
+
+        function setSelect(id, value) {
+            const el = document.getElementById(id)
+            if (!el || !el.__x) return
+
+            el.__x.$data.selected = value ?? ''
+        }
+
+        function fillForm(data) {
+            document.getElementById('no_kkpo').value = data.no_kkpo ?? ''
+            document.getElementById('kp_po').value = data.kp_po ?? ''
+            document.getElementById('qty_total').value = data.qty_total ?? ''
+            document.getElementById('price').value = data.price ?? ''
+            document.getElementById('reject_allowance').value = data.reject_allowance ?? ''
+
+            setSelect('customer_id', data.customer_id)
+            setSelect('category_id', data.category_id)
+            setSelect('style_id', data.style_id)
+            setSelect('color_id', data.color_id)
+            setSelect('item_id', data.item_id)
+            setSelect('brand_id', data.brand_id)
+            setSelect('unit_id', data.unit_id)
+            setSelect('currency_id', data.currency_id)
         }
 
         function openAddModal() {
-            document.getElementById('modal-title').textContent = 'Tambah KKPO';
-            document.getElementById('submit-button').textContent = 'Tambah KKPO';
-            document.getElementById('crud-form').action = "{{ route('ppic.kkpomanagement.store') }}";
-            document.getElementById('form-method').value = 'POST';
+            resetForm()
 
-            document.getElementById('kkpo_id').value = '';
-            // document.getElementById('customer_id').value = '';
-            document.getElementById('category_id').value = '';
-            document.getElementById('style_id').value = '';
-            document.getElementById('color_id').value = '';
-            document.getElementById('kp_po').value = '';
-            document.getElementById('qty_total').value = '';
-            document.getElementById('price').value = '';
-            document.getElementById('reject_allowance').value = '';
+            document.getElementById('modal-title').textContent = 'Tambah KKPO'
+            document.getElementById('submit-button').textContent = 'Tambah KKPO'
 
-            document.getElementById('addModal').classList.remove('hidden');
-            document.getElementById('addModal').classList.add('flex');
+            form.action = "{{ route('ppic.kkpomanagement.store') }}"
+            document.getElementById('form-method').value = 'POST'
 
-            // setinit
-            setTimeout(() => {
-                if (window.HSStaticMethods) {
-                    window.HSStaticMethods.autoInit();
-                }
-            }, 100);
-
+            openModal()
         }
 
-        function openEditModal(id) {
-            // Fetch KKPO data by ID (you can use AJAX or pass data to the modal)
-            // For demonstration, let's assume you have the KKPO data available in a JavaScript object
-            const kkpoData = @json($kkpomanagements->keyBy('id'));
+        function openEditModal(data) {
+            resetForm()
 
-            if (kkpoData[id]) {
-                const kkpomanagement = kkpoData[id];
-                document.getElementById('modal-title').textContent = 'Edit KKPO';
-                document.getElementById('submit-button').textContent = 'Update KKPO';
-                document.getElementById('crud-form').action = '{{ route('ppic.kkpomanagement.update', ':id') }}'.replace(
-                    ':id', id);
-                document.getElementById('form-method').value = 'PUT';
+            document.getElementById('modal-title').textContent = 'Edit KKPO'
+            document.getElementById('submit-button').textContent = 'Update KKPO'
 
-                document.getElementById('kkpo_id').value = kkpomanagement.kkpo_id;
-                // document.getElementById('customer_id').value = kkpomanagement.customer_id;
-                document.getElementById('category_id').value = kkpomanagement.category_id;
-                document.getElementById('style_id').value = kkpomanagement.style_id;
-                document.getElementById('color_id').value = kkpomanagement.color_id;
-                document.getElementById('kp_po').value = kkpomanagement.kp_po;
-                document.getElementById('qty_total').value = kkpomanagement.qty_total;
-                document.getElementById('price').value = kkpomanagement.price;
-                document.getElementById('reject_allowance').value = kkpomanagement.reject_allowance;
+            let url = "{{ route('ppic.kkpomanagement.update', ':id') }}"
+            url = url.replace(':id', data.id)
 
-                document.getElementById('addModal').classList.remove('hidden');
-                document.getElementById('addModal').classList.add('flex');
-            } else {
-                alert('KKPO data not found!');
-            }
+            form.action = url
+            document.getElementById('form-method').value = 'PUT'
+
+            openModal()
+
+            // kasih sedikit delay biar Alpine ready
             setTimeout(() => {
-                if (window.HSStaticMethods) {
-                    window.HSStaticMethods.autoInit();
-                }
-            }, 100);
+                fillForm(data)
+            }, 50)
         }
     </script>
 </x-app-layout>

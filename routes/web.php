@@ -62,8 +62,14 @@ Route::middleware('role:manager')->group(function () {
         ->name('manager.detailmonitoring');
     Route::get('/manager/report', [ManagerController::class, 'report'])
         ->name('manager.report');
-    Route::get('/manager/report/{id}', [ManagerController::class, 'detailReport'])
-        ->name('manager.detailreport');
+    Route::get('/manager/report/export', [ManagerController::class, 'exportReport'])
+        ->name('manager.report.export');
+    Route::get('/manager/report/{id}', [ManagerController::class, 'show'])
+        ->name('manager.show');
+
+
+    // Route::get('/manager/report/{id}', [ManagerController::class, 'detailReport'])
+    //     ->name('manager.detailreport');
 });
 
 /*
@@ -109,6 +115,11 @@ Route::middleware('role:ppic')->group(function () {
     Route::put('/ppic/unit/update/{id}', [PpicController::class, 'unitUpdate'])->name('ppic.unit.update');
     Route::delete('/ppic/unit/delete/{id}', [PpicController::class, 'unitDelete'])->name('ppic.unit.delete');
 
+    Route::get('/ppic/currency', [PpicController::class, 'currency'])->name('ppic.currency');
+    Route::post('/ppic/currency', [PpicController::class, 'currencyStore'])->name('ppic.currency.store');
+    Route::put('/ppic/currency/update/{id}', [PpicController::class, 'currencyUpdate'])->name('ppic.currency.update');
+    Route::delete('/ppic/currency/delete/{id}', [PpicController::class, 'currencyDelete'])->name('ppic.currency.delete');
+
     Route::get('/ppic/kkpo', [PpicController::class, 'kkpo'])->name('ppic.kkpo');
     Route::post('/ppic/kkpo', [PpicController::class, 'kkpoStore'])->name('ppic.kkpo.store');
     Route::put('/ppic/kkpo/update/{id}', [PpicController::class, 'kkpoUpdate'])->name('ppic.kkpo.update');
@@ -116,7 +127,8 @@ Route::middleware('role:ppic')->group(function () {
 
     Route::get('/ppic/kkpomanagement', [PpicController::class, 'kkpoManagement'])->name('ppic.kkpomanagement');
     Route::post('/ppic/kkpomanagement', [PpicController::class, 'kkpoManagementStore'])->name('ppic.kkpomanagement.store');
-    Route::get('/ppic/kkpomanagement/detail/{id}', [PpicController::class, 'kkpoDetail'])->name('ppic.kkpomanagement.detail');
+    Route::get('/ppic/kkpomanagement/{id}', [PpicController::class, 'kkpoManagementShow'])->name('ppic.kkpomanagement.show');
+    // Route::get('/ppic/kkpomanagement/detail/{id}', [PpicController::class, 'kkpoDetail'])->name('ppic.kkpomanagement.detail');
     Route::put('/ppic/kkpomanagement/update/{id}', [PpicController::class, 'kkpoManagementUpdate'])->name('ppic.kkpomanagement.update');
     Route::delete('/ppic/kkpomanagement/delete/{id}', [PpicController::class, 'kkpoManagementDelete'])->name('ppic.kkpomanagement.delete');
 
@@ -154,14 +166,19 @@ Route::middleware('role:warehouse')->group(function () {
 Route::middleware('role:produksi')->group(function () {
     Route::get('/produksi/dashboard', [ProductionController::class, 'dashboard'])->name('produksi.dashboard');
 
-    Route::get('/produksi', [ProductionController::class, 'index'])->name('produksi.index');
+    Route::get('/produksi', [ProductionController::class, 'index'])->name('produksi.proses.index');
+    Route::get('/produksi/suratjalanout', [ProductionController::class, 'suratJalanOut'])->name('produksi.suratjalanout.index');
+    Route::post('/produksi/suratjalanout/create/', [ProductionController::class, 'suratJalanOutStore'])->name('produksi.suratjalanout.store');
+
+    Route::get('/produksi/suratjalanout/create/{id}', [ProductionController::class, 'createSuratJalanOut'])->name('produksi.suratjalanout.create');
 
     Route::get('/produksi/log', [ProductionController::class, 'logProduction'])->name('produksi.logproduksi');
     Route::get('/produksi/log/{id}', [ProductionController::class, 'logDetail'])->name('produksi.logdetail');
 
-    Route::get('/produksi/{id}', [ProductionController::class, 'process'])->name('produksi.process');
-    Route::post('/produksi/in', [ProductionController::class, 'storeIn'])->name('produksi.in');
-    Route::post('/produksi/out', [ProductionController::class, 'storeOut'])->name('produksi.out');
+    Route::get('/produksi/{id}', [ProductionController::class, 'process'])->name('produksi.proses.process');
+    Route::post('/produksi/in', [ProductionController::class, 'storeIn'])->name('produksi.in.store');
+    Route::post('/produksi/out', [ProductionController::class, 'storeOut'])->name('produksi.out.store');
+
 
     // Route::get('/produksi/datain', [ProductionController::class, 'dataIn'])->name('produksi.datain');
     // Route::get('/produksi/dataout', [ProductionController::class, 'dataOut'])->name('produksi.dataout');

@@ -1,14 +1,7 @@
 <x-app-layout>
-    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+    {{-- <h2 class="font-semibold text-xl text-gray-800 leading-tight">
         All Users
-    </h2>
-
-    @if (session('success'))
-        <div class="mt-4">
-            <x-alerts variant="success" title="Success" :message="session('success')" :showLink="false" />
-        </div>
-    @endif
-
+    </h2> --}}
     <div class="py-6">
         <div class="max-w-7xl mx-auto">
 
@@ -23,7 +16,7 @@
                 </form>
 
                 <button onclick="openAddModal()" class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
-                    Add User
+                    + Tambah User
                 </button>
             </div>
 
@@ -32,7 +25,7 @@
                 <div class="bg-white rounded-lg p-6 w-full max-w-md">
 
                     <div class="flex justify-between items-center mb-4">
-                        <h3 id="modalTitle" class="text-lg font-semibold">Add User</h3>
+                        <h3 id="modalTitle" class="text-lg font-semibold">Tambah User</h3>
                         <button type="button" onclick="closeModal('crud-modal')"
                             class="text-gray-500 text-2xl hover:text-gray-700">&times;</button>
                     </div>
@@ -40,6 +33,7 @@
                     <form id="userForm" action="{{ route('superadmin.users.store') }}" method="POST">
                         @csrf
                         <input type="hidden" name="_method" id="formMethod" value="POST">
+                        <input type="hidden" name="user_id" id="user_id">
 
                         <div class="grid grid-cols-2 gap-4">
 
@@ -113,7 +107,7 @@
                         <div class="mt-6">
                             <button type="submit" id="submitButton"
                                 class="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
-                                Add User
+                                Tambah User
                             </button>
                         </div>
 
@@ -128,20 +122,20 @@
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead>
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"">
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     No</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"">
-                                    Name</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"">
-                                    Email</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"">
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Nama</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Email</th> 
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Role</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"">
-                                    Department</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"">
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Departemen</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Status</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"">
-                                    Actions</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Aksi</th>
                             </tr>
                         </thead>
 
@@ -158,12 +152,12 @@
                                             @if ($user->status == 'active')
                                                 <span
                                                     class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                    Active
+                                                    Aktif
                                                 </span>
                                             @else
                                                 <span
                                                     class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                                    Inactive
+                                                    Tidak Aktif
                                                 </span>
                                             @endif
                                         </td>
@@ -180,10 +174,12 @@
                                 )"
                                                 class="text-blue-600 hover:text-blue-900" title="Edit User"> 
                                                 {{-- Edit icon outline --}}
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                                    stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 .375a48 48 0 013.75 0m-3.75 0a48 48 0 00-3.75 0" />
+                                                <svg class="w-6 h-6 text-blue-500 hover:text-blue-700"
+                                                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
+                                                    height="24" fill="none" viewBox="0 0 24 24">
+                                                    <path stroke="currentColor" stroke-linecap="round"
+                                                        stroke-linejoin="round" stroke-width="2"
+                                                        d="M10.779 17.779 4.36 19.918 6.5 13.5m4.279 4.279 8.364-8.643a3.027 3.027 0 0 0-2.14-5.165 3.03 3.03 0 0 0-2.14.886L6.5 13.5m4.279 4.279L6.499 13.5m2.14 2.14 6.213-6.504M12.75 7.04 17 11.28" />
                                                 </svg>
                                                 
                                             </button>
@@ -195,11 +191,13 @@
                                                 <button type="submit" class="text-red-600 hover:text-red-900" title="Hapus User"
                                                     onclick="return confirm('Apakah Anda yakin ingin menghapus user ini?')">
                                                     {{-- Delete icon outline --}}
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                                        stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v .916m7 .001a3 .3"
-                                                            />
+                                                    <svg class="w-6 h-6 text-red-500 hover:text-red-700"
+                                                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                                        width="24" height="24" fill="none"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke="currentColor" stroke-linecap="round"
+                                                            stroke-linejoin="round" stroke-width="2"
+                                                            d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
                                                     </svg>
                                                 </button>
                                             </form>
@@ -210,7 +208,7 @@
                             @else
                                 <tr>
                                     <td colspan="7" class="text-center py-4 text-gray-500">
-                                        No users found
+                                        User tidak ditemukan.
                                     </td>
                                 </tr>
                             @endif
@@ -239,8 +237,8 @@
         }
 
         function openAddModal() {
-            document.getElementById('modalTitle').innerText = "Add User";
-            document.getElementById('submitButton').innerText = "Add User";
+            document.getElementById('modalTitle').innerText = "Tambah User";
+            document.getElementById('submitButton').innerText = "Tambah User";
             document.getElementById('submitButton').classList.remove('bg-blue-600');
             document.getElementById('submitButton').classList.add('bg-green-600');
 
@@ -263,8 +261,9 @@
             document.getElementById('submitButton').classList.remove('bg-green-600');
             document.getElementById('submitButton').classList.add('bg-blue-600');
 
-            document.getElementById('userForm').action =
-                "{{ route('superadmin.users.update', ':id') }}".replace(':id', id);
+            let url = "{{ route('superadmin.users.update', ':id') }}";
+            url = url.replace(':id', id);
+            document.getElementById('userForm').action = url;
             document.getElementById('formMethod').value = "PUT";
 
             document.getElementById('name').value = name;

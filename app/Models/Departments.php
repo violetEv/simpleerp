@@ -19,6 +19,10 @@ class Departments extends Model
     {
         return $this->hasMany(User::class);
     }
+    public function travelersCurrent()
+    {
+        return $this->hasMany(Traveler::class, 'current_dept_id');
+    }
     public function travelersAsal()
     {
         return $this->hasMany(Traveler::class, 'dept_asal_id');

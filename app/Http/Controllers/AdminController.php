@@ -6,6 +6,7 @@ use App\Http\Requests\StoreUserRequest;
 use App\Models\Departments;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -43,69 +44,77 @@ class AdminController extends Controller
         return view('superadmin.users', compact('users'));
     }
 
-    // public function searchUsers(Request $request)
-    // {
-    //     $query = User::with('department');
-
-    //     if ($request->has('search')) {
-    //         $search = $request->input('search');
-    //         $query->where(function ($q) use ($search) {
-    //             $q->where('name', 'like', "%{$search}%")->orWhere('email', 'like', "%{$search}%");
-    //         });
-    //     }
-
-    //     $users = $query->paginate(10);
-    //     return view('superadmin.users', compact('users'));
-    // }
-
     public function storeUser(StoreUserRequest $request)
     {
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => $request->role,
-            'department_id' => $request->department_id ?? null,
-            'status' => $request->status,
-        ]);
+        try {
+            User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'role' => $request->role,
+                'department_id' => $request->department_id ?? null,
+                'status' => $request->status,
+            ]);
 
-        return redirect()
-            ->route('superadmin.users')
-            ->with('success', 'User berhasil ditambahkan');
+            return redirect()
+                ->route('superadmin.users')
+                ->with('success', 'User berhasil ditambahkan');
+        } catch (QueryException $e) {
+
+            if ($e->errorInfo[1] == 1062) {
+                return back()->with('error', 'Email sudah digunakan');
+            }
+
+            return back()->with('error', 'Gagal menambahkan user');
+        }
     }
 
     function delete($id)
     {
         $user = User::findOrFail($id);
-        $user->delete();
+        try {
+            $user->delete();
 
-        return redirect()->route('superadmin.users')->with('success', 'User deleted successfully.');
+            return redirect()
+                ->route('superadmin.users')
+                ->with('success', 'User berhasil dihapus');
+        } catch (QueryException $e) {
+            return redirect()
+                ->route('superadmin.users')
+                ->with('error', 'Gagal menghapus user: ' . $e->getMessage());
+        }
     }
 
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
 
-        $data = $request->validate([
-            'name' => 'required',
-            'email' => 'required|email',
-            'role' => 'required',
-            'department_id' => 'nullable',
-            'status' => 'required',
-        ]);
+       try {
+            $user->update([
+                'name' => $request->name,
+                'email' => $request->email,
+                'role' => $request->role,
+                'department_id' => $request->department_id ?? null,
+                'status' => $request->status,
+            ]);
 
-        if ($request->filled('password')) {
-            $data['password'] = Hash::make($request->password);
+            return redirect()
+                ->route('superadmin.users')
+                ->with('success', 'User berhasil diperbarui');
+        } catch (QueryException $e) {
+
+            if ($e->errorInfo[1] == 1062) {
+                return back()->with('error', 'Email sudah digunakan');
+            }
+
+            return back()->with('error', 'Gagal memperbarui user');
         }
-
-        $user->update($data);
-
-        return redirect()->back()->with('success', 'User updated successfully');
     }
 
     public function departments(Request $request)
     {
-        $query = Departments::query();
+        //department urut nama A-Z
+        $query = Departments::query()->orderBy('name', 'asc');
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -123,21 +132,21 @@ class AdminController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
         ]);
+        try {
+            Departments::create([
+                'name' => $request->name
+            ]);
 
-        $slug = Str::slug($request->name);
-        $count = Departments::where('slug', 'like', "{$slug}%")->count();
+            return redirect()
+                ->route('superadmin.departments')
+                ->with('success', 'Department berhasil ditambahkan');
+        } catch (QueryException $e) {
+            if ($e->errorInfo[1] == 1062) {
+                return back()->with('error', 'Nama department sudah digunakan');
+            }
 
-        if ($count) {
-            $slug = "{$slug}-" . ($count + 1);
+            return back()->with('error', 'Gagal menambahkan department');
         }
-
-        Departments::create([
-            'name' => $request->name,
-            'slug' => $slug,
-        ]);
-
-        return redirect()->route('superadmin.departments')
-            ->with('success', 'Department created successfully');
     }
 
     public function updateDepartment(Request $request, $id)
@@ -147,20 +156,41 @@ class AdminController extends Controller
         ]);
 
         $department = Departments::findOrFail($id);
-        $department->update([
-            'name' => $request->name
-        ]);
+        try {
+            $department->update([
+                'name' => $request->name
+            ]);
 
-        return redirect()->route('superadmin.departments')
-            ->with('success', 'Department updated successfully');
+            return redirect()
+                ->route('superadmin.departments')
+                ->with('success', 'Department berhasil diperbarui');
+        } catch (QueryException $e) {
+            // if ($e->errorInfo[1] == 1062) {
+                return back()->with('error', 'Nama department sudah digunakan');
+            // }
+
+            // return back()->with('error', 'Gagal memperbarui department');
+        }
     }
     public function deleteDepartment($id)
     {
         $department = Departments::findOrFail($id);
         // $department->name = request('name');
-        $department->delete();
+        try {
+            $department->delete();
 
-        return redirect()->route('superadmin.departments')->with('success', 'Department deleted successfully.');
+            return redirect()
+                ->route('superadmin.departments')
+                ->with('success', 'Department berhasil dihapus');
+        } catch (QueryException $e) {
+            if ($e->errorInfo[1] == 1451) {
+                return back()->with('error', 'Department tidak dapat dihapus karena masih digunakan');
+            }
+
+            return back()->with('error', 'Gagal menghapus department');
+        }
+
+        return redirect()->route('superadmin.departments')->with('success', 'Department berhasil dihapus');
     }
 
     public function monitoring()

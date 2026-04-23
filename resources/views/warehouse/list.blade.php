@@ -3,11 +3,11 @@
 @section('content') --}}
 <x-app-layout>
 
-    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+    {{-- <h2 class="font-semibold text-xl text-gray-800 leading-tight">
         List Traveler
-    </h2>
+    </h2> --}}
 
-    @if (session('success'))
+    {{-- @if (session('success'))
         <div class="mt-4">
             <x-alerts variant="success" title="Success" :message="session('success')" :showLink="false" />
         </div>
@@ -15,7 +15,7 @@
         <div class="mt-4">
             <x-alerts variant="danger" title="Error" :message="session('error')" :showLink="false" />
         </div>
-    @endif
+    @endif --}}
     <div class="py-6">
         <div class="max-w-7xl mx-auto">
             {{-- SEARCH --}}
@@ -48,62 +48,62 @@
                 </div>
                 {{-- table baru --}}
                 <div id="tab-content-baru">
-                    <div class="bg-white shadow rounded-lg overflow-hidden">
-                        <table class="min-w-full divide-y divide-gray-200">
+                    <div class="bg-white shadow rounded-lg overflow-hidden p-2">
+                        <table class="min-w-full table-fixed">
 
-                            <thead>
+                            <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                    {{-- <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">No</th> --}}
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                                         No Traveler</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Surat
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Surat
                                         Jalan</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Qty</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Qty</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Tanggal
+                                        Out</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                                         Departemen Tujuan
                                     </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal
-                                        Out</th>
-                                    {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th> --}}
-                                    {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th> --}}
-                                    {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Notes</th> --}}
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi
+                                    {{-- <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Type</th> --}}
+                                    {{-- <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Status</th> --}}
+                                    {{-- <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Notes</th> --}}
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Aksi
                                     </th>
-                                    {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
-                    <th class="py-2 px-4 border-b">Dari</th>
-                    <th class="py-2 px-4 border-b">Ke</th>
-                    <th class="py-2 px-4 border-b">Notes</th> --}}
+                                    {{-- <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Dari</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Ke</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Notes</th> --}}
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @if ($travelers->count())
                                     @foreach ($travelers as $traveler)
                                         <tr>
-                                            <td class="px-6 py-4 whitespace-nowrap">
+                                            {{-- <td class="px-4 py-2 whitespace-nowrap">
                                                 {{ $loop->iteration + ($travelers->currentPage() - 1) * $travelers->perPage() }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">{{ $traveler->no_traveler }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
+                                            </td> --}}
+                                            <td class="px-4 py-2 whitespace-nowrap">{{ $traveler->no_traveler }}</td>
+                                            <td class="px-4 py-2 whitespace-nowrap">
                                                 {{ $traveler->suratJalan->no_surat_jalan ?? '-' }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap">{{ $traveler->qty }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                {{ $traveler->deptTujuan->name ?? '-' }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
+                                            <td class="px-4 py-2 whitespace-nowrap">{{ $traveler->qty }}</td>
+                                            <td class="px-4 py-2 whitespace-nowrap">
                                                 {{-- format tanggal 12 Maret 2024 --}}
                                                 {{ \Carbon\Carbon::parse($traveler->tanggal)->format('d F Y') ?? '-' }}
                                             </td>
-                                            {{-- <td class="px-6 py-4 whitespace-nowrap">
+                                            <td class="px-4 py-2 whitespace-nowrap">
+                                                {{ $traveler->deptTujuan->name ?? '-' }}
+                                            </td>
+                                            {{-- <td class="px-4 py-2 whitespace-nowrap">
                                         {{ $traveler->type ?? '-' }}
                                     </td> --}}
-                                            {{-- <td class="px-6 py-4 whitespace-nowrap">{{ $traveler->status }}</td> --}}
-                                            {{-- <td class="px-6 py-4 whitespace-nowrap">{{ $traveler->notes }}</td> --}}
-                                            <td class="px-6 py-4 whitespace-nowrap">
+                                            {{-- <td class="px-4 py-2 whitespace-nowrap">{{ $traveler->status }}</td> --}}
+                                            {{-- <td class="px-4 py-2 whitespace-nowrap">{{ $traveler->notes }}</td> --}}
+                                            <td class="px-4 py-2 whitespace-nowrap">
                                                 {{-- <a href="{{ route('warehouse.list', $traveler->id) }}"
                                     class="text-green-500 border-sm hover:underline ml-2">+ Buat turunan</a> --}}
                                                 <button onclick="openDetail(this)"
                                                     data-traveler="{{ $traveler->no_traveler ?? '-' }}"
-                                                    data-customer="{{ $traveler->suratJalan->kkpoManagement->kkpo->customer->name ?? '-' }}"
+                                                    data-customer="{{ $traveler->suratJalan->kkpoManagement->customer->name ?? '-' }}"
                                                     data-sj="{{ $traveler->suratJalan->no_surat_jalan ?? '-' }}"
                                                     data-qty="{{ $traveler->qty }}"
                                                     data-style="{{ $traveler->suratJalan->kkpoManagement->style->name ?? '-' }}"
@@ -122,7 +122,7 @@
                                     @endforeach
                                 @else
                                     <tr>
-                                        <td colspan="7" class="px-6 py-4 text-center text-gray-500">
+                                        <td colspan="7" class="px-4 py-2 text-center text-gray-500">
                                             Data Traveler Baru Tidak Ada.
                                         </td>
                                     </tr>
@@ -138,37 +138,37 @@
                 {{-- table rework --}}
                 <div id="tab-content-rework" class="hidden">
 
-                    <div class="bg-white shadow rounded-lg overflow-hidden">
+                    <div class="bg-white shadow rounded-lg overflow-hidden p-2">
 
-                        <table class="min-w-full divide-y divide-gray-200">
+                        <table class="min-w-full table-fixed">
 
-                            <thead>
+                            <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                                         No Traveler
                                     </th>
 
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                                         Departemen Asal
                                     </th>
 
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                                         Qty Rework
                                     </th>
 
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                                         Status
                                     </th>
 
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                                         No Turunan
                                     </th>
 
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                                         Departemen Tujuan
                                     </th>
 
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                                         Aksi
                                     </th>
 
@@ -180,19 +180,19 @@
                                 @forelse($reworkTravelers as $traveler)
                                     <tr>
 
-                                        <td class="px-6 py-4">
+                                        <td class="px-4 py-2 whitespace-nowrap">
                                             {{ $traveler->traveler->no_traveler ?? '-' }}
                                         </td>
 
-                                        <td class="px-6 py-4">
+                                        <td class="px-4 py-2 whitespace-nowrap">
                                             {{ $traveler->deptAsal->name ?? '-' }}
                                         </td>
 
-                                        <td class="px-6 py-4">
+                                        <td class="px-4 py-2 whitespace-nowrap">
                                             {{ $traveler->qty_reject }}
                                         </td>
 
-                                        <td class="px-6 py-4">
+                                        <td class="px-4 py-2 whitespace-nowrap">
                                             <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">
                                                 Rework
                                             </span>
@@ -200,7 +200,7 @@
                                         <form action="{{ route('warehouse.rework.store', $traveler->id) }}"
                                             method="POST">
                                             @csrf
-                                            <td class="px-6 py-4">
+                                            <td class="px-4 py-2 whitespace-nowrap">
                                                 {{-- disamping input no traveler turunan, muncul no traveler asal dengan tambahan suffix -A (contoh: TRV-001-A) --}}
                                                 {{-- <span class="text-gray-500 text-sm">
                                                 {{ $traveler->traveler->no_traveler ?? '-' }}
@@ -213,7 +213,7 @@
                                                 class="border border-gray-300 rounded-lg px-2 py-1 w-full bg-gray-100 text-sm text-center"> --}}
                                             </td>
 
-                                            <td class="px-6 py-4">
+                                            <td class="px-4 py-2 whitespace-nowrap">
                                                 <select name="dept_tujuan_id" required
                                                     class="mt-1 block w-full border border-gray-300 rounded-md">
 
@@ -229,7 +229,7 @@
                                                 {{-- {{ $traveler->deptTujuan->name ?? '-' }} --}}
                                             </td>
 
-                                            <td class="px-6 py-4">
+                                            <td class="px-4 py-2 whitespace-nowrap">
                                                 <button type="submit"
                                                     class="px-2 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
                                                     Terbitkan
@@ -241,7 +241,7 @@
                                 @empty
 
                                     <tr>
-                                        <td colspan="7" class="px-6 py-4 text-center text-gray-500">
+                                        <td colspan="7" class="px-4 py-2 text-center text-gray-500">
                                             Data Traveler Rework Tidak Ada.
                                         </td>
                                     </tr>
@@ -251,7 +251,7 @@
 
                         </table>
                         {{-- pagination --}}
-                        <div class="p-4">
+                        <div class="p-3">
                             {{ $reworkTravelers->links() }}
                         </div>
 
@@ -364,7 +364,6 @@
             document.getElementById('detail-modal').classList.remove('flex');
         }
 
-
         function switchTab(tab) {
 
             let tabBaru = document.getElementById('tab-content-baru');
@@ -398,7 +397,6 @@
 
         }
     </script>
-
 
     {{-- @endsection --}}
 </x-app-layout>

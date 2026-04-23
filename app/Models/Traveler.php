@@ -35,6 +35,10 @@ class Traveler extends Model
     {
         return $this->hasMany(TravelerMovement::class);
     }
+    public function latestMovement()
+    {
+        return $this->hasOne(TravelerMovement::class)->latestOfMany();
+    }
 
     public function children()
     {
@@ -50,7 +54,7 @@ class Traveler extends Model
     {
         return $this->belongsTo(Departments::class, 'dept_tujuan_id');
     }
-    public function currentDept()
+    public function currentDepartment()
     {
         return $this->belongsTo(Departments::class, 'current_dept_id');
     }

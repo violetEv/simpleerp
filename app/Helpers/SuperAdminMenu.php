@@ -9,11 +9,11 @@ class SuperAdminMenu
         return [
             ['name' => 'Dashboard', 'route' => 'dashboard', 'icon' => 'fas fa-tachometer-alt'],
             [
-                'name' => 'User Management',
+                'name' => 'Kelola User',
                 'icon' => 'fas fa-users',
                 'sub' => [
-                    ['name' => 'All Users', 'route' => 'superadmin.users'],
-                    ['name' => 'Departments', 'route' => 'superadmin.departments'],
+                    ['name' => 'User', 'route' => 'superadmin.users'],
+                    ['name' => 'Departemen', 'route' => 'superadmin.departments'],
                 ]
             ],
             ['name' => 'Monitoring Produksi', 'route' => 'superadmin.monitoring', 'icon' => 'fas fa-industry'],
