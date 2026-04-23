@@ -59,12 +59,21 @@
     }
 
     function lanjutSubmit() {
-        let formRef = document.getElementById('formIn'); // aman tanpa global
+        let formRef = document.getElementById('formOut'); 
 
         let notes = document.getElementById('notes');
-        if (notes && notes.value.trim() === '') {
-            notes.value = "Selisih saat penerimaan";
+        let qtyIn = parseInt(document.getElementById('qty_in_hidden').value) || 0;
+        let qtyOut = parseInt(document.getElementById('qty_out').value) || 0;
+
+        let selisih = qtyIn - qtyOut;
+
+        if (selisih > 0 && notes.value.trim() === '') {
+            alert('Harap isi catatan terlebih dahulu');
+            notes.focus();
+            return;
         }
+
+        closeModalSelisih();
 
         formRef.submit();
     }

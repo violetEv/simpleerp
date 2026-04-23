@@ -1,7 +1,7 @@
 @if ($movementActive && $movementActive->qty_in && !$movementActive->date_out)
     <div class="bg-white shadow rounded-lg p-6 mb-6">
         <h3 class="text-lg font-medium text-gray-900 mb-4">Input Qty Out</h3>
-        <form action="{{ route('produksi.out.store', $traveler->id) }}" method="POST" id="formOut">
+        <form id="formOut" action="{{ route('produksi.out.store', $traveler->id) }}" method="POST">
             @csrf
             <input type="hidden" name="traveler_id" value="{{ $traveler->id }}">
             <input type="hidden" id="qty_in_hidden" value="{{ $movementActive->qty_in ?? 0 }}">
@@ -30,15 +30,16 @@
                     class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
             </div>
 
+            {{-- INFO MAX
+            <p class="text-xs text-gray-500 mb-2">
+                Maksimal Qty OUT + Reject = {{ $movementActive->qty_in }}
+            </p> --}}
+
             {{-- WARNING SELISIH --}}
-            <div id="warning-selisih" class="mb-4 hidden">
-                <p class="text-sm text-red-600">Warning: Qty Out is less than Qty In. Please provide a
-                    reason.
-                </p>
+            <div id="warning-selisih" class="mb-4 hidden text-sm font-medium rounded p-2 bg-yellow-100 text-yellow-700">
             </div>
 
-            <button type="submit"
-                onclick="return confirm('Data yang sudah disimpan tidak dapat diubah kembali. Apakah Anda yakin ingin menyimpan data?')"
+            <button type="button" onclick="return handleSubmitOut()"
                 class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">SIMPAN
                 OUT</button>
         </form>

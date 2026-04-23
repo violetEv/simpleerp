@@ -1,3 +1,4 @@
+
 <x-app-layout>
     {{-- <h2 class="font-semibold text-xl text-gray-800 leading-tight">
         Report
@@ -45,7 +46,7 @@
                         </button>
 
                         {{-- RESET --}}
-                        <a href="{{ route('manager.report') }}"
+                        <a href="{{ route('ppic.report') }}"
                             class="h-9 px-3 text-sm rounded-md
                               bg-gray-200 text-gray-700 hover:bg-gray-300
                               flex items-center">
@@ -53,9 +54,9 @@
                         </a>
 
                         {{-- EXPORT --}}
-                        <a href="{{ route('manager.report.export', request()->all()) }}"
+                        <a href="{{ route('ppic.report.export', request()->all()) }}"
                             class="h-9 px-3 text-sm rounded-md
-                              bg-green-600 text-white hover:bg-green-700">
+                              bg-green-600 text-white hover:bg-green-700 flex items-center">
                             Export
                         </a>
 
@@ -124,30 +125,45 @@
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             {{-- Data report akan di-looping di sini dan hanya menampilkan satu data per kkpo --}}
-                            @if ($movements->count())
-                                @foreach ($movements as $movement)
+                            @if ($data->count())
+                                @foreach ($data as $sj)
                                     <tr>
                                         <td class="px-4 py-2 whitespace-nowrap">
-                                            {{ $movement->traveler->suratJalan->kkpoManagement->no_kkpo ?? '-' }}</td>
+                                            {{ $sj->kkpoManagement->no_kkpo ?? '-' }}</td>
                                         <td class="px-4 py-2 whitespace-nowrap">
-                                            {{ $movement->traveler->suratJalan->no_surat_jalan ?? '-' }}</td>
+                                            {{ $sj->no_surat_jalan ?? '-' }}</td>
                                         <td class="px-4 py-2 whitespace-nowrap">
-                                            {{ $movement->traveler->suratJalan->kkpoManagement->customer->name ?? '-' }}
+                                            {{ $sj->kkpoManagement->customer->name ?? '-' }}
                                         </td>
                                         <td class="px-4 py-2 whitespace-nowrap">
-                                            {{ $movement->traveler->suratJalan->kkpoManagement->category->name ?? '-' }}
+                                            {{ $sj->kkpoManagement->category->name ?? '-' }}
                                         </td>
                                         <td class="px-4 py-2 whitespace-nowrap">
-                                            {{ $movement->traveler->suratJalan->kkpoManagement->style->name ?? '-' }}
+                                            {{ $sj->kkpoManagement->style->name ?? '-' }}
                                         </td>
-                                        <td class="px-4 py-2 whitespace-nowrap">{{ $movement->qty_in }}</td>
-                                        <td class="px-4 py-2 whitespace-nowrap">{{ $movement->qty_out }}</td>
-                                        <td class="px-4 py-2 whitespace-nowrap">{{ $movement->balance }}</td>
-                                        <td class="px-4 py-2 whitespace-nowrap">
-                                            <a href="{{ route('manager.show', $movement->id) }}"
-                                                class="text-blue-500 border border-blue-500 rounded-xl py-1 px-4 hover:bg-blue-50">
-                                                Detail</a>
-                                        </td>
+                                        
+                                            @php
+                                                $totalIn = 0;
+                                                $totalOut = 0;
+                                                $totalBalance = 0;
+
+                                                foreach ($sj->travelers as $t) {
+                                                    foreach ($t->movements as $m) {
+                                                        $totalIn += $m->qty_in;
+                                                        $totalOut += $m->qty_out;
+                                                        $totalBalance += $m->balance;
+                                                    }
+                                                }
+                                            @endphp
+                                            
+                                            <td class="px-4 py-2 whitespace-nowrap">{{ $totalIn }}</td>
+                                            <td class="px-4 py-2 whitespace-nowrap">{{ $totalOut }}</td>
+                                            <td class="px-4 py-2 whitespace-nowrap">{{ $totalBalance }}</td>
+                                            <td class="px-4 py-2 whitespace-nowrap">
+                                                <a href="{{ route('manager.report.show', ['id' => $sj->id]) }}"
+                                                    class="text-blue-500 border border-blue-500 rounded-xl py-1 px-4 hover:bg-blue-50">
+                                                    Detail</a>
+                                            </td>
 
                                     </tr>
                                 @endforeach
@@ -160,7 +176,7 @@
                         </tbody>
                     </table>
                     <div class="p-3">
-                        {{ $movements->links() }}
+                        {{ $data->links() }}
                     </div>
                 </div>
             </div>

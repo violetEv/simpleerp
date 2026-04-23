@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\TravelerMovementExport;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Color;
@@ -12,8 +13,11 @@ use App\Models\KkpoManagement;
 use App\Models\Style;
 use App\Models\Unit;
 use App\Models\Currency;
+use App\Models\SuratJalan;
+use App\Models\TravelerMovement;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PpicController extends Controller
 {
@@ -686,7 +690,6 @@ class PpicController extends Controller
 
     public function kkpoManagementStore(Request $request)
     {
-        // Validasi input jika diperlukan
         $request->validate([
             'no_kkpo' => 'required|string|max:255',
             'customer_id' => 'required|exists:customers,id',
@@ -701,11 +704,10 @@ class PpicController extends Controller
             'brand_id' => 'required|exists:brands,id',
             'unit_id' => 'required|exists:units,id',
             'currency_id' => 'required|exists:currencies,id'
-
         ]);
 
-        // Simpan data KKPO ke database
         try {
+
             KkpoManagement::create([
                 'no_kkpo' => $request->no_kkpo,
                 'customer_id' => $request->customer_id,
@@ -725,8 +727,12 @@ class PpicController extends Controller
             return redirect()
                 ->route('ppic.kkpomanagement')
                 ->with('success', 'KKPO berhasil ditambahkan');
-        } catch (QueryException $e) {
-            return back()->with('error', 'Gagal menambahkan KKPO');
+        } catch (\Exception $e) {
+
+            // 🔥 lebih jelas dari QueryException saja
+            return back()
+                ->withInput()
+                ->with('error', 'Gagal menambahkan KKPO: ' . $e->getMessage());
         }
     }
 
@@ -824,5 +830,74 @@ class PpicController extends Controller
         }
         $monitoring = $query->paginate(10);
         return view('ppic.monitoring', compact('monitoring'));
+    }
+    public function report(Request $request)
+    {
+        $suratJalan = SuratJalan::select('no_surat_jalan')->distinct()->pluck('no_surat_jalan');
+        $kkpo = KkpoManagement::select('no_kkpo')->distinct()->pluck('no_kkpo');
+        $customer = Customer::select('name')->distinct()->pluck('name');
+        $style = Style::select('name')->distinct()->pluck('name');
+
+        $query = SuratJalan::with([
+            'kkpoManagement.customer',
+            'kkpoManagement.category',
+            'kkpoManagement.style',
+            'travelers.movements' // relasi ke traveler movements
+        ])
+
+            ->when($request->kkpo, function ($q, $kkpo) {
+                $q->whereHas('kkpoManagement', function ($k) use ($kkpo) {
+                    $k->where('no_kkpo', $kkpo);
+                });
+            })
+
+            ->when($request->no_surat_jalan, function ($q, $sj) {
+                $q->where('no_surat_jalan', $sj);
+            })
+
+            ->when($request->customer, function ($q, $customer) {
+                $q->whereHas('kkpoManagement.customer', function ($c) use ($customer) {
+                    $c->where('name', $customer);
+                });
+            })
+
+            ->when($request->style, function ($q, $style) {
+                $q->whereHas('kkpoManagement.style', function ($s) use ($style) {
+                    $s->where('name', $style);
+                });
+            });
+
+        $data = $query->paginate(10);
+
+        return view('ppic.report', compact(
+            'data',
+            'suratJalan',
+            'kkpo',
+            'customer',
+            'style'
+        ));
+    }
+
+    public function show($id)
+    {
+        $sj = SuratJalan::with([
+            'kkpoManagement.customer',
+            'kkpoManagement.category',
+            'kkpoManagement.style',
+            'kkpoManagement.color',
+            'kkpoManagement.item',
+            'kkpoManagement.brand',
+            'kkpoManagement.unit',
+            'travelers.movements.currentDepartment'
+        ])->findOrFail($id);
+
+        return view('ppic.detailreport', compact('sj'));
+    }
+    public function exportReport(Request $request)
+    {
+        return Excel::download(
+            new TravelerMovementExport($request),
+            'report-traveler.xlsx'
+        );
     }
 }

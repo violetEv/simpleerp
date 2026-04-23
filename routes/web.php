@@ -60,12 +60,14 @@ Route::middleware('role:manager')->group(function () {
         ->name('manager.monitoring');
     Route::get('/manager/monitoring/{id}', [ManagerController::class, 'detailMonitoring'])
         ->name('manager.detailmonitoring');
-    Route::get('/manager/report', [ManagerController::class, 'report'])
+       Route::get('/manager/report', [ManagerController::class, 'report'])
         ->name('manager.report');
+    Route::get('/manager/report/{id}', [ManagerController::class, 'show'])
+        ->name('manager.report.show');
     Route::get('/manager/report/export', [ManagerController::class, 'exportReport'])
         ->name('manager.report.export');
-    Route::get('/manager/report/{id}', [ManagerController::class, 'show'])
-        ->name('manager.show');
+    // Route::get('/manager/report/{id}', [ManagerController::class, 'show'])
+    //     ->name('manager.show');
 
 
     // Route::get('/manager/report/{id}', [ManagerController::class, 'detailReport'])
@@ -133,6 +135,13 @@ Route::middleware('role:ppic')->group(function () {
     Route::delete('/ppic/kkpomanagement/delete/{id}', [PpicController::class, 'kkpoManagementDelete'])->name('ppic.kkpomanagement.delete');
 
     Route::get('/ppic/monitoring', [PpicController::class, 'monitoring'])->name('ppic.monitoring');
+
+    Route::get('/ppic/report', [PpicController::class, 'report'])
+        ->name('ppic.report');
+    Route::get('/ppic/report/{id}', [PpicController::class, 'show'])
+        ->name('ppic.report.show');
+    Route::get('/ppic/report/export', [PpicController::class, 'exportReport'])
+        ->name('ppic.report.export');
 });
 
 /*
@@ -154,7 +163,10 @@ Route::middleware('role:warehouse')->group(function () {
     Route::delete('/warehouse/pecah/delete/{id}', [WarehouseController::class, 'pecahDelete'])->name('warehouse.pecah.delete');
 
     Route::get('/warehouse/list', [WarehouseController::class, 'list'])->name('warehouse.list');
+    Route::get('/warehouse/list/{id}', [WarehouseController::class, 'travelerDetail'])->name('warehouse.list.show');
+    Route::delete('/warehouse/list/delete/{id}', [WarehouseController::class, 'travelerDelete'])->name('warehouse.list.delete');
     // Route::get('/warehouse/rework', [WarehouseController::class, 'rework'])->name('warehouse.rework');
+
     Route::post('/warehouse/rework/{id}', [WarehouseController::class, 'reworkStore'])->name('warehouse.rework.store');
 });
 

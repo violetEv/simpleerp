@@ -24,7 +24,8 @@ class TravelerMovement extends Model
         'machine_id',
         'type',
         'created_by',
-        'updated_by'
+        'updated_by',
+        'status_case'
     ];
 
     public function traveler()
@@ -32,10 +33,10 @@ class TravelerMovement extends Model
         return $this->belongsTo(Traveler::class);
     }
 
-    // public function department()
-    // {
-    //     return $this->belongsTo(Departments::class, 'dept_id');
-    // }
+    public function department()
+    {
+        return $this->belongsTo(Departments::class, 'dept_id');
+    }
 
     public function machine()
     {
@@ -58,6 +59,14 @@ class TravelerMovement extends Model
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+    public function updatedBy()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+    public function getBalanceAttribute()
+    {
+        return ($this->qty_in ?? 0) - ($this->qty_out ?? 0) - ($this->qty_reject ?? 0);
     }
 
 }

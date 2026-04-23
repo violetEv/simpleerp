@@ -28,7 +28,8 @@
         </div>
     </div>
     @include('produksi.proses.components.modal-selisih')
+    @include('produksi.proses.components.modal-selisih-out')
 
-    @include('produksi.proses.partials.script')
+    {{-- @include('produksi.proses.partials.script') --}}
 
 </x-app-layout>

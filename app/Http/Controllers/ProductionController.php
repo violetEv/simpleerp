@@ -147,7 +147,6 @@ class ProductionController extends Controller
             $expected = $lastMovement?->qty_out ?? 0;
             $actual = (int) $request->qty_in;
 
-            // 🔥 SELISIH (bisa minus atau plus)
             $selisih = $expected - $actual;
 
             // status lebih clean
@@ -183,8 +182,8 @@ class ProductionController extends Controller
     public function storeOut(Request $request)
     {
         $request->validate([
-            'traveler_id' => 'required',
-            'updated_by' => 'nullable|string|max:255',
+            'traveler_id' => 'required|exists:travelers,id',
+            'updated_by' => 'required|string|max:255',
             'qty_out' => 'required|integer|min:0',
             'dept_tujuan_id' => 'required|exists:departments,id',
             'type_reject' => 'nullable|string',
@@ -192,66 +191,96 @@ class ProductionController extends Controller
             'notes' => 'nullable|string'
         ]);
 
-        $dept = Auth::user()->department->name;
+        DB::beginTransaction();
 
-        $movement = TravelerMovement::where('traveler_id', $request->traveler_id)
-            ->where('current_dept_id', Auth::user()->department_id)
-            ->whereNull('date_out')
-            ->latest()
-            ->first();
+        try {
+            $traveler = Traveler::lockForUpdate()->findOrFail($request->traveler_id);
 
-        if (!$movement || !$movement->qty_in) {
-            return back()->with('error', 'Harus input IN dulu');
-        }
+            // 🔹 ambil movement aktif (yang belum OUT)
+            $movement = TravelerMovement::where('traveler_id', $traveler->id)
+                ->where('current_dept_id', Auth::user()->department_id)
+                ->whereNull('date_out')
+                ->latest()
+                ->first();
 
-        $qty_in = $movement->qty_in;
-        $qty_out = $request->qty_out;
-        $qty_reject = $request->qty_reject ?? 0;
+            if (!$movement) {
+                DB::rollBack();
+                return back()->with('error', 'Harus input IN dulu');
+            }
 
-        $qty_loss = $qty_in - ($qty_out + $qty_reject);
+            $qty_in = (int) $movement->qty_in;
+            $qty_out = (int) $request->qty_out;
+            $qty_reject = (int) ($request->qty_reject ?? 0);
 
-        // ❌ invalid
-        if (($qty_out + $qty_reject) > $qty_in) {
-            return back()->with('error', 'Qty OUT & Reject melebihi Qty IN');
-        }
+            $total = $qty_out + $qty_reject;
 
-        // 🔥 WAJIB ISI ALASAN kalau ada loss
-        if ($qty_loss > 0 && empty($request->notes)) {
-            return back()->with('error', 'Ada selisih qty, wajib isi keterangan!');
-        }
-        $deptTujuan = $request->dept_tujuan_id;
+            // ❌ tidak boleh kosong semua
+            if ($qty_out === 0 && $qty_reject === 0) {
+                DB::rollBack();
+                return back()->with('error', 'Qty OUT dan Reject tidak boleh kosong semua');
+            }
 
-        // ✅ UPDATE movement
-        $movement->update([
-            'qty_out' => $qty_out,
-            'updated_by' => $request->updated_by,
-            'date_out' => now(),
-            'qty_reject' => $qty_reject,
-            'type_reject' => $request->type_reject,
-            'qty_loss' => $qty_loss,
-            'dept_tujuan_id' => $deptTujuan,
-            'notes' => $request->notes,
-        ]);
+            // ❌ tidak boleh lebih dari IN
+            if ($total > $qty_in) {
+                DB::rollBack();
+                return back()->with('error', 'Qty OUT + Reject melebihi Qty IN');
+            }
 
-        // ✅ UPDATE traveler (INI YANG PENTING)
-        if ($dept != 'Warehouse Send') {
-            Traveler::where('id', $request->traveler_id)
-                ->update([
-                    'current_dept_id' => $deptTujuan,
-                    'dept_tujuan_id' => $deptTujuan, // 🔥 TAMBAHAN PENTING
+            // hitung loss
+            $qty_loss = $qty_in - $total;
+
+            // status
+            $statusCase = ($qty_loss > 0) ? 'selisih' : 'normal';
+
+            // ⚠️ wajib notes kalau ada selisih
+            if ($qty_loss > 0 && trim($request->notes) === '') {
+                DB::rollBack();
+                return back()->with('error', 'Ada selisih qty, wajib isi keterangan!');
+            }
+
+            // ✅ UPDATE movement
+            $movement->update([
+                'updated_by' => $request->updated_by,
+                'qty_out' => $qty_out,
+                'qty_reject' => $qty_reject,
+                'type_reject' => $request->type_reject,
+                'qty_loss' => $qty_loss,
+                'status_case' => $statusCase,
+                'dept_tujuan_id' => $request->dept_tujuan_id,
+                'date_out' => now(),
+                'notes' => $request->notes
+            ]);
+
+            // ✅ UPDATE traveler
+            if (Auth::user()->department->name !== 'Warehouse Send') {
+                $traveler->update([
+                    'current_dept_id' => $request->dept_tujuan_id,
+                    'dept_tujuan_id' => $request->dept_tujuan_id,
                     'status' => 'in_progress'
                 ]);
-        } else {
-            Traveler::where('id', $request->traveler_id)
-                ->update([
+            } else {
+                $traveler->update([
                     'status' => 'done'
                 ]);
+            }
+
+            DB::commit();
+
+            // 🎯 RESPONSE CLEAN
+            return redirect()
+                ->route('produksi.proses.index')
+                ->with(
+                    $qty_loss > 0 ? 'warning' : 'success',
+                    $qty_loss > 0
+                        ? "Terdapat selisih $qty_loss pcs"
+                        : 'Qty OUT berhasil disimpan'
+                );
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
-
-        return redirect()->route('produksi.proses.index')
-            ->with('success', 'Qty OUT berhasil disimpan');
     }
-
     public function dataIn()
     {
         return view('produksi.datain');

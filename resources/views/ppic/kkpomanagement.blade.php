@@ -259,7 +259,7 @@
                             </div>
 
                             <div>
-                                <label for="kp_po" class="block text-gray-700">KP / PO</label>
+                                <label for="kp_po" class="block text-gray-700">KP</label>
                                 <input type="text" name="kp_po" id="kp_po"
                                     class="w-full border border-gray-300 rounded px-3 py-2 mt-1">
                             </div>

@@ -278,4 +278,26 @@ class WarehouseController extends Controller
         $reworkTravelers = TravelerMovement::with('traveler')->where('qty_reject', '>', 0)->orderBy('date_in', 'desc')->paginate(10)->withQueryString();
         return view('warehouse.list', compact('travelers', 'reworkTravelers'));
     }
+    public function travelerDetail($id)
+    {
+        $traveler = Traveler::with(['suratJalan.kkpoManagement.customer', 'deptAsal', 'deptTujuan'])->findOrFail($id);
+        $movements = TravelerMovement::with(['deptAsal', 'deptTujuan'])->where('traveler_id', $id)->orderBy('date_in', 'desc')->get();
+
+        return view('warehouse.traveler_detail', compact('traveler', 'movements'));
+    }
+    public function travelerDelete($id)
+    {
+        $traveler = Traveler::findOrFail($id);
+        try {
+            $traveler->delete();
+
+            return redirect()
+                ->route('warehouse.list')
+                ->with('success', 'Traveler berhasil dihapus');
+        } catch (QueryException $e) {
+            return redirect()
+                ->route('warehouse.list')
+                ->with('error', 'Gagal menghapus traveler: ' . $e->getMessage());
+        }
+    }
 }

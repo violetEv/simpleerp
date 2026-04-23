@@ -24,8 +24,8 @@ class PPICMenu
                 ]
             ],
             ['name' => 'KK / PO', 'route' => 'ppic.kkpomanagement', 'icon' => 'fas fa-file-alt'],
-            ['name' => 'Monitoring & Report', 'route' => 'ppic.monitoring', 'icon' => 'fas fa-chart-bar'],
-            // ['name' => 'Report','route' => 'ppic.report', 'icon' => 'fas fa-chart-bar']
+            ['name' => 'Monitoring', 'route' => 'ppic.monitoring', 'icon' => 'fas fa-industry'],
+            ['name' => 'Report','route' => 'ppic.report', 'icon' => 'fas fa-chart-bar']
         ];
     }
 }

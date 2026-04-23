@@ -46,52 +46,39 @@ class ManagerController extends Controller
         $customer = Customer::select('name')->distinct()->pluck('name');
         $style = Style::select('name')->distinct()->pluck('name');
 
-        $query = TravelerMovement::query()
-            ->with([
-                'traveler.suratJalan.kkpoManagement.customer',
-                'traveler.suratJalan.kkpoManagement.category',
-                'traveler.suratJalan.kkpoManagement.style',
-            ])
-            ->when($request->search, function ($q, $search) {
-                $q->whereHas('traveler', function ($t) use ($search) {
-                    $t->where('no_traveler', 'like', "%$search%");
-                });
-            })
+        $query = SuratJalan::with([
+            'kkpoManagement.customer',
+            'kkpoManagement.category',
+            'kkpoManagement.style',
+            'travelers.movements' // relasi ke traveler movements
+        ])
+
             ->when($request->kkpo, function ($q, $kkpo) {
-                $q->whereHas('traveler.suratJalan.kkpoManagement', function ($k) use ($kkpo) {
+                $q->whereHas('kkpoManagement', function ($k) use ($kkpo) {
                     $k->where('no_kkpo', $kkpo);
                 });
             })
+
             ->when($request->no_surat_jalan, function ($q, $sj) {
-                $q->whereHas('traveler.suratJalan', function ($s) use ($sj) {
-                    $s->where('no_surat_jalan', $sj);
-                });
+                $q->where('no_surat_jalan', $sj);
             })
+
             ->when($request->customer, function ($q, $customer) {
-                $q->whereHas('traveler.suratJalan.kkpoManagement.customer', function ($c) use ($customer) {
+                $q->whereHas('kkpoManagement.customer', function ($c) use ($customer) {
                     $c->where('name', $customer);
                 });
             })
+
             ->when($request->style, function ($q, $style) {
-                $q->whereHas('traveler.suratJalan.kkpoManagement.style', function ($s) use ($style) {
+                $q->whereHas('kkpoManagement.style', function ($s) use ($style) {
                     $s->where('name', $style);
                 });
-            })
-            ->when($request->date_from, function ($q) use ($request) {
-                $q->whereDate('created_at', '>=', $request->date_from);
-            })
-
-            ->when($request->date_to, function ($q) use ($request) {
-                $q->whereDate('created_at', '<=', $request->date_to);
             });
 
-        $movements = $query
-            ->orderBy('created_at', 'desc')
-            ->paginate(10)
-            ->withQueryString();
+        $data = $query->paginate(10);
 
         return view('manager.report', compact(
-            'movements',
+            'data',
             'suratJalan',
             'kkpo',
             'customer',
@@ -99,15 +86,20 @@ class ManagerController extends Controller
         ));
     }
 
-    public function show($kkpoId)
+    public function show($id)
     {
-        $movement = TravelerMovement::with([
-            'traveler.suratJalan.kkpoManagement.customer',
-            'traveler.suratJalan.kkpoManagement.category',
-            'traveler.suratJalan.kkpoManagement.style',
-        ])->findOrFail($kkpoId);
+        $sj = SuratJalan::with([
+            'kkpoManagement.customer',
+            'kkpoManagement.category',
+            'kkpoManagement.style',
+            'kkpoManagement.color',
+            'kkpoManagement.item',
+            'kkpoManagement.brand',
+            'kkpoManagement.unit',
+            'travelers.movements.currentDepartment'
+        ])->findOrFail($id);
 
-        return view('manager.detailreport', compact('movement'));
+        return view('manager.detailreport', compact('sj'));
     }
 
     public function detailReport($id)
