@@ -9,7 +9,7 @@
                 {{-- ITEM PERTAMA --}}
                 @if ($loop->first)
                     <a href="{{ $item['url'] }}"
-                       class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-700">
+                       class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-600">
 
                         {{-- ICON (optional) --}}
                         @if (!empty($item['icon']))
@@ -36,7 +36,7 @@
 
                         {{-- LAST ITEM --}}
                         @if ($loop->last)
-                            <span class="text-sm font-medium text-gray-800">
+                            <span class="text-sm font-medium text-gray-700">
                                 @if (!empty($item['icon']))
                                     <i class="{{ $item['icon'] }} mr-1"></i>
                                 @endif
@@ -44,7 +44,7 @@
                             </span>
                         @else
                             <a href="{{ $item['url'] }}"
-                               class="text-sm font-medium text-gray-500 hover:text-gray-700">
+                               class="text-sm font-medium text-gray-500 hover:text-gray-600">
 
                                 @if (!empty($item['icon']))
                                     <i class="{{ $item['icon'] }} mr-1"></i>

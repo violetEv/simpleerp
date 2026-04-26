@@ -67,14 +67,14 @@
                         </button>
 
                         {{-- RESET (TERTIARY) --}}
-                        <a href="{{ route('manager.report') }}"
+                        <a href="{{ route('ppic.report') }}"
                             class="h-9 px-3 text-sm rounded-md text-gray-500 hover:text-gray-700 flex items-center gap-1 transition">
 
                             Reset
                         </a>
 
                         {{-- EXPORT (SECONDARY SUCCESS) --}}
-                        <a href="{{ route('manager.report.export', request()->all()) }}"
+                        <a href="{{ route('ppic.report.export', request()->all()) }}"
                             class="h-9 px-3 text-sm rounded-md border border-green-200 text-green-700 bg-green-50 hover:bg-green-100 flex items-center gap-1 transition">
 
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
@@ -182,7 +182,7 @@
                                         <td class="px-4 py-2 whitespace-nowrap">{{ $totalOut }}</td>
                                         <td class="px-4 py-2 whitespace-nowrap">{{ $totalBalance }}</td>
                                         <td class="px-4 py-2 whitespace-nowrap">
-                                            <a href="{{ route('manager.report.show', ['id' => $sj->id]) }}"
+                                            <a href="{{ route('ppic.report.show', ['id' => $sj->id]) }}"
                                                 class="text-blue-500 border border-blue-500 rounded-xl py-1 px-4 hover:bg-blue-50">
                                                 Detail</a>
                                         </td>

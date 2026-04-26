@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Customer extends Model
 {
     protected $fillable = ['name', 'address', 'phone', 'attention'];
-    public function kkpommangements()
+    public function kkpoManagements()
     {
         return $this->hasMany(KkpoManagement::class);
     }

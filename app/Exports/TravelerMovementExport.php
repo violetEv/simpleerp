@@ -23,6 +23,10 @@ class TravelerMovementExport implements FromCollection, WithHeadings
                 'traveler.suratJalan.kkpoManagement.customer',
                 'traveler.suratJalan.kkpoManagement.category',
                 'traveler.suratJalan.kkpoManagement.style',
+                'traveler.suratJalan.kkpoManagement.brand',
+                'traveler.suratJalan.kkpoManagement.item',
+                'traveler.suratJalan.kkpoManagement.color',
+                
             ])
 
             // SEARCH
@@ -59,6 +63,21 @@ class TravelerMovementExport implements FromCollection, WithHeadings
                     $s->where('name', $style);
                 });
             })
+            ->when($this->request->brand, function ($q, $brand) {
+                $q->whereHas('traveler.suratJalan.kkpoManagement.brand', function ($b) use ($brand) {
+                    $b->where('name', $brand);
+                });
+            })
+            ->when($this->request->item, function ($q, $item) {
+                $q->whereHas('traveler.suratJalan.kkpoManagement.item', function ($i) use ($item) {
+                    $i->where('name', $item);
+                });
+            })
+            ->when($this->request->color, function ($q, $color) {
+                $q->whereHas('traveler.suratJalan.kkpoManagement.color', function ($c) use ($color) {
+                    $c->where('name', $color);
+                });
+            })
             ->when($this->request->date_from, function ($q) {
                 $q->whereDate('created_at', '>=', $this->request->date_from);
             })
@@ -76,6 +95,9 @@ class TravelerMovementExport implements FromCollection, WithHeadings
                     'Customer'    => $m->traveler->suratJalan->kkpoManagement->customer->name ?? '-',
                     'Category'    => $m->traveler->suratJalan->kkpoManagement->category->name ?? '-',
                     'Style'       => $m->traveler->suratJalan->kkpoManagement->style->name ?? '-',
+                    'Brand'       => $m->traveler->suratJalan->kkpoManagement->brand->name ?? '-',
+                    'Item'        => $m->traveler->suratJalan->kkpoManagement->item->name ?? '-',
+                    'Color'       => $m->traveler->suratJalan->kkpoManagement->color->name ?? '-',
                     'Qty In'      => $m->qty_in,
                     'Qty Out'     => $m->qty_out,
                     'Balance'     => $m->balance,
@@ -91,6 +113,9 @@ class TravelerMovementExport implements FromCollection, WithHeadings
             'Customer',
             'Category',
             'Style',
+            'Brand',
+            'Item',
+            'Color',
             'Qty In',
             'Qty Out',
             'Balance',

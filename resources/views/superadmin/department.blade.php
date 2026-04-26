@@ -2,16 +2,16 @@
     {{-- <h2 class="font-semibold text-xl text-gray-800 leading-tight">
         Departments
     </h2> --}}
-    <div class="py-6">
+    <div class="py-3">
         <div class="max-w-7xl mx-auto">
 
             {{-- Search --}}
             <div class="flex items-center justify-between mb-4">
-                <form action="{{ route('superadmin.departments') }}" method="GET" class="flex items-center gap-2">
-                    <input type="text" name="search" placeholder="Search departments..."
+                <form action="{{ route('superadmin.department') }}" method="GET" class="flex items-center gap-2">
+                    <input type="text" name="search" placeholder="Cari departemen..."
                         class="border border-gray-300 rounded-lg px-4 py-2" value="{{ request('search') }}">
                     <button type="submit" class="bg-[#136566] text-white px-4 py-2 rounded-lg hover:bg-[#0f4f50]">
-                        Search
+                        Cari
                     </button>
                 </form>
                 <button onClick="openAddModal()" class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
@@ -29,7 +29,7 @@
                             class="text-gray-500 text-2xl hover:text-gray-700">&times;</button>
                     </div>
 
-                    <form id="crud-form" action="{{ route('superadmin.departments.store') }}" method="POST">
+                    <form id="crud-form" action="{{ route('superadmin.department.store') }}" method="POST">
                         @csrf
                         <input type="hidden" name="_method" id="form-method" value="POST">
                         <input type="hidden" name="department_id" id="department_id">
@@ -51,24 +51,24 @@
 
             {{-- Table --}}
             <div class="bg-white shadow rounded-lg overflow-hidden p-2">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead>
+                <table class="min-w-full table-fixed">
+                    <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                 Nama Departemen
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                 Aksi
                             </th>
                         </tr>
                     </thead>
 
-                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tbody class="bg-white divide-y divide-gray-200 text-sm">
                         @if ($departments->count())
                             @foreach ($departments as $department)
                                 <tr>
-                                    <td class="px-6 py-4">{{ $department->name }}</td>
-                                    <td class="px-6 py-4">
+                                    <td class="px-4 py-2">{{ $department->name }}</td>
+                                    <td class="px-4 py-2">
                                         <button onClick="openEditModal({{ $department->id }}, '{{ $department->name }}')"
                                             class="text-blue-600 hover:text-blue-900" title="Edit Department">
                                             {{-- Edit icon --}}
@@ -81,7 +81,7 @@
                                                 </svg>
                                         </button>
 
-                                        <form action="{{ route('superadmin.departments.delete', $department->id) }}"
+                                        <form action="{{ route('superadmin.department.delete', $department->id) }}"
                                             method="POST" class="inline-block">
                                             @csrf
                                             @method('DELETE')
@@ -111,7 +111,7 @@
                         @endif
                     </tbody>
                 </table>
-                <div class="mt-4">
+                <div class="p-3">
                     {{ $departments->links() }}
                 </div>
                 {{-- </div> --}}
@@ -125,7 +125,7 @@
             document.getElementById('modal-title').textContent = 'Tambah Departemen';
             document.getElementById('submit-button').textContent = 'Tambah Departemen';
             document.getElementById('crud-form').action =
-                "{{ route('superadmin.departments.store') }}";
+                "{{ route('superadmin.department.store') }}";
 
             document.getElementById('form-method').value = "POST";
 
@@ -137,9 +137,9 @@
         }
 
         function openEditModal(id, name) {
-            document.getElementById('modal-title').textContent = 'Edit Department';
-            document.getElementById('submit-button').textContent = 'Update Department';
-            let url = "{{ route('superadmin.departments.update', ':id') }}";
+            document.getElementById('modal-title').textContent = 'Edit Departemen';
+            document.getElementById('submit-button').textContent = 'Update Departemen';
+            let url = "{{ route('superadmin.department.update', ':id') }}";
             url = url.replace(':id', id);
             document.getElementById('crud-form').action = url;
 

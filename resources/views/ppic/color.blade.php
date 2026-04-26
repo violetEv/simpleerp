@@ -8,36 +8,36 @@
             {{-- Search & Add Color Modal --}}
             <div class="flex items-center justify-between mb-4">
                 <form action="{{ route('ppic.color') }}" method="GET" class="flex items-center gap-2">
-                    <input type="text" name="search" placeholder="Search colors..."
+                    <input type="text" name="search" placeholder="Cari warna..."
                         class="border border-gray-300 rounded-lg px-4 py-2" value="{{ request('search') }}">
                     <button type="submit" class="bg-[#136566] text-white px-4 py-2 rounded-lg hover:bg-[#0f4f50]">
-                        Search
+                        Cari
                     </button>
                 </form>
 
                 <button onClick="openAddModal()"
                     class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
-                    + Tambah Color
+                    + Tambah Warna
                 </button>
             </div>
             {{-- Color Table --}}
             <div class="bg-white overflow-hidden shadow rounded-lg p-2">
                 {{-- <div class="p-4 bg-white border-b border-gray-200"> --}}
 
-                    <table class="min-w-full table-fixed">
-                        <thead class="bg-gray-50">
+                    <table class="min-w-full table-fixed text-gray-800">
+                        <thead class="bg-gray-50 text-gray-700 uppercase tracking wider">
                             <tr>
                                 {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th> --}}
                                 <th
-                                    class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Name</th>
+                                    class="px-4 py-2 text-left text-xs font-semibold">
+                                    Nama Warna</th>
                                 <th
-                                    class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Action
+                                    class="px-4 py-2 text-left text-xs font-semibold">
+                                    Aksi
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
+                        <tbody class="bg-white divide-y divide-gray-200 text-sm">
                             @if ($colors->count())
                                 @foreach ($colors as $color)
                                     <tr>
@@ -58,7 +58,7 @@
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" title="Hapus"
-                                                    onclick="return confirm('Apakah Anda yakin ingin mengapus color ini?')">
+                                                    onclick="return confirm('Apakah Anda yakin ingin menghapus warna ini?')">
                                                     <svg class="w-6 h-6 text-red-500 hover:text-red-700"
                                                         aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                                         width="24" height="24" fill="none"
@@ -75,7 +75,7 @@
                             @else
                                 <tr>
                                     <td colspan="2" class="px-4 py-2 whitespace-nowrap text-center text-gray-500">
-                                        Color tidak ditemukan.
+                                        Warna tidak ditemukan.
                                     </td>
                                 </tr>
                             @endif
@@ -91,7 +91,7 @@
                 class="hidden fixed inset-0 bg-gray-600  bg-opacity-50 items-center justify-center z-50">
                 <div class="bg-white p-6 rounded-lg w-full max-w-md">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 id="modal-title" class="text-lg font-medium">Add Color</h3>
+                        <h3 id="modal-title" class="text-lg font-medium">Tambah Warna</h3>
                         <button onClick="closeAddModal()" class="text-gray-500 text-2xl hover:text-gray-700">
                             &times;
                         </button>
@@ -101,13 +101,13 @@
                         <input type="hidden" name="_method" id="form-method" value="POST">
                         <input type="hidden" name="color_id" id="color_id">
                         <div class="mb-4">
-                            <label for="name" class="block text-gray-700">Color Name</label>
+                            <label for="name" class="block text-gray-700">Nama Warna</label>
                             <input type="text" name="name" id="name" required
                                 class="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1">
                         </div>
-                        <button type="submit" id="submit-button"
+                        <button type="submit" 
                             class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
-                            Add Color
+                            Simpan
                         </button>
                     </form>
                 </div>
@@ -118,8 +118,8 @@
         function openAddModal() {
             document.getElementById('addModal').classList.remove('hidden');
             document.getElementById('addModal').classList.add('flex')
-            document.getElementById('modal-title').textContent = 'Add Color';
-            document.getElementById('submit-button').textContent = 'Add Color';
+            document.getElementById('modal-title').textContent = 'Tambah Warna';
+            // document.getElementById('submit-button').textContent = 'Tambah Warna';
             document.getElementById('crud-form').action = "{{ route('ppic.color.store') }}";
             document.getElementById('form-method').value = 'POST';
             document.getElementById('color_id').value = '';
@@ -133,8 +133,8 @@
 
         function editColor(id, name) {
             openAddModal();
-            document.getElementById('modal-title').textContent = 'Edit Color';
-            document.getElementById('submit-button').textContent = 'Update Color';
+            document.getElementById('modal-title').textContent = 'Edit Warna';
+            // document.getElementById('submit-button').textContent = 'Update Warna';
             let url = "{{ route('ppic.color.update', ':id') }}";
             url = url.replace(':id', id);
 

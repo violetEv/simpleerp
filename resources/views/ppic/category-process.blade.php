@@ -4,10 +4,10 @@
             {{-- Search & Add Category Process Modal --}}
             <div class="flex items-center justify-between mb-4">
                 <form action="{{ route('ppic.category') }}" method="GET" class="flex items-center gap-2">
-                    <input type="text" name="search" placeholder="Search category processes..."
+                    <input type="text" name="search" placeholder="Cari Category Process..."
                         class="border border-gray-300 rounded-lg px-4 py-2" value="{{ request('search') }}">
                     <button type="submit" class="bg-[#136566] text-white px-4 py-2 rounded-lg hover:bg-[#0f4f50]">
-                        Search
+                        Cari
                     </button>
                 </form>
                 <button onClick="openAddModal()" class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
@@ -18,18 +18,18 @@
             <div class="bg-white overflow-hidden shadow rounded-lg p-2">
                 {{-- <div class="p-4 bg-white border-b border-gray-200"> --}}
 
-                    <table class="min-w-full table-fixed">
-                        <thead class="bg-gray-50">
+                    <table class="min-w-full table-fixed text-gray-800">
+                        <thead class="bg-gray-50 text-gray-700 uppercase tracking wider">
                             <tr>
                                 {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th> --}}
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Name</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Action
+                                <th class="px-4 py-2 text-left text-xs font-semibold">
+                                    Nama Category Process</th>
+                                <th class="px-4 py-2 text-left text-xs font-semibold">
+                                    Aksi
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
+                        <tbody class="bg-white divide-y divide-gray-200 text-sm">
                             @if ($categories->count())
                                 @foreach ($categories as $categoryProcess)
                                     <tr>
@@ -52,7 +52,7 @@
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" title="Hapus"
-                                                    onclick="return confirm('Apakah Anda yakin ingin mengapus category process ini?')">
+                                                    onclick="return confirm('Apakah Anda yakin ingin menghapus {{ $categoryProcess->name }}?')">
                                                     <svg
                                                         class="w-6 h-6 text-red-500 hover:text-red-700"
                                                         aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
@@ -68,7 +68,7 @@
                             @else
                                 <tr>
                                     <td colspan="2" class="text-center py-4 text-gray-500">
-                                        No category processes found
+                                        Category Process tidak ditemukan.
                                     </td>
                                 </tr>
                             @endif
@@ -86,7 +86,7 @@
     <div id="addModal" class="hidden fixed inset-0 z-50 bg-gray-600 bg-opacity-50 items-center justify-center">
         <div class="bg-white rounded-lg p-6 w-full max-w-md">
             <div class="flex justify-between items-center mb-4">
-                <h3 id="modal-title" class="text-xl font-semibold">Add Category Process</h3>
+                <h3 id="modal-title" class="text-xl font-semibold">Tambah Category Process</h3>
                 <button type="button" onClick="closeModal()"
                     class="text-gray-500 text-2xl hover:text-gray-700">&times;</button>
             </div>
@@ -95,13 +95,13 @@
                 <input type="hidden" name="_method" id="form-method" value="POST">
                 <input type="hidden" name="category_id" id="category_id">
                 <div class="mb-4">
-                    <label for="name" class="block text-gray-700">Category Process Name</label>
+                    <label for="name" class="block text-gray-700">Nama Category Process</label>
                     <input type="text" name="name" id="name" required
                         class="w-full border mt-1 border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
-                <button type="submit" id="submit-button"
+                <button type="submit"
                     class="bg-[#136566] text-white px-4 py-2 rounded-lg hover:bg-[#0f4f50]">
-                    Add Category Process
+                    Simpan
                 </button>
             </form>
         </div>
@@ -113,8 +113,8 @@
         }
 
         function openAddModal() {
-            document.getElementById('modal-title').textContent = 'Add Category Process';
-            document.getElementById('submit-button').textContent = 'Add Category Process';
+            document.getElementById('modal-title').textContent = 'Tambah Category Process';
+            // document.getElementById('submit-button').textContent = 'Tambah Category Process';
             document.getElementById('crud-form').action = "{{ route('ppic.category.store') }}";
 
             document.getElementById('form-method').value = 'POST';
@@ -125,7 +125,7 @@
         }
         openEditModal = (id, name) => {
             document.getElementById('modal-title').textContent = 'Edit Category Process';
-            document.getElementById('submit-button').textContent = 'Update Category Process';
+            // document.getElementById('submit-button').textContent = 'Update Category Process';
             let url = "{{ route('ppic.category.update', ':id') }}";
 url = url.replace(':id', id);
 

@@ -107,7 +107,6 @@
                                             class="text-blue-500 border border-blue-500 rounded-xl py-1 px-4 hover:bg-blue-50">
                                             Detail</button>
                                     </td>
-
                                 </tr>
                             @endforeach
                         @else

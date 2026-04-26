@@ -12,7 +12,7 @@
                     <i class="fas fa-users"></i>
                 </div>
                 <div>
-                    <p class="text-sm font-medium text-gray-500">Total Users</p>
+                    <p class="text-sm font-medium text-gray-500">Total Pengguna</p>
                     <p class="text-lg font-semibold text-gray-900">
                         {{ $totalUsers }}
                     </p>
@@ -26,7 +26,7 @@
                     <i class="fas fa-user-tie"></i>
                 </div>
                 <div>
-                    <p class="text-sm font-medium text-gray-500">Total Departments</p>
+                    <p class="text-sm font-medium text-gray-500">Total Departemen</p>
                     <p class="text-lg font-semibold text-gray-900">
                         {{ $totalDepartments }}
                     </p>
@@ -40,7 +40,7 @@
                     <i class="fas fa-chart-line"></i>
                 </div>
                 <div>
-                    <p class="text-sm font-medium text-gray-500">Active Users</p>
+                    <p class="text-sm font-medium text-gray-500">Pengguna Aktif</p>
                     <p class="text-lg font-semibold text-gray-900">
                         {{ $activeUsers }}
                     </p>
@@ -54,7 +54,7 @@
                     <i class="fas fa-user-slash"></i>
                 </div>
                 <div>
-                    <p class="text-sm font-medium text-gray-500">Inactive Users</p>
+                    <p class="text-sm font-medium text-gray-500">Pengguna Tidak Aktif</p>
                     <p class="text-lg font-semibold text-gray-900">
                         {{ $inactiveUsers }}
                     </p>
@@ -64,9 +64,9 @@
 
     </div>
 
-    <!-- RECENT ACTIVITY -->
+    <!-- AKTIVITAS TERBARU -->
     <div class="bg-white rounded-lg p-6 shadow">
-        <h2 class="text-xl font-semibold mb-4">Recent Activity</h2>
+        <h2 class="text-xl font-semibold mb-4">Aktivitas Terbaru</h2>
         <ul class="divide-y divide-gray-200">
             <li class="flex items-center gap-4 py-3">
                 <div class="rounded-full bg-gray-300 p-2 text-gray-500">
@@ -74,7 +74,7 @@
                 </div>
                 <div>
                     <p class="text-sm font-medium text-gray-900">{{ $recentActivity->user->name ?? 'Unknown User' }}</p>
-                    <p class="text-sm text-gray-500">Added a new user</p>
+                    <p class="text-sm text-gray-500">Menambahkan pengguna baru</p>
                     <p class="text-xs text-gray-400">2 hours ago</p>
                 </div>
             </li>

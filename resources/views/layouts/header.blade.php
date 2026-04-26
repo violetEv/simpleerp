@@ -32,7 +32,7 @@
             </button>
 
             <h1 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-                {{ auth()->user()->department_id ? auth()->user()->department->name : 'No Department' }}
+                {{ auth()->user()->department_id ? auth()->user()->department->name : '-' }}
             </h1>
         </div>
 

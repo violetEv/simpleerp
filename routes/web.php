@@ -27,26 +27,42 @@ Route::middleware('role:super_admin')->group(function () {
         ->name('superadmin.dashboard');
 
     Route::get('/superadmin/users', [AdminController::class, 'users'])
-        ->name('superadmin.users');
+        ->name('superadmin.user');
     Route::post('/superadmin/users', [AdminController::class, 'storeUser'])
-        ->name('superadmin.users.store');
+        ->name('superadmin.user.store');
     Route::put('/superadmin/update/{id}', [AdminController::class, 'update'])
-        ->name('superadmin.users.update');
+        ->name('superadmin.user.update');
     Route::delete('/superadmin/delete/{id}', [AdminController::class, 'delete'])
-        ->name('superadmin.users.delete');
+        ->name('superadmin.user.delete');
 
 
     Route::get('/superadmin/departments', [AdminController::class, 'departments'])
-        ->name('superadmin.departments');
+        ->name('superadmin.department');
     Route::post('/superadmin/departments', [AdminController::class, 'storeDepartment'])
-        ->name('superadmin.departments.store');
+        ->name('superadmin.department.store');
     Route::put('/superadmin/departments/update/{id}', [AdminController::class, 'updateDepartment'])
-        ->name('superadmin.departments.update');
+        ->name('superadmin.department.update');
     Route::delete('/superadmin/departments/delete/{id}', [AdminController::class, 'deleteDepartment'])
-        ->name('superadmin.departments.delete');
+        ->name('superadmin.department.delete');
+
+    Route::get('/superadmin/machines', [AdminController::class, 'machines'])
+        ->name('superadmin.machine');
+    Route::post('/superadmin/machines', [AdminController::class, 'storeMachine'])
+        ->name('superadmin.machine.store');
+    Route::put('/superadmin/machines/update/{id}', [AdminController::class, 'updateMachine'])
+        ->name('superadmin.machine.update');
+    Route::delete('/superadmin/machines/delete/{id}', [AdminController::class, 'deleteMachine'])
+        ->name('superadmin.machine.delete');
 
     Route::get('/superadmin/monitoring', [AdminController::class, 'monitoring'])
         ->name('superadmin.monitoring');
+
+    Route::get('/superadmin/report', [AdminController::class, 'report'])
+        ->name('superadmin.report');
+    Route::get('/superadmin/approval', [AdminController::class, 'approval'])
+        ->name('superadmin.approval');
+     // Route::get('/superadmin/activitylog', [AdminController::class, 'activityLog'])->name('superadmin.activitylog');
+     // Route::get('/superadmin/settings', [AdminController::class, 'settings'])->name('superadmin.settings');
 });
 /*
     |--------------------------------------------------------------------------
@@ -60,18 +76,15 @@ Route::middleware('role:manager')->group(function () {
         ->name('manager.monitoring');
     Route::get('/manager/monitoring/{id}', [ManagerController::class, 'detailMonitoring'])
         ->name('manager.detailmonitoring');
-       Route::get('/manager/report', [ManagerController::class, 'report'])
+
+    // RRoute::get('/ppic/monitoring', [PpicController::class, 'monitoring'])->name('ppic.monitoring');
+// 
+    Route::get('/manager/report', [ManagerController::class, 'report'])
         ->name('manager.report');
-    Route::get('/manager/report/{id}', [ManagerController::class, 'show'])
-        ->name('manager.report.show');
     Route::get('/manager/report/export', [ManagerController::class, 'exportReport'])
         ->name('manager.report.export');
-    // Route::get('/manager/report/{id}', [ManagerController::class, 'show'])
-    //     ->name('manager.show');
-
-
-    // Route::get('/manager/report/{id}', [ManagerController::class, 'detailReport'])
-    //     ->name('manager.detailreport');
+    Route::get('/manager/report/{id}', [ManagerController::class, 'show'])
+        ->name('manager.report.show');
 });
 
 /*
@@ -138,10 +151,10 @@ Route::middleware('role:ppic')->group(function () {
 
     Route::get('/ppic/report', [PpicController::class, 'report'])
         ->name('ppic.report');
-    Route::get('/ppic/report/{id}', [PpicController::class, 'show'])
-        ->name('ppic.report.show');
     Route::get('/ppic/report/export', [PpicController::class, 'exportReport'])
         ->name('ppic.report.export');
+    Route::get('/ppic/report/{id}', [PpicController::class, 'show'])
+        ->name('ppic.report.show');
 });
 
 /*

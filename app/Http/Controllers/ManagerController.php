@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Exports\TravelerMovementExport;
+use App\Models\Category;
+use App\Models\Color;
 use App\Models\Customer;
 use App\Models\Kkpo;
 use App\Models\KkpoManagement;
@@ -41,20 +43,47 @@ class ManagerController extends Controller
 
     public function report(Request $request)
     {
-        $suratJalan = SuratJalan::select('no_surat_jalan')->distinct()->pluck('no_surat_jalan');
-        $kkpo = KkpoManagement::select('no_kkpo')->distinct()->pluck('no_kkpo');
-        $customer = Customer::select('name')->distinct()->pluck('name');
-        $style = Style::select('name')->distinct()->pluck('name');
+        $suratJalan = SuratJalan::whereHas('travelers.movements')->select('no_surat_jalan')->distinct()->pluck('no_surat_jalan');
+        $kkpo = KkpoManagement::whereHas('travelers.movements')->select('no_kkpo')->distinct()->pluck('no_kkpo');
+        $customer = Customer::whereHas('kkpoManagements.travelers.movements')->select('name')->distinct()->pluck('name');
+        $style = Style::whereHas('kkpoManagements.travelers.movements')->select('name')->distinct()->pluck('name');
+        $category = Category::whereHas('kkpoManagements.travelers.movements')->select('name')->distinct()->pluck('name');
+        $color = Color::whereHas('kkpoManagements.travelers.movements')->select('name')->distinct()->pluck('name');
 
         $query = SuratJalan::with([
-            'kkpoManagement.customer',
-            'kkpoManagement.category',
-            'kkpoManagement.style',
+            'kkpoManagements',
+            'kkpoManagements.customer',
+            'kkpoManagements.category',
+            'kkpoManagements.style',
+            'kkpoManagements.color',
             'travelers.movements' // relasi ke traveler movements
         ])
+            // search
+            ->when($request->search, function ($q, $search) {
+                $q->where(function ($query) use ($search) {
+                    $query->whereHas('kkpoManagements', function ($k) use ($search) {
+                        $k->where('no_kkpo', 'like', "%{$search}%");
+                    })
+                        ->orWhere('no_surat_jalan', 'like', "%{$search}%")
+                        ->orWhereHas('kkpoManagements.customer', function ($c) use ($search) {
+                            $c->where('name', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('kkpoManagements.category', function ($c) use ($search) {
+                            $c->where('name', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('kkpoManagements.style', function ($s) use ($search) {
+                            $s->where('name', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('kkpoManagements.color', function ($c) use ($search) {
+                            $c->where('name', 'like', "%{$search}%");
+                        });
+                });
+            })
+
+            // harusnya kkpo yg muncul hanya yg punya surat jalan out/sampai warehouse send, jadi filter berdasarkan surat jalan dulu baru filter kkpo, customer, style, category, color
 
             ->when($request->kkpo, function ($q, $kkpo) {
-                $q->whereHas('kkpoManagement', function ($k) use ($kkpo) {
+                $q->whereHas('kkpoManagements', function ($k) use ($kkpo) {
                     $k->where('no_kkpo', $kkpo);
                 });
             })
@@ -64,14 +93,26 @@ class ManagerController extends Controller
             })
 
             ->when($request->customer, function ($q, $customer) {
-                $q->whereHas('kkpoManagement.customer', function ($c) use ($customer) {
+                $q->whereHas('kkpoManagements.customer', function ($c) use ($customer) {
                     $c->where('name', $customer);
                 });
             })
 
             ->when($request->style, function ($q, $style) {
-                $q->whereHas('kkpoManagement.style', function ($s) use ($style) {
+                $q->whereHas('kkpoManagements.style', function ($s) use ($style) {
                     $s->where('name', $style);
+                });
+            })
+
+            ->when($request->category, function ($q, $category) {
+                $q->whereHas('kkpoManagements.category', function ($c) use ($category) {
+                    $c->where('name', $category);
+                });
+            })
+
+            ->when($request->color, function ($q, $color) {
+                $q->whereHas('kkpoManagements.color', function ($c) use ($color) {
+                    $c->where('name', $color);
                 });
             });
 
@@ -82,20 +123,22 @@ class ManagerController extends Controller
             'suratJalan',
             'kkpo',
             'customer',
-            'style'
+            'style',
+            'category',
+            'color'
         ));
     }
 
     public function show($id)
     {
         $sj = SuratJalan::with([
-            'kkpoManagement.customer',
-            'kkpoManagement.category',
-            'kkpoManagement.style',
-            'kkpoManagement.color',
-            'kkpoManagement.item',
-            'kkpoManagement.brand',
-            'kkpoManagement.unit',
+            'kkpoManagements.customer',
+            'kkpoManagements.category',
+            'kkpoManagements.style',
+            'kkpoManagements.color',
+            'kkpoManagements.item',
+            'kkpoManagements.brand',
+            'kkpoManagements.unit',
             'travelers.movements.currentDepartment'
         ])->findOrFail($id);
 

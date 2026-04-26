@@ -12,10 +12,10 @@
             {{-- SEARCH & ADD SATUAN --}}
             <div class="flex items-center justify-between mb-4">
                 <form action="{{ route('ppic.unit') }}" method="GET" class="flex items-center gap-2">
-                    <input type="text" name="search" placeholder="Search satuan..."
+                    <input type="text" name="search" placeholder="Cari satuan..."
                         class="border border-gray-300 rounded-lg px-4 py-2" value="{{ request('search') }}">
                     <button type="submit" class="bg-[#136566] text-white px-4 py-2 rounded-lg hover:bg-[#0f4f50]">
-                        Search
+                        Cari
                     </button>
                 </form>
                 <button onClick="openAddModal()"
@@ -26,19 +26,19 @@
             {{-- SATUAN TABLE --}}
             <div class="bg-white overflow-hidden shadow rounded-lg p-2">
                 {{-- <div class="p-4 bg-white border-b border-gray-200"> --}}
-                    <table class="min-w-full table-fixed">
-                        <thead class="bg-gray-50">
+                    <table class="min-w-full table-fixed text-gray-800">
+                        <thead class="bg-gray-50 text-gray-700 uppercase tracking wider">
                             <tr>
                                 <th
-                                    class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Nama</th>
+                                    class="px-4 py-2 text-left text-xs font-semibold">
+                                    Nama Satuan</th>
                                 <th
-                                    class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-4 py-2 text-left text-xs font-semibold">
                                     Aksi
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
+                        <tbody class="bg-white divide-y divide-gray-200 text-sm">
                             @if ($units->count())
                                 @foreach ($units as $unit)
                                     <tr>
@@ -58,7 +58,7 @@
                                                 class="inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" title="Delete">
+                                                <button type="submit" onclick="return confirm('Apakah Anda yakin ingin menghapus {{ $unit->name }}?')" title="Hapus">
                                                     <svg class="w-6 h-6 text-red-500 hover:text-red-700"
                                                         aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                                         width="24" height="24" fill="none"
@@ -102,9 +102,9 @@
                         <input type="hidden" name="_method" id="unitMethod" value="POST">
                         <input type="hidden" name="unit_id" id="unitId">
                         <div class="mb-4">
-                            <label for="name" class="block text-gray-700">Nama Satuan:</label>
+                            <label for="name" class="block text-gray-700">Nama Satuan</label>
                             <input type="text" name="name" id="unitName"
-                                class="w-full border border-gray-300 rounded-lg px-4 py-2" required>
+                                class="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1" required>
                         </div>
                         <button type="submit" class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
                             Simpan

@@ -5,33 +5,35 @@
         <h3 class="text-lg font-medium text-gray-900 mb-4">Detail Report</h3>
 
         <div class="grid grid-cols-2 gap-y-3 text-sm">
-
+@php
+    $kkpo = $sj->kkpoManagements->first();
+@endphp
             <span class="text-gray-500">No Surat Jalan</span>
             <span>{{ $sj->no_surat_jalan }}</span>
 
             <span class="text-gray-500">KKPO</span>
-            <span>{{ $sj->kkpoManagement->no_kkpo ?? '-' }}</span>
+            <span>{{ $kkpo->no_kkpo ?? '-' }}</span>
 
             <span class="text-gray-500">Customer</span>
-            <span>{{ $sj->kkpoManagement->customer->name ?? '-' }}</span>
+            <span>{{ $kkpo->customer->name ?? '-' }}</span>
 
             <span class="text-gray-500">Item</span>
-            <span>{{ $sj->kkpoManagement->item->name ?? '-' }}</span>
+            <span>{{ $kkpo->item->name ?? '-' }}</span>
 
             <span class="text-gray-500">Category</span>
-            <span>{{ $sj->kkpoManagement->category->name ?? '-' }}</span>
+            <span>{{ $kkpo->category->name ?? '-' }}</span>
 
             <span class="text-gray-500">Style</span>
-            <span>{{ $sj->kkpoManagement->style->name ?? '-' }}</span>
+            <span>{{ $kkpo->style->name ?? '-' }}</span>
 
             <span class="text-gray-500">Color</span>
-            <span>{{ $sj->kkpoManagement->color->name ?? '-' }}</span>
+            <span>{{ $kkpo->color->name ?? '-' }}</span>
 
             <span class="text-gray-500">Brand</span>
-            <span>{{ $sj->kkpoManagement->brand->name ?? '-' }}</span>
+            <span>{{ $kkpo->brand->name ?? '-' }}</span>
 
             <span class="text-gray-500">Unit</span>
-            <span>{{ $sj->kkpoManagement->unit->name ?? '-' }}</span>
+            <span>{{ $kkpo->unit->name ?? '-' }}</span>
 
         </div>
     </div>

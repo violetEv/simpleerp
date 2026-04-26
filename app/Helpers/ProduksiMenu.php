@@ -7,7 +7,7 @@ class ProduksiMenu
     public static function items()
     {
         return [
-            ['name' => 'Dashboard', 'route' => 'dashboard', 'icon' => 'fas fa-tachometer-alt'],
+            ['name' => 'Dasbor', 'route' => 'dashboard', 'icon' => 'fas fa-tachometer-alt'],
             ['name' => 'Proses Traveler', 'route' => 'produksi.proses.index', 'icon' => 'fas fa-cogs'],
             ['name' => 'Log Produksi', 'route' => 'produksi.logproduksi', 'icon' => 'fas fa-clipboard-list'],
             

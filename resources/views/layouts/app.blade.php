@@ -15,7 +15,7 @@
 
 </head>
 
-<body x-data class="bg-gray-100">
+<body x-data class="bg-gray-50 text-gray-800">
     <x-flash-alert /> {{-- Flash Message --}}
 
     @php
@@ -39,7 +39,7 @@
             :class="$store.sidebar.isExpanded ? 'xl:ml-64' : 'xl:ml-20'">
             @include('layouts.header')
 
-            <main class="flex-1 overflow-y-auto p-6">
+            <main class="flex-1 overflow-y-auto px-6 py-5 bg-gray-50 scroll-smooth">
                 <x-page-header :breadcrumbs="$breadcrumbs" />
                 {{-- @yield('content') --}}
                 {{ $slot }}

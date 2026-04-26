@@ -7,7 +7,7 @@ class PPICMenu
     public static function items()
     {
         return [
-            ['name' => 'Dashboard', 'route' => 'dashboard', 'icon' => 'fas fa-tachometer-alt'],
+            ['name' => 'Dasbor', 'route' => 'dashboard', 'icon' => 'fas fa-tachometer-alt'],
             [
                 'name' => 'Master Data',
                 'icon' => 'fas fa-database',
@@ -18,7 +18,7 @@ class PPICMenu
                     ['name' => 'Color', 'route' => 'ppic.color'],
                     ['name' => 'Item', 'route' => 'ppic.item'],
                     ['name' => 'Brand', 'route' => 'ppic.brand'],
-                    ['name' => 'Satuan', 'route' => 'ppic.unit'],
+                    ['name' => 'Unit', 'route' => 'ppic.unit'],
                     ['name' => 'Currency', 'route' => 'ppic.currency'],
                     // ['name' => 'KKPO', 'route' => 'ppic.kkpo']
                 ]

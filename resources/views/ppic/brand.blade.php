@@ -12,32 +12,32 @@
             {{-- SEARCH & ADD BRAND --}}
             <div class="flex items-center justify-between mb-4">
                 <form action="{{ route('ppic.brand') }}" method="GET" class="flex items-center gap-2">
-                    <input type="text" name="search" placeholder="Search brands..."
+                    <input type="text" name="search" placeholder="Cari merek..."
                         class="border border-gray-300 rounded-lg px-4 py-2" value="{{ request('search') }}">
                     <button type="submit" class="bg-[#136566] text-white px-4 py-2 rounded-lg hover:bg-[#0f4f50]">
-                        Search
+                        Cari
                     </button>
                 </form>
                 <button onClick="openAddModal()"
                     class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
-                    + Tambah Brand
+                    + Tambah Merek
                 </button>
             </div>
             {{-- BRAND TABLE --}}
             <div class="bg-white overflow-hidden shadow rounded-lg p-2">
                 {{-- <div class="p-4 bg-white border-b border-gray-200"> --}}
-                <table class="min-w-full table-fixed">
-                    <thead class="bg-gray-50">
+                <table class="min-w-full table-fixed text-gray-800">
+                    <thead class="bg-gray-50 text-gray-700 uppercase tracking wider">
                         <tr>
                             {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th> --}}
-                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Nama</th>
-                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th class="px-4 py-2 text-left text-xs font-semibold">
+                                Nama Merek</th>
+                            <th class="px-4 py-2 text-left text-xs font-semibold">
                                 Aksi
                             </th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tbody class="bg-white divide-y divide-gray-200 text-sm">
                         @if ($brands->count())
                             @foreach ($brands as $brand)
                                 <tr>
@@ -56,10 +56,10 @@
                                         </button>
                                         <form action="{{ route('ppic.brand.delete', $brand->id) }}" method="POST"
                                             class="inline"
-                                            onsubmit="return confirm('Are you sure you want to delete this brand?')">
+                                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus {{ $brand->name }}?')">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" title="Delete">
+                                            <button type="submit" title="Hapus">
                                                 <svg class="w-6 h-6 text-red-500 hover:text-red-700" aria-hidden="true"
                                                     xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                     fill="none" viewBox="0 0 24 24">
@@ -75,7 +75,7 @@
                         @else
                             <tr>
                                 <td colspan="2" class="px-4 py-2 whitespace-nowrap text-center text-gray-500">
-                                    Brand tidak ditemukan.
+                                    Merek tidak ditemukan.
                                 </td>
                             </tr>
                         @endif
@@ -91,7 +91,7 @@
         <div id="addModal" class="hidden fixed inset-0 z-50 bg-gray-600 bg-opacity-50 items-center justify-center">
             <div class="bg-white rounded-lg p-6 w-full max-w-md">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 id="modal-title" class="text-lg font-medium">Tambah Brand</h3>
+                    <h3 id="modal-title" class="text-lg font-medium">Tambah Merek</h3>
                     <button onClick="closeAddModal()" class="text-gray-500 text-2xl hover:text-gray-700">
                         &times;
                     </button>
@@ -101,13 +101,13 @@
                     <input type="hidden" name="_method" id="brandMethod" value="POST">
                     <input type="hidden" name="brand_id" id="brandId">
                     <div class="mb-4">
-                        <label for="name" class="block text-gray-700 font-medium mb-2">Nama Brand</label>
+                        <label for="name" class="block text-gray-700 font-medium mb-2">Nama Merek</label>
                         <input type="text" name="name" id="name" required
                             class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#136566]">
                     </div>
-                    <button type="submit" id="submit-button"
+                    <button type="submit"
                         class="bg-[#136566] text-white px-4 py-2 rounded-lg hover:bg-[#0f4f50]">
-                        Tambah Brand
+                        Simpan
                     </button>
                 </form>
             </div>
@@ -118,8 +118,8 @@
         function openAddModal() {
             document.getElementById('addModal').classList.remove('hidden');
             document.getElementById('addModal').classList.add('flex');
-            document.getElementById('modal-title').textContent = 'Tambah Brand';
-            document.getElementById('submit-button').textContent = 'Tambah Brand';
+            document.getElementById('modal-title').textContent = 'Tambah Merek';
+            // document.getElementById('submit-button').textContent = 'Tambah Merek';
             document.getElementById('brandForm').action = "{{ route('ppic.brand.store') }}";
             document.getElementById('brandMethod').value = 'POST';
             document.getElementById('brandId').value = '';
@@ -133,8 +133,8 @@
 
         function editBrand(id, name) {
             openAddModal();
-            document.getElementById('modal-title').textContent = 'Edit Brand';
-            document.getElementById('submit-button').textContent = 'Update Brand';
+            document.getElementById('modal-title').textContent = 'Edit Merek';
+            // document.getElementById('submit-button').textContent = 'Update Merek';
             let url = "{{ route('ppic.brand.update', ':id') }}";
             url = url.replace(':id', id);
             document.getElementById('brandForm').action = url;

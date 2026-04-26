@@ -585,98 +585,86 @@ class PpicController extends Controller
             return back()->with('error', 'Gagal menghapus Currency');
         }
     }
-    // disini untuk set master kkpo
-    public function kkpo()
-    {
-        $query = Kkpo::with('customer')->orderBy('no_kkpo', 'asc');
-
-        if (request()->filled('search')) {
-            $search = request()->search;
-
-            $query->where('no_kkpo', 'like', "%{$search}%")
-                ->orWhereHas('customer', function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%");
-                });
-        }
-
-        $kkpos = $query->paginate(10)->withQueryString();
-        $customers = Customer::all();
-        return view('ppic.kkpo', compact('kkpos', 'customers'));
-    }
-
-
-    public function kkpoStore(Request $request)
-    {
-        $request->validate([
-            'no_kkpo' => 'required|string|max:255',
-        ]);
-
-        Kkpo::create([
-            'no_kkpo' => $request->no_kkpo,
-            'customer_id' => $request->customer_id,
-        ]);
-
-        return redirect()
-            ->route('ppic.kkpo')
-            ->with('success', 'KKPO berhasil ditambahkan');
-    }
-    public function kkpoUpdate(Request $request, $id)
-    {
-        $kkpo = Kkpo::findOrFail($id);
-        $request->validate([
-            'no_kkpo' => 'required|string|max:255',
-            'customer_id' => 'required|exists:customers,id',
-        ]);
-        $kkpo->update([
-            'no_kkpo' => $request->no_kkpo,
-            'customer_id' => $request->customer_id,
-        ]);
-        return redirect()
-            ->route('ppic.kkpo')
-            ->with('success', 'KKPO berhasil diupdate');
-    }
-    public function kkpoDelete($id)
-    {
-        $kkpo = Kkpo::findOrFail($id);
-        try {
-            $kkpo->delete();
-
-            return redirect()
-                ->route('ppic.kkpo')
-                ->with('success', 'KKPO berhasil dihapus');
-        } catch (QueryException $e) {
-            if ($e->errorInfo[1] == 1451) {
-                return back()->with('error', 'Gagal menghapus KKPO karena masih digunakan di KKPO Management');
-            }
-            return back()->with('error', 'Gagal menghapus KKPO');
-        }
-    }
-
 
     public function kkpoManagement()
     {
-        $query = KkpoManagement::with('customer', 'style', 'color', 'category', 'travelers')->latest();
+        $query = KkpoManagement::with([
+            'customer',
+            'style',
+            'color',
+            'category',
+            'item',
+            'brand',
+            'unit',
+            'currency'
+        ])->latest();
 
+        // SEARCH
         if (request()->filled('search')) {
-            $search = request()->search;
+            $search = request('search');
 
-            $query->where('no_kkpo', 'like', "%{$search}%")
-                ->orWhereHas('customer', function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%");
-                })
-                ->orWhereHas('category', function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%");
-                })
-                ->orWhereHas('style', function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%");
-                })
-                ->orWhereHas('color', function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%");
-                });
+            $query->where(function ($q) use ($search) {
+                $q->where('no_kkpo', 'like', "%{$search}%")
+                    ->orWhereHas('customer', fn($q) => $q->where('name', 'like', "%{$search}%"))
+                    ->orWhereHas('category', fn($q) => $q->where('name', 'like', "%{$search}%"))
+                    ->orWhereHas('style', fn($q) => $q->where('name', 'like', "%{$search}%"))
+                    ->orWhereHas('color', fn($q) => $q->where('name', 'like', "%{$search}%"))
+                    ->orWhere('kp_po', 'like', "%{$search}%")
+                    ->orWhereHas('item', fn($q) => $q->where('name', 'like', "%{$search}%"))
+                    ->orWhereHas('brand', fn($q) => $q->where('name', 'like', "%{$search}%"))
+                    ->orWhereHas('unit', fn($q) => $q->where('name', 'like', "%{$search}%"))
+                    ->orWhereHas('currency', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%")
+                            ->orWhere('code', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        // FILTER
+        if (request()->filled('customer')) {
+            $query->where('customer_id', request('customer'));
+        }
+        if (request()->filled('category')) {
+            $query->where('category_id', request('category'));
+        }
+        if (request()->filled('style')) {
+            $query->where('style_id', request('style'));
+        }
+        if (request()->filled('color')) {
+            $query->where('color_id', request('color'));
+        }
+        if (request()->filled('item')) {
+            $query->where('item_id', request('item'));
+        }
+        if (request()->filled('brand')) {
+            $query->where('brand_id', request('brand'));
+        }
+
+        if (request()->filled('date_from') && request()->filled('date_to')) {
+            $query->whereBetween('tanggal', [request('date_from'), request('date_to')]);
         }
 
         $kkpomanagements = $query->paginate(10)->withQueryString();
-        // $kkpos = Kkpo::all();
+
+        /*
+    |--------------------------------------------------------------------------
+    | FILTER DATA (HANYA YANG SUDAH ADA DI KKPO)
+    |--------------------------------------------------------------------------
+    */
+        $base = clone $query;
+
+        $filterCustomers = Customer::whereIn('id', $base->pluck('customer_id'))->get();
+        $filterCategories = Category::whereIn('id', $base->pluck('category_id'))->get();
+        $filterStyles = Style::whereIn('id', $base->pluck('style_id'))->get();
+        $filterColors = Color::whereIn('id', $base->pluck('color_id'))->get();
+        $filterItems = Item::whereIn('id', $base->pluck('item_id'))->get();
+        $filterBrands = Brand::whereIn('id', $base->pluck('brand_id'))->get();
+
+        /*
+    |--------------------------------------------------------------------------
+    | MODAL DATA (SEMUA MASTER DATA)
+    |--------------------------------------------------------------------------
+    */
         $customers = Customer::all();
         $categories = Category::all();
         $styles = Style::all();
@@ -685,9 +673,46 @@ class PpicController extends Controller
         $brands = Brand::all();
         $units = Unit::all();
         $currencies = Currency::all();
-        return view('ppic.kkpomanagement', compact('kkpomanagements', 'customers', 'categories', 'styles', 'colors', 'items', 'brands', 'units', 'currencies'));
-    }
 
+        return view('ppic.kkpomanagement', compact(
+            'kkpomanagements',
+
+            // filter
+            'filterCustomers',
+            'filterCategories',
+            'filterStyles',
+            'filterColors',
+            'filterItems',
+            'filterBrands',
+
+            // modal
+            'customers',
+            'categories',
+            'styles',
+            'colors',
+            'items',
+            'brands',
+            'units',
+            'currencies'
+        ));
+    }
+    public function kkpoManagementShow($id)
+    {
+        $kkpomanagement = KkpoManagement::with([
+            'customer',
+            'style',
+            'color',
+            'category',
+            'item',
+            'brand',
+            'unit',
+            'currency',
+            'travelers',
+            'suratJalan'
+        ])->findOrFail($id);
+
+        return view('ppic.detailkkpo', compact('kkpomanagement'));
+    }
     public function kkpoManagementStore(Request $request)
     {
         $request->validate([
@@ -703,7 +728,12 @@ class PpicController extends Controller
             'item_id' => 'required|exists:items,id',
             'brand_id' => 'required|exists:brands,id',
             'unit_id' => 'required|exists:units,id',
-            'currency_id' => 'required|exists:currencies,id'
+            'currency_id' => 'required|exists:currencies,id',
+            'payment_terms' => 'nullable|integer',
+            'notes' => 'nullable|string',
+            'npwp' => 'nullable|string|max:255',
+            'remark' => 'nullable|string',
+            'tanggal' => 'nullable|date',
         ]);
 
         try {
@@ -721,7 +751,12 @@ class PpicController extends Controller
                 'qty_total' => $request->qty_total,
                 'price' => $request->price,
                 'reject_allowance' => $request->reject_allowance,
-                'currency_id' => $request->currency_id
+                'currency_id' => $request->currency_id,
+                'payment_terms' => $request->payment_terms,
+                'notes' => $request->notes,
+                'npwp' => $request->npwp,
+                'remark' => $request->remark,
+                'tanggal' => $request->tanggal,
             ]);
 
             return redirect()
@@ -729,7 +764,6 @@ class PpicController extends Controller
                 ->with('success', 'KKPO berhasil ditambahkan');
         } catch (\Exception $e) {
 
-            // 🔥 lebih jelas dari QueryException saja
             return back()
                 ->withInput()
                 ->with('error', 'Gagal menambahkan KKPO: ' . $e->getMessage());
@@ -740,7 +774,6 @@ class PpicController extends Controller
     {
         $kkpomanagement = KkpoManagement::findOrFail($id);
 
-        // Validasi input jika diperlukan
         $request->validate([
             'no_kkpo' => 'required|exists:kkpo_managements,no_kkpo',
             'style_id' => 'required|exists:styles,id',
@@ -754,8 +787,12 @@ class PpicController extends Controller
             'item_id' => 'required|exists:items,id',
             'brand_id' => 'required|exists:brands,id',
             'unit_id' => 'required|exists:units,id',
-            'currency_id' => 'required|exists:currencies,id'
-
+            'currency_id' => 'required|exists:currencies,id',
+            'payment_terms' => 'nullable|integer',
+            'notes' => 'nullable|string',
+            'npwp' => 'nullable|string|max:255',
+            'remark' => 'nullable|string',
+            'tanggal' => 'nullable|date',
         ]);
 
         try {
@@ -772,7 +809,12 @@ class PpicController extends Controller
                 'qty_total' => $request->qty_total,
                 'price' => $request->price,
                 'reject_allowance' => $request->reject_allowance,
-                'currency_id' => $request->currency_id
+                'currency_id' => $request->currency_id,
+                'payment_terms' => $request->payment_terms,
+                'notes' => $request->notes,
+                'npwp' => $request->npwp,
+                'remark' => $request->remark,
+                'tanggal' => $request->tanggal,
             ]);
 
             return redirect()
@@ -796,11 +838,7 @@ class PpicController extends Controller
             return back()->with('error', 'Gagal menghapus KKPO');
         }
     }
-    public function kkpoManagementShow($id)
-    {
-        $kkpomanagement = KkpoManagement::with('customer', 'style', 'color', 'category', 'item', 'brand', 'unit', 'currency', 'travelers', 'suratJalan')->findOrFail($id);
-        return view('ppic.detailkkpo', compact('kkpomanagement'));
-    }
+
     public function kkpoDetail($id)
     {
         $kkpo = KkpoManagement::with('customer', 'style', 'color', 'category')->findOrFail($id);
@@ -812,19 +850,21 @@ class PpicController extends Controller
         if (request()->filled('search')) {
             $search = request()->search;
 
-            $query->whereHas('kkpo', function ($q) use ($search) {
+            $query->whereHas('kkpoManagements', function ($q) use ($search) {
                 $q->where('no_kkpo', 'like', "%{$search}%");
             })
-                ->orWhereHas('customer', function ($q) use ($search) {
+                ->orWhere('no_surat_jalan', 'like', "%{$search}%")
+
+                ->orWhereHas('kkpoManagements.customer', function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%");
                 })
-                ->orWhereHas('category', function ($q) use ($search) {
+                ->orWhereHas('kkpoManagements.category', function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%");
                 })
-                ->orWhereHas('style', function ($q) use ($search) {
+                ->orWhereHas('kkpoManagements.style', function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%");
                 })
-                ->orWhereHas('color', function ($q) use ($search) {
+                ->orWhereHas('kkpoManagements.color', function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%");
                 });
         }
@@ -833,20 +873,46 @@ class PpicController extends Controller
     }
     public function report(Request $request)
     {
-        $suratJalan = SuratJalan::select('no_surat_jalan')->distinct()->pluck('no_surat_jalan');
-        $kkpo = KkpoManagement::select('no_kkpo')->distinct()->pluck('no_kkpo');
-        $customer = Customer::select('name')->distinct()->pluck('name');
-        $style = Style::select('name')->distinct()->pluck('name');
+        $suratJalan = SuratJalan::whereHas('travelers.movements')->select('no_surat_jalan')->distinct()->pluck('no_surat_jalan');
+        $kkpo = KkpoManagement::whereHas('travelers.movements')->select('no_kkpo')->distinct()->pluck('no_kkpo');
+        $customer = Customer::whereHas('kkpoManagements.travelers.movements')->select('name')->distinct()->pluck('name');
+        $style = Style::whereHas('kkpoManagements.travelers.movements')->select('name')->distinct()->pluck('name');
+        $category = Category::whereHas('kkpoManagements.travelers.movements')->select('name')->distinct()->pluck('name');
+        $color = Color::whereHas('kkpoManagements.travelers.movements')->select('name')->distinct()->pluck('name');
 
         $query = SuratJalan::with([
-            'kkpoManagement.customer',
-            'kkpoManagement.category',
-            'kkpoManagement.style',
+            'kkpoManagements',
+            'kkpoManagements.customer',
+            'kkpoManagements.category',
+            'kkpoManagements.style',
+            'kkpoManagements.color',
             'travelers.movements' // relasi ke traveler movements
         ])
+            ->when($request->search, function ($q, $search) {
+                $q->where(function ($query) use ($search) {
+                    $query->whereHas('kkpoManagements', function ($k) use ($search) {
+                        $k->where('no_kkpo', 'like', "%{$search}%");
+                    })
+                        ->orWhere('no_surat_jalan', 'like', "%{$search}%")
+                        ->orWhereHas('kkpoManagements.customer', function ($c) use ($search) {
+                            $c->where('name', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('kkpoManagements.category', function ($c) use ($search) {
+                            $c->where('name', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('kkpoManagements.style', function ($s) use ($search) {
+                            $s->where('name', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('kkpoManagements.color', function ($c) use ($search) {
+                            $c->where('name', 'like', "%{$search}%");
+                        });
+                });
+            })
+
+            // harusnya kkpo yg muncul hanya yg punya surat jalan out/sampai warehouse send, jadi filter berdasarkan surat jalan dulu baru filter kkpo, customer, style, category, color
 
             ->when($request->kkpo, function ($q, $kkpo) {
-                $q->whereHas('kkpoManagement', function ($k) use ($kkpo) {
+                $q->whereHas('kkpoManagements', function ($k) use ($kkpo) {
                     $k->where('no_kkpo', $kkpo);
                 });
             })
@@ -856,14 +922,26 @@ class PpicController extends Controller
             })
 
             ->when($request->customer, function ($q, $customer) {
-                $q->whereHas('kkpoManagement.customer', function ($c) use ($customer) {
+                $q->whereHas('kkpoManagements.customer', function ($c) use ($customer) {
                     $c->where('name', $customer);
                 });
             })
 
             ->when($request->style, function ($q, $style) {
-                $q->whereHas('kkpoManagement.style', function ($s) use ($style) {
+                $q->whereHas('kkpoManagements.style', function ($s) use ($style) {
                     $s->where('name', $style);
+                });
+            })
+
+            ->when($request->category, function ($q, $category) {
+                $q->whereHas('kkpoManagements.category', function ($c) use ($category) {
+                    $c->where('name', $category);
+                });
+            })
+
+            ->when($request->color, function ($q, $color) {
+                $q->whereHas('kkpoManagements.color', function ($c) use ($color) {
+                    $c->where('name', $color);
                 });
             });
 
@@ -874,20 +952,22 @@ class PpicController extends Controller
             'suratJalan',
             'kkpo',
             'customer',
-            'style'
+            'style',
+            'category',
+            'color'
         ));
     }
 
     public function show($id)
     {
         $sj = SuratJalan::with([
-            'kkpoManagement.customer',
-            'kkpoManagement.category',
-            'kkpoManagement.style',
-            'kkpoManagement.color',
-            'kkpoManagement.item',
-            'kkpoManagement.brand',
-            'kkpoManagement.unit',
+            'kkpoManagements.customer',
+            'kkpoManagements.category',
+            'kkpoManagements.style',
+            'kkpoManagements.color',
+            'kkpoManagements.item',
+            'kkpoManagements.brand',
+            'kkpoManagements.unit',
             'travelers.movements.currentDepartment'
         ])->findOrFail($id);
 

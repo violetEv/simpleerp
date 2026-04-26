@@ -5,10 +5,10 @@
             {{-- Search & Add Style Modal --}}
             <div class="flex items-center justify-between mb-4">
                 <form action="{{ route('ppic.style') }}" method="GET" class="flex items-center gap-2">
-                    <input type="text" name="search" placeholder="Search styles..."
+                    <input type="text" name="search" placeholder="Cari Style..."
                         class="border border-gray-300 rounded-lg px-4 py-2" value="{{ request('search') }}">
                     <button type="submit" class="bg-[#136566] text-white px-4 py-2 rounded-lg hover:bg-[#0f4f50]">
-                        Search
+                        Cari
                     </button>
                 </form>
 
@@ -21,20 +21,20 @@
             <div class="bg-white overflow-hidden shadow rounded-lg p-2">
                 {{-- <div class="p-4 bg-white border-b border-gray-200"> --}}
 
-                    <table class="min-w-full table-fixed">
-                        <thead class="bg-gray-50">
+                    <table class="min-w-full table-fixed text-gray-800">
+                        <thead class="bg-gray-50 text-gray-700 uppercase tracking wider">
                             <tr>
                                 {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th> --}}
                                 <th
-                                    class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Name</th>
+                                    class="px-4 py-2 text-left text-xs font-semibold">
+                                    Nama Style</th>
                                 <th
-                                    class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Action
+                                    class="px-4 py-2 text-left text-xs font-semibold">
+                                    Aksi
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
+                        <tbody class="bg-white divide-y divide-gray-200 text-sm">
                             @if ($styles->count())
                                 @foreach ($styles as $style)
                                     <tr>
@@ -55,8 +55,8 @@
                                                 class="inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" title="Delete"
-                                                    onclick="return confirm('Apakah Anda yakin ingin mengapus style ini?')">
+                                                <button type="submit" title="Hapus"
+                                                    onclick="return confirm('Apakah Anda yakin ingin menghapus {{ $style->name }}?')">
                                                     <svg class="w-6 h-6 text-red-500 hover:text-red-700"
                                                         aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                                         width="24" height="24" fill="none"
@@ -89,7 +89,7 @@
                 class="hidden fixed inset-0 bg-gray-600  bg-opacity-50 items-center justify-center z-50">
                 <div class="bg-white p-6 rounded-lg w-full max-w-md">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 id="modal-title" class="text-lg font-medium">Add Style</h3>
+                        <h3 id="modal-title" class="text-lg font-medium">Tambah Style</h3>
                         <button onClick="closeAddModal()" class="text-gray-500 text-2xl hover:text-gray-700">
                             &times;
                         </button>
@@ -99,13 +99,13 @@
                         <input type="hidden" name="_method" id="form-method" value="POST">
                         <input type="hidden" name="style_id" id="style_id">
                         <div class="mb-4">
-                            <label for="name" class="block text-gray-700">Style Name</label>
+                            <label for="name" class="block text-gray-700">Nama Style</label>
                             <input type="text" name="name" id="name" required
                                 class="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1">
                         </div>
-                        <button type="submit" id="submit-button"
+                        <button type="submit" 
                             class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
-                            Add Style
+                            Simpan
                         </button>
                     </form>
                 </div>
@@ -116,8 +116,8 @@
         function openAddModal() {
             document.getElementById('addModal').classList.remove('hidden');
             document.getElementById('addModal').classList.add('flex')
-            document.getElementById('modal-title').textContent = 'Add Style';
-            document.getElementById('submit-button').textContent = 'Add Style';
+            document.getElementById('modal-title').textContent = 'Tambah Style';
+            // document.getElementById('submit-button').textContent = 'Simpan';
             document.getElementById('crud-form').action = "{{ route('ppic.style.store') }}";
             document.getElementById('form-method').value = 'POST';
             document.getElementById('style_id').value = '';
@@ -132,7 +132,7 @@
         function editStyle(id, name) {
             openAddModal();
             document.getElementById('modal-title').textContent = 'Edit Style';
-            document.getElementById('submit-button').textContent = 'Update Style';
+            // document.getElementById('submit-button').textContent = 'Update Style';
             let url = "{{ route('ppic.style.update', ':id') }}";
             url = url.replace(':id', id);
 

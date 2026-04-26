@@ -169,7 +169,6 @@ class ProductionController extends Controller
                 'status_case' => $statusCase,
             ]);
 
-            // 🔥 UPDATE STATUS TRAVELER (ini versi aman)
             $traveler->update([
                 'status' => 'in_progress',
                 'current_dept_id' => Auth::user()->department_id
@@ -220,19 +219,17 @@ class ProductionController extends Controller
                 return back()->with('error', 'Qty OUT dan Reject tidak boleh kosong semua');
             }
 
-            // ❌ tidak boleh lebih dari IN
             if ($total > $qty_in) {
                 DB::rollBack();
                 return back()->with('error', 'Qty OUT + Reject melebihi Qty IN');
             }
 
-            // hitung loss
+
             $qty_loss = $qty_in - $total;
 
             // status
             $statusCase = ($qty_loss > 0) ? 'selisih' : 'normal';
 
-            // ⚠️ wajib notes kalau ada selisih
             if ($qty_loss > 0 && trim($request->notes) === '') {
                 DB::rollBack();
                 return back()->with('error', 'Ada selisih qty, wajib isi keterangan!');
@@ -266,7 +263,6 @@ class ProductionController extends Controller
 
             DB::commit();
 
-            // 🎯 RESPONSE CLEAN
             return redirect()
                 ->route('produksi.proses.index')
                 ->with(

@@ -20,6 +20,7 @@
 
     {{-- hidden input --}}
     <input type="hidden" name="{{ $name }}" :value="selected">
+    <input type="text" x-model="selected" class="absolute opacity-0 pointer-events-none" tabindex="-1" required>
 
     {{-- trigger --}}
     <div @click="toggle" class="w-full border border-gray-300 rounded px-3 py-2 bg-white cursor-pointer">
