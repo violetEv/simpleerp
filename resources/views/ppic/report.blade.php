@@ -150,17 +150,17 @@
                                 @foreach ($data as $sj)
                                     <tr>
                                         <td class="px-4 py-2 whitespace-nowrap">
-                                            {{ $sj->kkpoManagements->no_kkpo ?? '-' }}</td>
+                                            {{ $sj->kkpoManagement->no_kkpo ?? '-' }}</td>
                                         <td class="px-4 py-2 whitespace-nowrap">
                                             {{ $sj->no_surat_jalan ?? '-' }}</td>
                                         <td class="px-4 py-2 whitespace-nowrap">
-                                            {{ $sj->kkpoManagements->customer->name ?? '-' }}
+                                            {{ $sj->kkpoManagement->customer->name ?? '-' }}
                                         </td>
                                         <td class="px-4 py-2 whitespace-nowrap">
-                                            {{ $sj->kkpoManagements->category->name ?? '-' }}
+                                            {{ $sj->kkpoManagement->category->name ?? '-' }}
                                         </td>
                                         <td class="px-4 py-2 whitespace-nowrap">
-                                            {{ $sj->kkpoManagements->style->name ?? '-' }}
+                                            {{ $sj->kkpoManagement->style->name ?? '-' }}
                                         </td>
 
                                         @php

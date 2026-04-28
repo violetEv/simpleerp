@@ -7,6 +7,7 @@
     'placeholder' => 'Pilih data...',
     'searchPlaceholder' => 'Cari...',
     'onChange' => null,
+    'required' => false, // 🔥 TAMBAHAN
 ])
 
 <div id="{{ $id ?? $name }}" x-data="selectSearch({
@@ -14,34 +15,41 @@
     selected: @js($value),
     placeholder: '{{ $placeholder }}'
 })" class="relative w-full">
+
     @if ($label)
         <label class="block text-gray-700 mb-1">{{ $label }}</label>
     @endif
 
     {{-- hidden input --}}
     <input type="hidden" name="{{ $name }}" :value="selected">
-    <input type="text" x-model="selected" class="absolute opacity-0 pointer-events-none" tabindex="-1" required>
+
+    {{-- 🔥 VALIDATION TRIGGER --}}
+    <input 
+        type="text" 
+        x-model="selected" 
+        class="absolute opacity-0 pointer-events-none" 
+        tabindex="-1"
+        {{ $required ? 'required' : '' }}
+    >
 
     {{-- trigger --}}
-    <div @click="toggle" class="w-full border border-gray-300 rounded px-3 py-2 bg-white cursor-pointer">
+    <div @click="toggle"
+        class="w-full border border-gray-300 rounded px-3 py-2 bg-white cursor-pointer">
         <span x-text="selectedLabel || placeholder"></span>
     </div>
 
     {{-- dropdown --}}
     <div x-show="open" x-transition @click.outside="open = false"
         class="absolute z-50 mt-1 w-full bg-white border rounded shadow">
-        {{-- search --}}
+
         <div class="p-2">
             <input type="text" x-model="search" placeholder="{{ $searchPlaceholder }}"
                 class="w-full border px-2 py-1 rounded">
         </div>
 
-        {{-- options --}}
         <ul class="max-h-48 overflow-y-auto">
             <template x-for="option in filteredOptions" :key="option.value">
-                <li @click="
-        select(option);
-        {{ $onChange ? $onChange . '(option)' : '' }}"
+                <li @click="select(option); {{ $onChange ? $onChange . '(option)' : '' }}"
                     class="px-3 py-2 hover:bg-gray-100 cursor-pointer"
                     :class="{ 'bg-gray-100': isSelected(option.value) }">
                     <span x-text="option.label"></span>

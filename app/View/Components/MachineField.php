@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class qc-field extends Component
+class MachineField extends Component
 {
     /**
      * Create a new component instance.
@@ -21,6 +21,6 @@ class qc-field extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.qc-field');
+        return view('components.machine-field');
     }
 }

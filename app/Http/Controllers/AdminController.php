@@ -12,6 +12,7 @@ use App\Models\KkpoManagement;
 use App\Models\Machine;
 use App\Models\Style;
 use App\Models\SuratJalan;
+use App\Models\TravelerMovement;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Database\QueryException;
@@ -302,45 +303,103 @@ class AdminController extends Controller
             return back()->with('error', 'Gagal memuat data approval: ' . $e->getMessage());
         }
     }
+public function travelerMonitoring(Request $request)
+{
+    $movements = TravelerMovement::with([
+        'traveler.suratJalan',
+        'deptTujuan'
+    ])
+    ->orderBy('date_in')
+    ->get();
 
-    public function monitoring()
-    {
-        return view('superadmin.monitoring');
-    }
+    $data = $movements->groupBy('traveler_id')->map(function ($items) {
+
+        $traveler = $items->first()->traveler;
+
+        $row = [
+            'traveler' => $traveler,
+            'departments' => []
+        ];
+
+        // ambil movement terakhir
+        $last = $items->sortByDesc('date_in')->first();
+        $row['current_dept'] = optional($last->deptTujuan)->name;
+
+        $totalIn = 0;
+        $totalOut = 0;
+
+        foreach ($items as $movement) {
+
+            if (!$movement->deptTujuan) continue;
+
+            $deptName = $movement->deptTujuan->name;
+
+            if (!isset($row['departments'][$deptName])) {
+                $row['departments'][$deptName] = [
+                    'tanggal' => $movement->date_in,
+                    'qty_in' => 0,
+                    'qty_out' => 0,
+                ];
+            }
+
+            $row['departments'][$deptName]['tanggal'] = $movement->date_in;
+            $row['departments'][$deptName]['qty_in'] += $movement->qty_in ?? 0;
+            $row['departments'][$deptName]['qty_out'] += $movement->qty_out ?? 0;
+
+            $totalIn += $movement->qty_in ?? 0;
+            $totalOut += $movement->qty_out ?? 0;
+        }
+
+        // 🔥 WIP REAL (AMAN)
+        $row['wip'] = max($totalIn - $totalOut, 0);
+
+        // 🔥 OPTIONAL: HILANGKAN YANG SUDAH SELESAI
+        $row['is_finished'] = $row['wip'] == 0;
+
+        return $row;
+    })
+
+    // 
+    ->filter(function ($row) {
+        return !$row['is_finished']; // hanya tampil yg masih WIP
+    });
+
+    return view('ppic.monitoring', compact('data'));
+}
 
     public function report(Request $request)
     {
         $suratJalan = SuratJalan::whereHas('travelers.movements')->select('no_surat_jalan')->distinct()->pluck('no_surat_jalan');
         $kkpo = KkpoManagement::whereHas('travelers.movements')->select('no_kkpo')->distinct()->pluck('no_kkpo');
-        $customer = Customer::whereHas('kkpoManagements.travelers.movements')->select('name')->distinct()->pluck('name');
-        $style = Style::whereHas('kkpoManagements.travelers.movements')->select('name')->distinct()->pluck('name');
-        $category = Category::whereHas('kkpoManagements.travelers.movements')->select('name')->distinct()->pluck('name');
-        $color = Color::whereHas('kkpoManagements.travelers.movements')->select('name')->distinct()->pluck('name');
+        $customer = Customer::whereHas('kkpoManagement.travelers.movements')->select('name')->distinct()->pluck('name');
+        $style = Style::whereHas('kkpoManagement.travelers.movements')->select('name')->distinct()->pluck('name');
+        $category = Category::whereHas('kkpoManagement.travelers.movements')->select('name')->distinct()->pluck('name');
+        $color = Color::whereHas('kkpoManagement.travelers.movements')->select('name')->distinct()->pluck('name');
 
         $query = SuratJalan::with([
-            'kkpoManagements',
-            'kkpoManagements.customer',
-            'kkpoManagements.category',
-            'kkpoManagements.style',
-            'kkpoManagements.color',
+            'kkpoManagement',
+            'kkpoManagement.customer',
+            'kkpoManagement.category',
+            'kkpoManagement.style',
+            'kkpoManagement.color',
             'travelers.movements' // relasi ke traveler movements
         ])
             // search
             ->when($request->search, function ($q, $search) {
                 $q->where(function ($query) use ($search) {
-                    $query->whereHas('kkpoManagements', function ($k) use ($search) {
+                    $query->whereHas('kkpoManagement', function ($k) use ($search) {
                         $k->where('no_kkpo', 'like', "%{$search}%");
                     })
-                        ->orWhereHas('kkpoManagements.customer', function ($c) use ($search) {
+                        ->orWhereHas('kkpoManagement.customer', function ($c) use ($search) {
                             $c->where('name', 'like', "%{$search}%");
                         })
-                        ->orWhereHas('kkpoManagements.category', function ($c) use ($search) {
+                        ->orWhereHas('kkpoManagement.category', function ($c) use ($search) {
                             $c->where('name', 'like', "%{$search}%");
                         })
-                        ->orWhereHas('kkpoManagements.style', function ($s) use ($search) {
+                        ->orWhereHas('kkpoManagement.style', function ($s) use ($search) {
                             $s->where('name', 'like', "%{$search}%");
                         })
-                        ->orWhereHas('kkpoManagements.color', function ($c) use ($search) {
+                        ->orWhereHas('kkpoManagement.color', function ($c) use ($search) {
                             $c->where('name', 'like', "%{$search}%");
                         });
                 });
@@ -349,7 +408,7 @@ class AdminController extends Controller
             // harusnya kkpo yg muncul hanya yg punya surat jalan out/sampai warehouse send, jadi filter berdasarkan surat jalan dulu baru filter kkpo, customer, style, category, color
 
             ->when($request->kkpo, function ($q, $kkpo) {
-                $q->whereHas('kkpoManagements', function ($k) use ($kkpo) {
+                $q->whereHas('kkpoManagement', function ($k) use ($kkpo) {
                     $k->where('no_kkpo', $kkpo);
                 });
             })
@@ -359,25 +418,25 @@ class AdminController extends Controller
             })
 
             ->when($request->customer, function ($q, $customer) {
-                $q->whereHas('kkpoManagements.customer', function ($c) use ($customer) {
+                $q->whereHas('kkpoManagement.customer', function ($c) use ($customer) {
                     $c->where('name', $customer);
                 });
             })
 
             ->when($request->style, function ($q, $style) {
-                $q->whereHas('kkpoManagements.style', function ($s) use ($style) {
+                $q->whereHas('kkpoManagement.style', function ($s) use ($style) {
                     $s->where('name', $style);
                 });
             })
 
             ->when($request->category, function ($q, $category) {
-                $q->whereHas('kkpoManagements.category', function ($c) use ($category) {
+                $q->whereHas('kkpoManagement.category', function ($c) use ($category) {
                     $c->where('name', $category);
                 });
             })
 
             ->when($request->color, function ($q, $color) {
-                $q->whereHas('kkpoManagements.color', function ($c) use ($color) {
+                $q->whereHas('kkpoManagement.color', function ($c) use ($color) {
                     $c->where('name', $color);
                 });
             });
@@ -398,13 +457,13 @@ class AdminController extends Controller
     public function show($id)
     {
         $sj = SuratJalan::with([
-            'kkpoManagements.customer',
-            'kkpoManagements.category',
-            'kkpoManagements.style',
-            'kkpoManagements.color',
-            'kkpoManagements.item',
-            'kkpoManagements.brand',
-            'kkpoManagements.unit',
+            'kkpoManagement.customer',
+            'kkpoManagement.category',
+            'kkpoManagement.style',
+            'kkpoManagement.color',
+            'kkpoManagement.item',
+            'kkpoManagement.brand',
+            'kkpoManagement.unit',
             'travelers.movements.currentDepartment'
         ])->findOrFail($id);
 

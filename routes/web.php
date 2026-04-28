@@ -54,7 +54,7 @@ Route::middleware('role:super_admin')->group(function () {
     Route::delete('/superadmin/machines/delete/{id}', [AdminController::class, 'deleteMachine'])
         ->name('superadmin.machine.delete');
 
-    Route::get('/superadmin/monitoring', [AdminController::class, 'monitoring'])
+    Route::get('/superadmin/monitoring', [AdminController::class, 'travelerMonitoring'])
         ->name('superadmin.monitoring');
 
     Route::get('/superadmin/report', [AdminController::class, 'report'])
@@ -72,13 +72,11 @@ Route::middleware('role:super_admin')->group(function () {
 Route::middleware('role:manager')->group(function () {
     Route::get('/manager/dashboard', [ManagerController::class, 'dashboard'])
         ->name('manager.dashboard');
-    Route::get('/manager/monitoring', [ManagerController::class, 'monitoring'])
+    Route::get('/manager/monitoring', [ManagerController::class, 'traveler'])
         ->name('manager.monitoring');
     Route::get('/manager/monitoring/{id}', [ManagerController::class, 'detailMonitoring'])
         ->name('manager.detailmonitoring');
 
-    // RRoute::get('/ppic/monitoring', [PpicController::class, 'monitoring'])->name('ppic.monitoring');
-// 
     Route::get('/manager/report', [ManagerController::class, 'report'])
         ->name('manager.report');
     Route::get('/manager/report/export', [ManagerController::class, 'exportReport'])
@@ -147,7 +145,7 @@ Route::middleware('role:ppic')->group(function () {
     Route::put('/ppic/kkpomanagement/update/{id}', [PpicController::class, 'kkpoManagementUpdate'])->name('ppic.kkpomanagement.update');
     Route::delete('/ppic/kkpomanagement/delete/{id}', [PpicController::class, 'kkpoManagementDelete'])->name('ppic.kkpomanagement.delete');
 
-    Route::get('/ppic/monitoring', [PpicController::class, 'monitoring'])->name('ppic.monitoring');
+    Route::get('/ppic/monitoring', [PpicController::class, 'travelerMonitoring'])->name('ppic.monitoring');
 
     Route::get('/ppic/report', [PpicController::class, 'report'])
         ->name('ppic.report');

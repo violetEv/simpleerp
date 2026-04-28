@@ -22,7 +22,7 @@
                 @else
                     <div class="flex items-center space-x-1.5">
 
-                        {{-- 🔥 ICON PANAH --}}
+                        {{-- ICON PANAH --}}
                         <svg class="w-3.5 h-3.5 text-gray-400"
                              xmlns="http://www.w3.org/2000/svg"
                              fill="none"

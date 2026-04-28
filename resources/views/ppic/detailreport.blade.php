@@ -5,9 +5,9 @@
         <h3 class="text-lg font-medium text-gray-900 mb-4">Detail Report</h3>
 
         <div class="grid grid-cols-2 gap-y-3 text-sm">
-@php
-    $kkpo = $sj->kkpoManagements->first();
-@endphp
+            @php
+                $kkpo = $sj->kkpoManagement->first();
+            @endphp
             <span class="text-gray-500">No Surat Jalan</span>
             <span>{{ $sj->no_surat_jalan }}</span>
 
@@ -65,7 +65,6 @@
                     @endphp
 
                     @foreach ($sj->travelers as $t)
-
                         {{-- HEADER TRAVELER --}}
                         <tr class="bg-gray-100">
                             <td colspan="8" class="px-4 py-2 font-semibold">
@@ -103,7 +102,6 @@
                                 <td class="py-2 px-4 border-b">{{ $mov->date_out }}</td>
                             </tr>
                         @endforeach
-
                     @endforeach
                 </tbody>
 

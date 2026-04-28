@@ -8,16 +8,16 @@
             {{-- Search --}}
             <div class="flex items-center justify-between mb-4">
                 <form action="{{ route('superadmin.user') }}" method="GET" class="flex items-center gap-2">
-                    <input type="text" name="search" placeholder="Cari pengguna..."
+                    <input type="text" name="search" placeholder="Search users..."
                         class="border border-gray-300 rounded-lg px-4 py-2" value="{{ request('search') }}">
                     <button type="submit" class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
-                        Cari
+                        Search
                     </button>
                 </form>
 
                 <button onclick="openAddModal()"
                     class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
-                    + Tambah Pengguna
+                    + Add User
                 </button>
             </div>
 
@@ -27,7 +27,7 @@
                 <div class="bg-white rounded-lg p-6 w-full max-w-md">
 
                     <div class="flex justify-between items-center mb-4">
-                        <h3 id="modalTitle" class="text-lg font-semibold">Tambah User</h3>
+                        <h3 id="modalTitle" class="text-lg font-semibold">Add User</h3>
                         <button type="button" onclick="closeModal('crud-modal')"
                             class="text-gray-500 text-2xl hover:text-gray-700">&times;</button>
                     </div>
@@ -41,7 +41,7 @@
 
                             {{-- Name --}}
                             <div>
-                                <x-input-label for="name" :value="__('Nama')" />
+                                <x-input-label for="name" :value="__('Name')" />
                                 <x-text-input id="name" name="name" class="block mt-1 w-full" required />
                             </div>
 
@@ -66,10 +66,10 @@
 
                             {{-- Department --}}
                             <div id="department-div" style="display: none;">
-                                <x-input-label for="department_id" :value="__('Departemen')" />
+                                <x-input-label for="department_id" :value="__('Department')" />
                                 <select id="department_id" name="department_id"
                                     class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
-                                    <option value="">Pilih Departemen</option>
+                                    <option value="">Select Department</option>
                                     @foreach (App\Models\Departments::all() as $department)
                                         <option value="{{ $department->id }}">
                                             {{ $department->name }}
@@ -85,9 +85,9 @@
                                     required />
                             </div>
 
-                            {{-- Konfirmasi Password --}}
+                            {{-- Confirm Password --}}
                             <div>
-                                <x-input-label for="password_confirmation" :value="__('Konfirmasi Password')" />
+                                <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
                                 <x-text-input id="password_confirmation" type="password" name="password_confirmation"
                                     class="block mt-1 w-full" required />
                             </div>
@@ -97,9 +97,9 @@
                                 <x-input-label for="status" :value="__('Status')" />
                                 <select id="status" name="status"
                                     class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
-                                    <option value="">Pilih Status</option>
-                                    <option value="active">Aktif</option>
-                                    <option value="inactive">Tidak Aktif</option>
+                                    <option value="">Select Status</option>
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
                                 </select>
                             </div>
 
@@ -108,7 +108,7 @@
                         <div class="mt-6">
                             <button type="submit" id="submitButton"
                                 class="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
-                                Simpan
+                                Save
                             </button>
                         </div>
 
@@ -127,7 +127,7 @@
                                 No</th>
                             <th
                                 class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                Nama</th>
+                                Name</th>
                             <th
                                 class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                 Email</th>
@@ -136,13 +136,13 @@
                                 Role</th>
                             <th
                                 class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                Departemen</th>
+                                Department</th>
                             <th
                                 class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                 Status</th>
                             <th
                                 class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                Aksi</th>
+                                Actions</th>
                         </tr>
                     </thead>
 
@@ -159,12 +159,12 @@
                                         @if ($user->status == 'active')
                                             <span
                                                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                Aktif
+                                                Active
                                             </span>
                                         @else
                                             <span
                                                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                                Tidak Aktif
+                                                Inactive
                                             </span>
                                         @endif
                                     </td>
@@ -179,7 +179,7 @@
                                     '{{ $user->department_id }}',
                                     '{{ $user->status }}'
                                 )"
-                                            class="text-blue-600 hover:text-blue-900" title="Edit User">
+                                            class="text-blue-600 hover:text-blue-900" title="Edit">
                                             {{-- Edit icon outline --}}
                                             <svg class="w-6 h-6 text-blue-500 hover:text-blue-700" aria-hidden="true"
                                                 xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -196,8 +196,8 @@
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="text-red-600 hover:text-red-900"
-                                                title="Hapus User"
-                                                onclick="return confirm('Apakah Anda yakin ingin menghapus user ini?')">
+                                                title="Delete"
+                                                onclick="return confirm('Are you sure you want to delete {{ $user->name }}?')">
                                                 {{-- Delete icon outline --}}
                                                 <svg class="w-6 h-6 text-red-500 hover:text-red-700"
                                                     aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -216,7 +216,7 @@
                         @else
                             <tr>
                                 <td colspan="7" class="text-center py-4 text-gray-500">
-                                    Pengguna tidak ditemukan.
+                                    No users found.
                                 </td>
                             </tr>
                         @endif
@@ -245,8 +245,8 @@
         }
 
         function openAddModal() {
-            document.getElementById('modalTitle').innerText = "Tambah User";
-            // document.getElementById('submitButton').innerText = "Tambah User";
+            document.getElementById('modalTitle').innerText = "Add User";
+            // document.getElementById('submitButton').innerText = "Add User";
             document.getElementById('submitButton').classList.remove('bg-blue-600');
             document.getElementById('submitButton').classList.add('bg-green-600');
 
@@ -264,7 +264,7 @@
         }
 
         function editUser(id, name, email, role, department_id, status) {
-            document.getElementById('modalTitle').innerText = "Edit Pengguna";
+            document.getElementById('modalTitle').innerText = "Edit User";
             // document.getElementById('submitButton').innerText = "Update User";
             document.getElementById('submitButton').classList.remove('bg-green-600');
             document.getElementById('submitButton').classList.add('bg-blue-600');
@@ -293,12 +293,15 @@
         function toggleDepartment() {
             const role = document.getElementById('role').value;
             const deptDiv = document.getElementById('department-div');
+            const deptSelect = document.getElementById('department_id');
 
             if (role === 'produksi') {
                 deptDiv.style.display = 'block';
+                deptSelect.required = true;
             } else {
                 deptDiv.style.display = 'none';
-                document.getElementById('department_id').value = '';
+                deptSelect.required = false;
+                deptSelect.value = '';
             }
         }
     </script>

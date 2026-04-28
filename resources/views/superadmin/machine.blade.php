@@ -8,23 +8,23 @@
             {{-- Search --}}
             <div class="flex items-center justify-between mb-4">
                 <form action="{{ route('superadmin.machine') }}" method="GET" class="flex items-center gap-2">
-                    <input type="text" name="search" placeholder="Cari mesin..."
+                    <input type="text" name="search" placeholder="Search machine..."
                         class="border border-gray-300 rounded-lg px-4 py-2" value="{{ request('search') }}">
                     <button type="submit" class="bg-[#136566] text-white px-4 py-2 rounded-lg hover:bg-[#0f4f50]">
-                        Cari
+                        Search
                     </button>
                 </form>
                 <button onClick="openAddModal()" class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
-                    + Tambah Mesin
+                    + Add Machine
                 </button>
             </div>
 
-            {{-- Modal Add & Edit Mesin --}}
+            {{-- Modal Add & Edit Machine --}}
             <div id="crud-modal" class="hidden fixed inset-0 z-50 bg-gray-600 bg-opacity-50 items-center justify-center">
                 <div class="bg-white rounded-lg p-6 w-full max-w-md">
 
                     <div class="flex justify-between items-center mb-4">
-                        <h3 id="modal-title" class="text-xl font-semibold">Tambah Mesin</h3>
+                        <h3 id="modal-title" class="text-xl font-semibold">Add Machine</h3>
                         <button type="button" onClick="closeModal()"
                             class="text-gray-500 text-2xl hover:text-gray-700">&times;</button>
                     </div>
@@ -36,24 +36,24 @@
 
                         {{-- pilih departemen washing atau dyeing untuk nama mesin --}}
                         <div class="mb-4">
-                            <label for="department" class="block text-gray-700">Departemen</label>
+                            <label for="department" class="block text-gray-700">Department</label>
                             <select name="department_id" id="department_id" required
                                 class="w-full border mt-1 border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="">Pilih Departemen</option>
+                                <option value="">Select Department</option>
                                 @foreach ($departments as $dept)
                                     <option value="{{ $dept->id }}">{{ $dept->name }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="mb-4">
-                            <label for="name" class="block text-gray-700">Nama Mesin</label>
+                            <label for="name" class="block text-gray-700">Machine Name</label>
                             <input type="text" name="name" id="name" required
                                 class="w-full border mt-1 border-gray-300 rounded px-3 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
 
-                        <button type="submit" id="submit-button"
+                        <button type="submit"
                             class="bg-[#136566] text-white px-4 py-2 rounded-lg hover:bg-[#0f4f50]">
-                            Tambah Mesin
+                            Save
                         </button>
                     </form>
                 </div>
@@ -65,13 +65,13 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                Nama Mesin
+                                Machine Name
                             </th>
                             <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                Departemen
+                                Department
                             </th>
                             <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                Aksi
+                                Actions
                             </th>
                         </tr>
                     </thead>
@@ -84,7 +84,7 @@
                                     <td class="px-4 py-2">{{ $machine->department->name ?? '-' }}</td>
                                     <td class="px-4 py-2">
                                         <button onClick="openEditModal({{ $machine->id }}, '{{ $machine->name }}', '{{ $machine->department_id }}')"
-                                            class="text-blue-600 hover:text-blue-900" title="Edit Mesin">
+                                            class="text-blue-600 hover:text-blue-900" title="Edit">
                                             {{-- Edit icon --}}
                                             <svg class="w-6 h-6 text-blue-500 hover:text-blue-700"
                                                     aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
@@ -100,8 +100,8 @@
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
-                                                onclick="return confirm('Apa Anda yakin ingin menghapus mesin {{ $machine->name }}?')"
-                                                class="text-red-600 hover:text-red-900" title="Hapus Mesin">
+                                                onclick="return confirm('Are you sure you want to delete machine {{ $machine->name }}?')"
+                                                class="text-red-600 hover:text-red-900" title="Delete">
                                                 {{-- Delete icon --}}
                                                 <svg class="w-6 h-6 text-red-500 hover:text-red-700"
                                                         aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -119,7 +119,7 @@
                         @else
                             <tr>
                                 <td colspan="2" class="text-center py-4 text-gray-500">
-                                    Mesin tidak ditemukan.
+                                    No machines found.
                                 </td>
                             </tr>
                         @endif
@@ -136,8 +136,8 @@
 
     <script>
         function openAddModal() {
-            document.getElementById('modal-title').textContent = 'Tambah Mesin';
-            document.getElementById('submit-button').textContent = 'Tambah Mesin';
+            document.getElementById('modal-title').textContent = 'Add Machine';
+            document.getElementById('submit-button').textContent = 'Add Machine';
             document.getElementById('crud-form').action =
                 "{{ route('superadmin.machine.store') }}";
 
@@ -152,8 +152,8 @@
         }
 
         function openEditModal(id, name, department_id) {
-            document.getElementById('modal-title').textContent = 'Edit Mesin';
-            document.getElementById('submit-button').textContent = 'Update Mesin';
+            document.getElementById('modal-title').textContent = 'Edit Machine';
+            document.getElementById('submit-button').textContent = 'Update Machine';
             let url = "{{ route('superadmin.machine.update', ':id') }}";
             url = url.replace(':id', id);
             document.getElementById('crud-form').action = url;

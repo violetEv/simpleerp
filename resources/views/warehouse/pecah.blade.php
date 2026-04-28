@@ -46,9 +46,9 @@
                                     Last Qty
                                 </th>
 
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                                {{-- <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                                     Status
-                                </th>
+                                </th> --}}
 
                                 <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                                     Aksi
@@ -79,7 +79,7 @@
                                             {{ $sisaQty }}
                                         </td>
 
-                                        <td class="px-4 py-2 whitespace-nowrap">
+                                        {{-- <td class="px-4 py-2 whitespace-nowrap">
                                             @if ($sisaQty <= 0)
                                                 <span
                                                     class="px-2 bg-red-100 text-red-800 rounded-full text-xs leading-5 font-semibold inline-flex">
@@ -90,9 +90,9 @@
                                                     class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                                                     Open
                                                 </span>
-                                            @endif
+                                            @endif --}}
                                             {{-- {{ $pecahTraveler->status ?? '-' }} --}}
-                                        </td>
+                                        {{-- </td> --}}
                                         <td class="px-4 py-2 whitespace-nowrap">
                                             @if ($sisaQty <= 0)
                                                 <button disabled
@@ -104,7 +104,7 @@
                                                         <path stroke-linecap="round" stroke-linejoin="round"
                                                             d="m7.848 8.25 1.536.887M7.848 8.25a3 3 0 1 1-5.196-3 3 3 0 0 1 5.196 3Zm1.536.887a2.165 2.165 0 0 1 1.083 1.839c.005.351.054.695.14 1.024M9.384 9.137l2.077 1.199M7.848 15.75l1.536-.887m-1.536.887a3 3 0 1 1-5.196 3 3 3 0 0 1 5.196-3Zm1.536-.887a2.165 2.165 0 0 0 1.083-1.838c.005-.352.054-.695.14-1.025m-1.223 2.863 2.077-1.199m0-3.328a4.323 4.323 0 0 1 2.068-1.379l5.325-1.628a4.5 4.5 0 0 1 2.48-.044l.803.215-7.794 4.5m-2.882-1.664A4.33 4.33 0 0 0 10.607 12m3.736 0 7.794 4.5-.802.215a4.5 4.5 0 0 1-2.48-.043l-5.326-1.629a4.324 4.324 0 0 1-2.068-1.379M14.343 12l-2.882 1.664" />
                                                     </svg>
-                                                    Split Traveler
+                                                    Buat Traveler
                                                 </button>
                                             @else
                                                 <button onclick="openSplitTraveler(this)"
@@ -114,7 +114,7 @@
                                                     data-qty_sisa="{{ $sisaQty }}"
                                                     class="px-2 py-1 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">
 
-                                                    Split Traveler
+                                                    Buat Traveler
 
                                                 </button>
                                             @endif
@@ -149,7 +149,7 @@
         <div class="bg-white rounded-lg p-6 w-full max-w-2xl overflow-auto max-h-[90vh] ">
 
             <div class="flex justify-between items-center mb-4">
-                <h3 id="modalTitle" class="text-lg font-medium">Pecah Traveler</h3>
+                <h3 id="modalTitle" class="text-lg font-medium">Buat Traveler</h3>
 
                 <button onClick="closeAddModal()" class="text-gray-500 text-2xl hover:text-gray-700">
                     &times;

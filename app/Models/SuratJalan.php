@@ -16,7 +16,7 @@ class SuratJalan extends Model
         'notes',
     ];
 
-    public function kkpoManagements()
+    public function kkpoManagement()
     {
         return $this->belongsTo(KkpoManagement::class, 'kkpo_management_id');
     }

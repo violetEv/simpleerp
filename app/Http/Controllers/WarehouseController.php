@@ -167,7 +167,7 @@ class WarehouseController extends Controller
                     'notes' => $request->notes,
                     'status' => $status
                 ]);
-                // 🔥 TAMBAHAN WAJIB
+                
                 TravelerMovement::create([
                     'traveler_id' => $travelerBaru->id,
                     'dept_asal_id' => FacadesAuth::user()->department_id,

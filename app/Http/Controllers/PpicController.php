@@ -844,33 +844,7 @@ class PpicController extends Controller
         $kkpo = KkpoManagement::with('customer', 'style', 'color', 'category')->findOrFail($id);
         return view('ppic.detailkkpo', compact('kkpo'));
     }
-    public function monitoring(Request $request)
-    {
-        $query = KkpoManagement::with(['customer', 'style', 'color', 'category', 'suratJalan'])->latest();
-        if (request()->filled('search')) {
-            $search = request()->search;
 
-            $query->whereHas('kkpoManagements', function ($q) use ($search) {
-                $q->where('no_kkpo', 'like', "%{$search}%");
-            })
-                ->orWhere('no_surat_jalan', 'like', "%{$search}%")
-
-                ->orWhereHas('kkpoManagements.customer', function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%");
-                })
-                ->orWhereHas('kkpoManagements.category', function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%");
-                })
-                ->orWhereHas('kkpoManagements.style', function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%");
-                })
-                ->orWhereHas('kkpoManagements.color', function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%");
-                });
-        }
-        $monitoring = $query->paginate(10);
-        return view('ppic.monitoring', compact('monitoring'));
-    }
     public function report(Request $request)
     {
         $suratJalan = SuratJalan::whereHas('travelers.movements')->select('no_surat_jalan')->distinct()->pluck('no_surat_jalan');
@@ -881,29 +855,29 @@ class PpicController extends Controller
         $color = Color::whereHas('kkpoManagements.travelers.movements')->select('name')->distinct()->pluck('name');
 
         $query = SuratJalan::with([
-            'kkpoManagements',
-            'kkpoManagements.customer',
-            'kkpoManagements.category',
-            'kkpoManagements.style',
-            'kkpoManagements.color',
+            'kkpoManagement',
+            'kkpoManagement.customer',
+            'kkpoManagement.category',
+            'kkpoManagement.style',
+            'kkpoManagement.color',
             'travelers.movements' // relasi ke traveler movements
         ])
             ->when($request->search, function ($q, $search) {
                 $q->where(function ($query) use ($search) {
-                    $query->whereHas('kkpoManagements', function ($k) use ($search) {
+                    $query->whereHas('kkpoManagement', function ($k) use ($search) {
                         $k->where('no_kkpo', 'like', "%{$search}%");
                     })
                         ->orWhere('no_surat_jalan', 'like', "%{$search}%")
-                        ->orWhereHas('kkpoManagements.customer', function ($c) use ($search) {
+                        ->orWhereHas('kkpoManagement.customer', function ($c) use ($search) {
                             $c->where('name', 'like', "%{$search}%");
                         })
-                        ->orWhereHas('kkpoManagements.category', function ($c) use ($search) {
+                        ->orWhereHas('kkpoManagement.category', function ($c) use ($search) {
                             $c->where('name', 'like', "%{$search}%");
                         })
-                        ->orWhereHas('kkpoManagements.style', function ($s) use ($search) {
+                        ->orWhereHas('kkpoManagement.style', function ($s) use ($search) {
                             $s->where('name', 'like', "%{$search}%");
                         })
-                        ->orWhereHas('kkpoManagements.color', function ($c) use ($search) {
+                        ->orWhereHas('kkpoManagement.color', function ($c) use ($search) {
                             $c->where('name', 'like', "%{$search}%");
                         });
                 });
@@ -912,7 +886,7 @@ class PpicController extends Controller
             // harusnya kkpo yg muncul hanya yg punya surat jalan out/sampai warehouse send, jadi filter berdasarkan surat jalan dulu baru filter kkpo, customer, style, category, color
 
             ->when($request->kkpo, function ($q, $kkpo) {
-                $q->whereHas('kkpoManagements', function ($k) use ($kkpo) {
+                $q->whereHas('kkpoManagement', function ($k) use ($kkpo) {
                     $k->where('no_kkpo', $kkpo);
                 });
             })
@@ -922,25 +896,25 @@ class PpicController extends Controller
             })
 
             ->when($request->customer, function ($q, $customer) {
-                $q->whereHas('kkpoManagements.customer', function ($c) use ($customer) {
+                $q->whereHas('kkpoManagement.customer', function ($c) use ($customer) {
                     $c->where('name', $customer);
                 });
             })
 
             ->when($request->style, function ($q, $style) {
-                $q->whereHas('kkpoManagements.style', function ($s) use ($style) {
+                $q->whereHas('kkpoManagement.style', function ($s) use ($style) {
                     $s->where('name', $style);
                 });
             })
 
             ->when($request->category, function ($q, $category) {
-                $q->whereHas('kkpoManagements.category', function ($c) use ($category) {
+                $q->whereHas('kkpoManagement.category', function ($c) use ($category) {
                     $c->where('name', $category);
                 });
             })
 
             ->when($request->color, function ($q, $color) {
-                $q->whereHas('kkpoManagements.color', function ($c) use ($color) {
+                $q->whereHas('kkpoManagement.color', function ($c) use ($color) {
                     $c->where('name', $color);
                 });
             });
@@ -961,13 +935,13 @@ class PpicController extends Controller
     public function show($id)
     {
         $sj = SuratJalan::with([
-            'kkpoManagements.customer',
-            'kkpoManagements.category',
-            'kkpoManagements.style',
-            'kkpoManagements.color',
-            'kkpoManagements.item',
-            'kkpoManagements.brand',
-            'kkpoManagements.unit',
+            'kkpoManagement.customer',
+            'kkpoManagement.category',
+            'kkpoManagement.style',
+            'kkpoManagement.color',
+            'kkpoManagement.item',
+            'kkpoManagement.brand',
+            'kkpoManagement.unit',
             'travelers.movements.currentDepartment'
         ])->findOrFail($id);
 
@@ -976,8 +950,72 @@ class PpicController extends Controller
     public function exportReport(Request $request)
     {
         return Excel::download(
-            new TravelerMovementExport($request),
+            new TravelerMovementExport($request->all()),
             'report-traveler.xlsx'
         );
     }
+
+public function travelerMonitoring(Request $request)
+{
+    $movements = TravelerMovement::with([
+        'traveler.suratJalan',
+        'deptTujuan'
+    ])
+    ->orderBy('date_in')
+    ->get();
+
+    $data = $movements->groupBy('traveler_id')->map(function ($items) {
+
+        $traveler = $items->first()->traveler;
+
+        $row = [
+            'traveler' => $traveler,
+            'departments' => []
+        ];
+
+        // ambil movement terakhir
+        $last = $items->sortByDesc('date_in')->first();
+        $row['current_dept'] = optional($last->deptTujuan)->name;
+
+        $totalIn = 0;
+        $totalOut = 0;
+
+        foreach ($items as $movement) {
+
+            if (!$movement->deptTujuan) continue;
+
+            $deptName = $movement->deptTujuan->name;
+
+            if (!isset($row['departments'][$deptName])) {
+                $row['departments'][$deptName] = [
+                    'tanggal' => $movement->date_in,
+                    'qty_in' => 0,
+                    'qty_out' => 0,
+                ];
+            }
+
+            $row['departments'][$deptName]['tanggal'] = $movement->date_in;
+            $row['departments'][$deptName]['qty_in'] += $movement->qty_in ?? 0;
+            $row['departments'][$deptName]['qty_out'] += $movement->qty_out ?? 0;
+
+            $totalIn += $movement->qty_in ?? 0;
+            $totalOut += $movement->qty_out ?? 0;
+        }
+
+        // 🔥 WIP REAL (AMAN)
+        $row['wip'] = max($totalIn - $totalOut, 0);
+
+        // 🔥 OPTIONAL: HILANGKAN YANG SUDAH SELESAI
+        $row['is_finished'] = $row['wip'] == 0;
+
+        return $row;
+    })
+
+    // 🔥 kalau mau hide yg sudah selesai
+    ->filter(function ($row) {
+        return !$row['is_finished']; // hanya tampil yg masih WIP
+    });
+
+    return view('ppic.monitoring', compact('data'));
+}
 }

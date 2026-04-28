@@ -7,7 +7,7 @@ class PPICMenu
     public static function items()
     {
         return [
-            ['name' => 'Dasbor', 'route' => 'dashboard', 'icon' => 'fas fa-tachometer-alt'],
+            ['name' => 'Dashboard', 'route' => 'dashboard', 'icon' => 'fas fa-tachometer-alt'],
             [
                 'name' => 'Master Data',
                 'icon' => 'fas fa-database',

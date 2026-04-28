@@ -8,14 +8,14 @@
             {{-- Search --}}
             <div class="flex items-center justify-between mb-4">
                 <form action="{{ route('superadmin.department') }}" method="GET" class="flex items-center gap-2">
-                    <input type="text" name="search" placeholder="Cari departemen..."
+                    <input type="text" name="search" placeholder="Search department..."
                         class="border border-gray-300 rounded-lg px-4 py-2" value="{{ request('search') }}">
                     <button type="submit" class="bg-[#136566] text-white px-4 py-2 rounded-lg hover:bg-[#0f4f50]">
-                        Cari
+                        Search
                     </button>
                 </form>
                 <button onClick="openAddModal()" class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
-                    + Tambah Departemen
+                    + Add Department
                 </button>
             </div>
 
@@ -24,7 +24,7 @@
                 <div class="bg-white rounded-lg p-6 w-full max-w-md">
 
                     <div class="flex justify-between items-center mb-4">
-                        <h3 id="modal-title" class="text-xl font-semibold">Tambah Departemen</h3>
+                        <h3 id="modal-title" class="text-xl font-semibold">Add Department</h3>
                         <button type="button" onClick="closeModal()"
                             class="text-gray-500 text-2xl hover:text-gray-700">&times;</button>
                     </div>
@@ -35,15 +35,15 @@
                         <input type="hidden" name="department_id" id="department_id">
 
                         <div class="mb-4">
-                            <label for="name" class="block text-gray-700">Nama Departemen</label>
+                            <label for="name" class="block text-gray-700">Department Name</label>
                             <input type="text" name="name" id="name" required
                                 class="w-full border mt-1 border-gray-300 rounded px-3 py-2
                         focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
 
-                        <button type="submit" id="submit-button"
+                        <button type="submit"
                             class="bg-[#136566] text-white px-4 py-2 rounded-lg hover:bg-[#0f4f50]">
-                            Tambah Departemen
+                            Save
                         </button>
                     </form>
                 </div>
@@ -55,10 +55,10 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                Nama Departemen
+                                Department Name
                             </th>
                             <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                Aksi
+                                Actions
                             </th>
                         </tr>
                     </thead>
@@ -70,7 +70,7 @@
                                     <td class="px-4 py-2">{{ $department->name }}</td>
                                     <td class="px-4 py-2">
                                         <button onClick="openEditModal({{ $department->id }}, '{{ $department->name }}')"
-                                            class="text-blue-600 hover:text-blue-900" title="Edit Department">
+                                            class="text-blue-600 hover:text-blue-900" title="Edit">
                                             {{-- Edit icon --}}
                                             <svg class="w-6 h-6 text-blue-500 hover:text-blue-700"
                                                     aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
@@ -86,8 +86,8 @@
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
-                                                onclick="return confirm('Are you sure you want to delete this department?')"
-                                                class="text-red-600 hover:text-red-900" title="Hapus Department">
+                                                onclick="return confirm('Are you sure you want to delete {{ $department->name }}?')"
+                                                class="text-red-600 hover:text-red-900" title="Delete">
                                                 {{-- Delete icon --}}
                                                 <svg class="w-6 h-6 text-red-500 hover:text-red-700"
                                                         aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -105,7 +105,7 @@
                         @else
                             <tr>
                                 <td colspan="2" class="text-center py-4 text-gray-500">
-                                    Departemen tidak ditemukan.
+                                    No departments found.
                                 </td>
                             </tr>
                         @endif
@@ -122,8 +122,8 @@
 
     <script>
         function openAddModal() {
-            document.getElementById('modal-title').textContent = 'Tambah Departemen';
-            document.getElementById('submit-button').textContent = 'Tambah Departemen';
+            document.getElementById('modal-title').textContent = 'Add Department';
+            // document.getElementById('submit-button').textContent = 'Add Department';
             document.getElementById('crud-form').action =
                 "{{ route('superadmin.department.store') }}";
 
@@ -137,8 +137,8 @@
         }
 
         function openEditModal(id, name) {
-            document.getElementById('modal-title').textContent = 'Edit Departemen';
-            document.getElementById('submit-button').textContent = 'Update Departemen';
+            document.getElementById('modal-title').textContent = 'Edit Department';
+            // document.getElementById('submit-button').textContent = 'Update Department';
             let url = "{{ route('superadmin.department.update', ':id') }}";
             url = url.replace(':id', id);
             document.getElementById('crud-form').action = url;
