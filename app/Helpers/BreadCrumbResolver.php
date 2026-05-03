@@ -13,7 +13,7 @@ class BreadcrumbResolver
         foreach ($menus as $menu) {
 
             /**
-             * 🔥 1. CEK SUBMENU DULU
+             *  1. CEK SUBMENU DULU
              */
             if (isset($menu['sub'])) {
                 foreach ($menu['sub'] as $sub) {
@@ -42,7 +42,7 @@ class BreadcrumbResolver
             }
 
             /**
-             * 🔥 2. MENU TANPA SUB
+             *  2. MENU TANPA SUB
              */
             if (isset($menu['route'])) {
 
@@ -66,7 +66,7 @@ class BreadcrumbResolver
     }
 
     /**
-     * 🔥 FIX MATCH (INI KUNCI UTAMA)
+     *  FIX MATCH (INI KUNCI UTAMA)
      */
     private static function isMatch($current, $base)
     {

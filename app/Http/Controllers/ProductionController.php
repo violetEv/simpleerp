@@ -30,7 +30,7 @@ class ProductionController extends Controller
         }
 
         $orders = $query->paginate(10)->withQueryString();
-        $kkpoManagements = KkpoManagement::with(['category', 'customer', 'style', 'color', 'item'])->get();
+        $kkpoManagements = KkpoManagement::with(['categories', 'customer', 'styles', 'colors', 'items'])->get();
         $suratJalanIns = SuratJalan::with('kkpoManagement')->get();
         $travelers = Traveler::with('suratJalan')->get();
 
@@ -213,7 +213,7 @@ class ProductionController extends Controller
 
             $total = $qty_out + $qty_reject;
 
-            // ❌ tidak boleh kosong semua
+            // tidak boleh kosong semua
             if ($qty_out === 0 && $qty_reject === 0) {
                 DB::rollBack();
                 return back()->with('error', 'Qty OUT dan Reject tidak boleh kosong semua');
@@ -235,7 +235,7 @@ class ProductionController extends Controller
                 return back()->with('error', 'Ada selisih qty, wajib isi keterangan!');
             }
 
-            // ✅ UPDATE movement
+            //  UPDATE movement
             $movement->update([
                 'updated_by' => $request->updated_by,
                 'qty_out' => $qty_out,
@@ -248,7 +248,7 @@ class ProductionController extends Controller
                 'notes' => $request->notes
             ]);
 
-            // ✅ UPDATE traveler
+            //  UPDATE traveler
             if (Auth::user()->department->name !== 'Warehouse Send') {
                 $traveler->update([
                     'current_dept_id' => $request->dept_tujuan_id,

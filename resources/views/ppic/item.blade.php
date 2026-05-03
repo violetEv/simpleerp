@@ -8,15 +8,15 @@
             {{-- SEARCH & ADD ITEM --}}
             <div class="flex items-center justify-between mb-4">
                 <form action="{{ route('ppic.item') }}" method="GET" class="flex items-center gap-2">
-                    <input type="text" name="search" placeholder="Cari barang..."
+                    <input type="text" name="search" placeholder="Search item..."
                         class="border border-gray-300 rounded-lg px-4 py-2" value="{{ request('search') }}">
                     <button type="submit" class="bg-[#136566] text-white px-4 py-2 rounded-lg hover:bg-[#0f4f50]">
-                        Cari
+                        Search
                     </button>
                 </form>
                 <button onClick="openAddModal()"
                     class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
-                    + Tambah Jenis Barang
+                    + Add Item
                 </button>
             </div>
             {{-- ITEM TABLE --}}
@@ -26,9 +26,9 @@
                     <thead class="bg-gray-50 text-gray-700 uppercase tracking wider">
                         <tr>
                             <th class="px-4 py-2 text-left text-xs font-semibold">
-                                Nama Jenis Barang</th>
+                                Item Name</th>
                             <th class="px-4 py-2 text-left text-xs font-semibold">
-                                Aksi
+                                Actions
                             </th>
                         </tr>
                     </thead>
@@ -53,8 +53,8 @@
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
-                                                onclick="return confirm('Apakah Anda yakin ingin menghapus {{ $item->name }}?')"
-                                                class="text-red-500 hover:text-red-700" title="Hapus">
+                                                onclick="return confirm('Are you sure you want to delete {{ $item->name }}?')"
+                                                class="text-red-500 hover:text-red-700" title="Delete">
                                                 {{-- <svg class="w-6 h-6" aria-hidden="true"
                                                     xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                     fill="none" viewBox="0 0 24 24">
@@ -76,8 +76,7 @@
                             @endforeach
                         @else
                             <tr>
-                                <td colspan="2" class="px-4 py-2 text-gray-500 whitespace-nowrap text-center">Jenis
-                                    Barang tidak ditemukan.</td>
+                                <td colspan="2" class="px-4 py-2 text-gray-500 whitespace-nowrap text-center">Item not found.</td>
                             </tr>
                         @endif
                     </tbody>
@@ -88,7 +87,7 @@
                 class="hidden fixed inset-0 z-50 bg-gray-600 bg-opacity-50 items-center justify-center">
                 <div class="bg-white rounded-lg p-6 w-full max-w-md">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 id="modal-title" class="text-lg font-medium">Tambah Jenis Barang</h3>
+                        <h3 id="modal-title" class="text-lg font-medium">Add Item</h3>
                         <button onClick="closeAddModal()" class="text-gray-500 text-2xl hover:text-gray-700">
                             &times;
                         </button>
@@ -97,7 +96,7 @@
                         @csrf
                         <input type="hidden" name="_method" id="form-method" value="POST">
                         <div class="mb-4">
-                            <label for="name" class="block text-gray-700">Nama Jenis Barang</label>
+                            <label for="name" class="block text-gray-700">Item Name</label>
                             <input type="text" name="name" id="name"
                                 class="w-full border border-gray-300 rounded px-3 py-2 mt-1" required>
                         </div>

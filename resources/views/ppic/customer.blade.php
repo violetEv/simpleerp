@@ -7,16 +7,16 @@
             {{-- Search & Add Customer Modal --}}
             <div class="flex items-center justify-between mb-4">
                 <form action="{{ route('ppic.customer') }}" method="GET" class="flex items-center gap-2">
-                    <input type="text" name="search" placeholder="Cari customer..."
+                    <input type="text" name="search" placeholder="Search customer..."
                         class="border border-gray-300 rounded-lg px-4 py-2" value="{{ request('search') }}">
                     <button type="submit" class="bg-[#136566] text-white px-4 py-2 rounded-lg hover:bg-[#0f4f50]">
-                        Cari
+                        Search
                     </button>
                 </form>
 
                 <button onClick="openAddModal()"
                     class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
-                    + Tambah Customer
+                    + Add Customer
                 </button>
             </div>
             {{-- Customer Table --}}
@@ -29,16 +29,16 @@
                                     ID</th> --}}
                                 <th
                                     class="px-4 py-2 text-left text-xs font-semibold">
-                                    Nama Customer</th>
+                                    Customer Name</th>
                                 <th class="px-4 py-2 text-left text-xs font-semibold">
-                                    Alamat</th>
+                                    Address</th>
                                 <th class="px-4 py-2 text-left text-xs font-semibold">
-                                    Telepon</th>
+                                    Phone</th>
                                 <th class="px-4 py-2 text-left text-xs font-semibold">
-                                    Nama PIC</th>
+                                    PIC Name</th>
                                 <th
                                     class="px-4 py-2 text-left text-xs font-semibold">
-                                    Aksi
+                                    Actions
                                 </th>
                             </tr>
                         </thead>
@@ -88,7 +88,7 @@
                             @else
                                 <tr>
                                     <td colspan="2" class="text-center py-4 text-gray-500">
-                                        Customer tidak ditemukan.
+                                        No customers found.
                                     </td>
                                 </tr>
                             @endif
@@ -103,7 +103,7 @@
             <div id="addModal" class="hidden fixed inset-0 z-50 bg-gray-600 bg-opacity-50 items-center justify-center">
                 <div class="bg-white rounded-lg p-6 w-full max-w-md">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 id="modal-title" class="text-lg font-medium">Tambah Customer</h3>
+                        <h3 id="modal-title" class="text-lg font-medium">Add Customer</h3>
                         <button onClick="closeAddModal()" class="text-gray-500 text-2xl hover:text-gray-700">
                             &times;
                         </button>
@@ -113,28 +113,28 @@
                         <input type="hidden" name="_method" id="form-method" value="POST">
                         <input type="hidden" name="customer_id" id="customer_id">
                         <div class="mb-4">
-                            <label for="name" class="block text-gray-700">Nama Customer</label>
+                            <label for="name" class="block text-gray-700">Customer Name</label>
                             <input type="text" name="name" id="name" required
                                 class="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1">
                         </div>
                         <div class="mb-4">
-                            <label for="address" class="block text-gray-700">Alamat</label>
+                            <label for="address" class="block text-gray-700">Address</label>
                             <input type="text" name="address" id="address"
                                 class="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1">
                         </div>
                         <div class="mb-4">
-                            <label for="phone" class="block text-gray-700">Telepon</label>
+                            <label for="phone" class="block text-gray-700">Phone</label>
                             <input type="text" name="phone" id="phone"
                                 class="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1">
                         </div>
                         <div class="mb-4">
-                            <label for="attention" class="block text-gray-700">Nama PIC</label>
+                            <label for="attention" class="block text-gray-700">PIC Name</label>
                             <input type="text" name="attention" id="attention"
                                 class="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1">
                         </div>
                         <button type="submit"
                             class="bg-[#136566] text-white px-4 py-2 rounded-lg hover:bg-[#0f4f50]">
-                            Simpan
+                            Save
                         </button>
                     </form>
 
@@ -149,8 +149,8 @@
         }
 
         function openAddModal() {
-            document.getElementById('modal-title').textContent = 'Tambah Customer';
-            // document.getElementById('submit-button').textContent = 'Simpan Customer';
+            document.getElementById('modal-title').textContent = 'Add Customer';
+            // document.getElementById('submit-button').textContent = 'Save Customer';
             document.getElementById('crud-form').action = "{{ route('ppic.customer.store') }}";
 
             document.getElementById('form-method').value = 'POST';

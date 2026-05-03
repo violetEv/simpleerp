@@ -115,16 +115,26 @@
 
                                                     Detail
                                                 </button>
-
+                                                {{-- edit --}}
+                                                <button onClick='openEditOrderModal(@json($traveler))' title="Edit"
+                                                    class="px-4 py-2 text-blue-500 rounded-lg hover:text-blue-700 ml-2">
+                                                    {{-- icon edit outline --}}
+                                                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                                        fill="none" viewBox="0 0 24 24">
+                                                        <path stroke="currentColor" stroke-linecap="round"
+                                                            stroke-linejoin="round" stroke-width="2"
+                                                            d="M16.862 4.487l1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18.375 19.5L17.25 18.375" />
+                                                    </svg>
+                                                </button>
                                                 {{-- delete --}}
-                                                <form
+                                                {{-- <form
                                                     action="{{ route('warehouse.list.delete', ['id' => $traveler->id]) }}"
                                                     method="POST" class="inline-block">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" title="Hapus"
                                                         onclick="return confirm('Apakah Anda yakin ingin menghapus traveler ini?')">
-                                                        {{-- Icon delete --}}
+                                                      
                                                         <svg class="w-6 h-6 text-red-500 hover:text-red-700"
                                                             aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                                             width="24" height="24" fill="none"
@@ -134,7 +144,7 @@
                                                                 d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
                                                         </svg>
                                                     </button>
-                                                </form>
+                                                </form> --}}
                                                 {{-- <a href="{{ route('warehouse.list', $traveler->id) }}"
                                             class="text-blue-500 border border-blue-500 rounded-xl py-1 px-4 hover:underline">Detail</a> --}}
                                             </td>

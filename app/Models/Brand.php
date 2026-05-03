@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Brand extends Model
 {
     protected $fillable = ['name'];
-    public function kkpoManagement()
+    public function kkpoManagements()
     {
-        return $this->hasMany(KkpoManagement::class);
+        return $this->belongsToMany(KkpoManagement::class, 'kkpo_management_brand');
     }
 }

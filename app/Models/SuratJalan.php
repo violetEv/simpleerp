@@ -26,6 +26,6 @@ class SuratJalan extends Model
     }
     public function suratJalanOut()
     {
-        return $this->hasOne(SuratJalanOut::class);
+        return $this->hasMany(SuratJalanOut::class);
     }
 }

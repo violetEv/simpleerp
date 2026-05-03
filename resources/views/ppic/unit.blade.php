@@ -12,15 +12,15 @@
             {{-- SEARCH & ADD SATUAN --}}
             <div class="flex items-center justify-between mb-4">
                 <form action="{{ route('ppic.unit') }}" method="GET" class="flex items-center gap-2">
-                    <input type="text" name="search" placeholder="Cari satuan..."
+                    <input type="text" name="search" placeholder="Search unit..."
                         class="border border-gray-300 rounded-lg px-4 py-2" value="{{ request('search') }}">
                     <button type="submit" class="bg-[#136566] text-white px-4 py-2 rounded-lg hover:bg-[#0f4f50]">
-                        Cari
+                        Search
                     </button>
                 </form>
                 <button onClick="openAddModal()"
                     class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
-                    + Tambah Satuan
+                    + Add Unit
                 </button>
             </div>
             {{-- SATUAN TABLE --}}
@@ -31,10 +31,10 @@
                             <tr>
                                 <th
                                     class="px-4 py-2 text-left text-xs font-semibold">
-                                    Nama Satuan</th>
+                                    Unit Name</th>
                                 <th
                                     class="px-4 py-2 text-left text-xs font-semibold">
-                                    Aksi
+                                    Actions
                                 </th>
                             </tr>
                         </thead>
@@ -58,7 +58,7 @@
                                                 class="inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" onclick="return confirm('Apakah Anda yakin ingin menghapus {{ $unit->name }}?')" title="Hapus">
+                                                <button type="submit" onclick="return confirm('Are you sure you want to delete {{ $unit->name }}?')" title="Delete">
                                                     <svg class="w-6 h-6 text-red-500 hover:text-red-700"
                                                         aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                                         width="24" height="24" fill="none"
@@ -75,7 +75,7 @@
                             @else
                                 <tr>
                                     <td colspan="2" class="px-4 py-2 whitespace-nowrap text-center text-gray-500">
-                                        Satuan tidak ditemukan.
+                                        Unit not found.
                                     </td>
                                 </tr>
                             @endif
@@ -87,27 +87,27 @@
 
                 {{-- </div> --}}
             </div>
-            {{-- MODAL ADD & EDIT SATUAN --}}
-            <div id="satuanModal"
+            {{-- MODAL ADD & EDIT UNIT --}}
+            <div id="unitModal"
                 class="hidden fixed inset-0 z-50 bg-gray-600 bg-opacity-50 items-center justify-center">
                 <div class="bg-white rounded-lg p-6 w-full max-w-md">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 id="modal-title" class="text-lg font-medium">Tambah Satuan</h3>
+                        <h3 id="modal-title" class="text-lg font-medium">Add Unit</h3>
                         <button onClick="closeModal()" class="text-gray-500 text-2xl hover:text-gray-700">
                             &times;
                         </button>
                     </div>
-                    <form id="satuanForm" method="POST" action="{{ route('ppic.unit.store') }}">
+                    <form id="unitForm" method="POST" action="{{ route('ppic.unit.store') }}">
                         @csrf
                         <input type="hidden" name="_method" id="unitMethod" value="POST">
                         <input type="hidden" name="unit_id" id="unitId">
                         <div class="mb-4">
-                            <label for="name" class="block text-gray-700">Nama Satuan</label>
+                            <label for="name" class="block text-gray-700">Unit Name</label>
                             <input type="text" name="name" id="unitName"
                                 class="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1" required>
                         </div>
                         <button type="submit" class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
-                            Simpan
+                            Save
                         </button>
 
                     </form>
@@ -117,26 +117,26 @@
     </div>
     <script>
         function openAddModal() {
-            document.getElementById('satuanModal').classList.remove('hidden');
-            document.getElementById('satuanModal').classList.add('flex');
-            document.getElementById('modal-title').textContent = 'Tambah Satuan';
-            document.getElementById('satuanForm').action = "{{ route('ppic.unit.store') }}";
+            document.getElementById('unitModal').classList.remove('hidden');
+            document.getElementById('unitModal').classList.add('flex');
+            document.getElementById('modal-title').textContent = 'Add Unit';
+            document.getElementById('unitForm').action = "{{ route('ppic.unit.store') }}";
             document.getElementById('unitMethod').value = 'POST';
             document.getElementById('unitId').value = '';
             document.getElementById('unitName').value = '';
         }
 
         function closeModal() {
-            document.getElementById('satuanModal').classList.add('hidden');
-            document.getElementById('satuanModal').classList.remove('flex');
+            document.getElementById('unitModal').classList.add('hidden');
+            document.getElementById('unitModal').classList.remove('flex');
         }
 
         function editUnit(id, name) {
             openAddModal();
-            document.getElementById('modal-title').textContent = 'Edit Satuan';
+            document.getElementById('modal-title').textContent = 'Edit Unit';
             let url = "{{ route('ppic.unit.update', ':id') }}";
             url = url.replace(':id', id);
-            document.getElementById('satuanForm').action = url;
+            document.getElementById('unitForm').action = url;
             document.getElementById('unitMethod').value = 'PUT';
             document.getElementById('unitId').value = id;
             document.getElementById('unitName').value = name;

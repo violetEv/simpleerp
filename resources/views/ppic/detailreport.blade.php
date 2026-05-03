@@ -18,19 +18,19 @@
             <span>{{ $kkpo->customer->name ?? '-' }}</span>
 
             <span class="text-gray-500">Item</span>
-            <span>{{ $kkpo->item->name ?? '-' }}</span>
+            <span>{{ $kkpo->items->first()->name ?? '-' }}</span>
 
             <span class="text-gray-500">Category</span>
-            <span>{{ $kkpo->category->name ?? '-' }}</span>
+            <span>{{ $kkpo->categories->first()->name ?? '-' }}</span>
 
             <span class="text-gray-500">Style</span>
-            <span>{{ $kkpo->style->name ?? '-' }}</span>
+            <span>{{ $kkpo->styles->first()->name ?? '-' }}</span>
 
             <span class="text-gray-500">Color</span>
-            <span>{{ $kkpo->color->name ?? '-' }}</span>
+            <span>{{ $kkpo->colors->first()->name ?? '-' }}</span>
 
             <span class="text-gray-500">Brand</span>
-            <span>{{ $kkpo->brand->name ?? '-' }}</span>
+            <span>{{ $kkpo->brands->first()->name ?? '-' }}</span>
 
             <span class="text-gray-500">Unit</span>
             <span>{{ $kkpo->unit->name ?? '-' }}</span>

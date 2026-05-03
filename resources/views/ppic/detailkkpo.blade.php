@@ -6,17 +6,17 @@
             <div class="flex justify-between items-center mb-4 mt-2">
                 <a href="{{ route('ppic.kkpomanagement') }}"
                     class="text-sm text-gray-500 hover:text-[#136566] transition">
-                    ← Kembali
+                    ← Back
                 </a>
             </div>
 
             {{-- HEADER --}}
             <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-4">
                 <h2 class="text-lg font-semibold text-gray-800">
-                    Detail KKPO
+                    KKPO Detail - {{ $kkpomanagement->no_kkpo }}
                 </h2>
                 <p class="text-sm text-gray-500 mt-1">
-                    Informasi lengkap terkait KKPO dan customer
+                    Complete information related to KKPO and customer
                 </p>
             </div>
 
@@ -26,7 +26,7 @@
                 {{-- KKPO DETAIL --}}
                 <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
                     <h3 class="text-sm font-semibold text-[#136566] mb-4 uppercase tracking-wide">
-                        Informasi KKPO
+                        KKPO Information
                     </h3>
 
                     <div class="space-y-3 text-sm">
@@ -63,7 +63,7 @@
                         </div>
 
                         <div>
-                            <div class="text-gray-500 text-xs">Harga</div>
+                            <div class="text-gray-500 text-xs">Unit Price</div>
                             <div class="font-semibold">
                                 {{ number_format($kkpomanagement->price, 0, ',', '.') }}
                                 <span class="text-gray-500 text-xs">
@@ -83,7 +83,7 @@
                         </div>
 
                         <div>
-                            <div class="text-gray-500 text-xs">Tanggal</div>
+                            <div class="text-gray-500 text-xs">Issue Date</div>
                             <div>{{ $kkpomanagement->tanggal ?? '-' }}</div>
                         </div>
 
@@ -112,14 +112,14 @@
 
                     <div class="space-y-3 text-sm">
                         <div>
-                            <div class="text-gray-500 text-xs">Nama</div>
+                            <div class="text-gray-500 text-xs">Name</div>
                             <div class="font-semibold text-gray-800">
                                 {{ $kkpomanagement->customer->name ?? '-' }}
                             </div>
                         </div>
 
                         <div>
-                            <div class="text-gray-500 text-xs">Alamat</div>
+                            <div class="text-gray-500 text-xs">Address</div>
                             <div>{{ $kkpomanagement->customer->address ?? '-' }}</div>
                         </div>
 
@@ -140,13 +140,13 @@
             <div class="bg-white border border-gray-200 rounded-xl shadow-sm mt-6 overflow-hidden">
                 <div class="p-6 border-b border-gray-200">
                     <h3 class="text-sm font-semibold text-[#136566] uppercase tracking-wide">
-                        Travelers Terkait
+                        Travelers Related to This KKPO
                     </h3>
                 </div>
 
                 @if ($kkpomanagement->travelers->isEmpty())
                     <div class="p-6 text-sm text-gray-500">
-                        Tidak ada travelers yang terkait.
+                        No travelers related.
                     </div>
                 @else
                     <table class="min-w-full text-sm text-gray-700">

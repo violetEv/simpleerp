@@ -5,8 +5,11 @@
     {{-- <h2 class="font-semibold text-xl text-gray-800 leading-tight">
         Split Traveler
     </h2> --}}
-
-    <div class="py-6">
+    {{-- deskripsi halaman --}}
+    <p class="text-sm text-gray-500 mb-4">
+        Halaman ini digunakan untuk membuat traveler dari surat jalan yang sudah ada. Pastikan untuk mengisi data dengan benar karena data yang sudah diinput tidak dapat diubah.
+    </p>
+    <div class="py-4">
         <div class="max-w-7xl mx-auto">
 
             {{-- SEARCH --}}
@@ -43,7 +46,11 @@
                                 </th>
 
                                 <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                                    Last Qty
+                                    Qty Awal
+                                </th>
+
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                                    Qty Sisa
                                 </th>
 
                                 {{-- <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
@@ -68,7 +75,11 @@
                                             {{ $pecahTraveler->kkpoManagement->customer->name ?? '-' }}
                                         </td>
                                         <td class="px-4 py-2 whitespace-nowrap">
-                                            {{ $pecahTraveler->kkpoManagement->style->name ?? '-' }}
+                                            {{ $pecahTraveler->kkpoManagement->styles->first()->name ?? '-' }}
+                                        </td>
+
+                                        <td class="px-4 py-2 whitespace-nowrap">
+                                            {{ $pecahTraveler->qty }}
                                         </td>
 
                                         @php
@@ -91,7 +102,7 @@
                                                     Open
                                                 </span>
                                             @endif --}}
-                                            {{-- {{ $pecahTraveler->status ?? '-' }} --}}
+                                        {{-- {{ $pecahTraveler->status ?? '-' }} --}}
                                         {{-- </td> --}}
                                         <td class="px-4 py-2 whitespace-nowrap">
                                             @if ($sisaQty <= 0)
@@ -164,6 +175,12 @@
                 <input type="hidden" name="parent_traveler_id" id="parent_traveler_id">
 
                 <div class="mb-4">
+                    <label for="pic" class="block text-gray-700">Nama PIC</label>
+                    <input type="text" name="pic" id="pic" required
+                        class="mt-1 block w-full border border-gray-300 rounded-md">
+                </div>
+
+                <div class="mb-4">
 
                     <label class="block text-sm font-medium text-gray-700">
                         Surat Jalan
@@ -212,6 +229,9 @@
                             </th>
 
                             <th class="text-center text-sm font-medium text-gray-700 w-10 pr-3 py-1">
+                                Tanggal Out
+                            </th>
+                            <th class="text-center text-sm font-medium text-gray-700 w-10 pr-3 py-1">
                             </th>
                         </tr>
                     </thead>
@@ -245,6 +265,11 @@
                                 </select>
                             </td>
 
+                            <td class="pr-3">
+                                <input type="date" id="tanggal" name="tanggal[]" required
+                                    class="mt-1 block w-full border border-gray-300 rounded-md">
+                            </td>
+
                             <td class="text-center px-3 py-2">
                                 <button type="button" class="text-green-600 text-xl font-bold"
                                     onclick="addTableRow()">
@@ -259,14 +284,14 @@
                     Qty melebihi sisa qty yang tersedia.
                 </p>
 
-                <div class="mb-4">
+                {{-- <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">
                         Tanggal Out
                     </label>
 
                     <input type="date" name="tanggal" id="tanggal" required
                         class="mt-1 block w-full border border-gray-300 rounded-md">
-                </div>
+                </div> --}}
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">
                         Catatan
@@ -275,10 +300,10 @@
                     <textarea name="notes" id="notes" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md"></textarea>
                 </div>
 
-                <div class="flex justify-end">
+                <div class="mt-3">
                     <button type="submit" id="submit-button"
                         onclick="return confirm('Data yang sudah diinput tidak dapat diubah. Apakah anda yakin ingin menyimpan data ini?')"
-                        class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
+                        class="px-4 py-2 w-full bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
                         Simpan Traveler
                     </button>
                 </div>
@@ -386,6 +411,11 @@
                 @endforeach
 
             </select>
+        </td>
+
+        <td class="pr-3">
+            <input type="date" name="tanggal[]" required
+            class="mt-1 block w-full border border-gray-300 rounded-md">
         </td>
 
         <td class="text-center">

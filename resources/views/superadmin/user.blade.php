@@ -168,48 +168,46 @@
                                             </span>
                                         @endif
                                     </td>
-                                    <td class="px-4 py-2 flex gap-3">
+                                    <td class="px-4 py-3">
+                                        <div class="inline-block text-left relative" x-data="{ menu: false }">
 
-                                        <button
-                                            onclick="editUser(
-                                    '{{ $user->id }}',
-                                    '{{ $user->name }}',
-                                    '{{ $user->email }}',
-                                    '{{ $user->role }}',
-                                    '{{ $user->department_id }}',
-                                    '{{ $user->status }}'
-                                )"
-                                            class="text-blue-600 hover:text-blue-900" title="Edit">
-                                            {{-- Edit icon outline --}}
-                                            <svg class="w-6 h-6 text-blue-500 hover:text-blue-700" aria-hidden="true"
-                                                xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                fill="none" viewBox="0 0 24 24">
-                                                <path stroke="currentColor" stroke-linecap="round"
-                                                    stroke-linejoin="round" stroke-width="2"
-                                                    d="M10.779 17.779 4.36 19.918 6.5 13.5m4.279 4.279 8.364-8.643a3.027 3.027 0 0 0-2.14-5.165 3.03 3.03 0 0 0-2.14.886L6.5 13.5m4.279 4.279L6.499 13.5m2.14 2.14 6.213-6.504M12.75 7.04 17 11.28" />
-                                            </svg>
-
-                                        </button>
-
-                                        <form action="{{ route('superadmin.user.delete', $user->id) }}"
-                                            method="POST">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:text-red-900"
-                                                title="Delete"
-                                                onclick="return confirm('Are you sure you want to delete {{ $user->name }}?')">
-                                                {{-- Delete icon outline --}}
-                                                <svg class="w-6 h-6 text-red-500 hover:text-red-700"
-                                                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                                    width="24" height="24" fill="none"
-                                                    viewBox="0 0 24 24">
-                                                    <path stroke="currentColor" stroke-linecap="round"
-                                                        stroke-linejoin="round" stroke-width="2"
-                                                        d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
+                                            <button @click="menu = !menu" class="text-gray-400 hover:text-gray-600">
+                                                <svg class="h-5 w-5 pointer-events-none" fill="currentColor"
+                                                    viewBox="0 0 20 20">
+                                                    <path
+                                                        d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
                                                 </svg>
                                             </button>
-                                        </form>
 
+                                            {{-- DROPDOWN --}}
+                                            <div x-show="menu" @click.outside="menu = false" x-transition x-cloak
+                                                class="absolute right-0 mt-2 w-36 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+
+                                                {{-- <button
+                                                    onclick="window.location='{{ route('superadmin.user.show', $user->id) }}'"
+                                                    class="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-50">
+                                                    Detail
+                                                </button> --}}
+
+                                                <button type="button"
+                                                    onclick='openEditModal(@json($user->id), @json($user->name), @json($user->email), @json($user->role), @json($user->department_id), @json($user->status))'
+                                                    class="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-50">
+                                                    Edit
+                                                </button>
+
+                                                <form
+                                                    action="{{ route('superadmin.user.delete', $user->id) }}"
+                                                    method="POST">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" onclick="return confirm('Are you sure?')"
+                                                        class="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50">
+                                                        Delete
+                                                    </button>
+                                                </form>
+
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
@@ -263,7 +261,7 @@
             document.getElementById('crud-modal').classList.add('flex');
         }
 
-        function editUser(id, name, email, role, department_id, status) {
+        function openEditModal(id, name, email, role, department_id, status) {
             document.getElementById('modalTitle').innerText = "Edit User";
             // document.getElementById('submitButton').innerText = "Update User";
             document.getElementById('submitButton').classList.remove('bg-green-600');

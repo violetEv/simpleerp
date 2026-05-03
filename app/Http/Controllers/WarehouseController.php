@@ -16,11 +16,16 @@ class WarehouseController extends Controller
 {
     public function dashboard()
     {
-        return view('warehouse.dashboard');
+        $totalQtyTraveler = Traveler::sum('qty');
+        $totalQtyKeluar = TravelerMovement::sum('qty_out');
+        $balanceBongkar = $totalQtyTraveler - $totalQtyKeluar;
+
+        return view('warehouse.dashboard', compact('totalQtyTraveler', 'totalQtyKeluar', 'balanceBongkar'));
     }
     public function order(Request $request)
     {
-        $query = SuratJalan::with(['kkpoManagement.customer', 'kkpoManagement.style', 'kkpoManagement.color', 'kkpoManagement.category']);
+        // ambil data surat jalan dengan relasi kkpoManagement, customer, style, color, category, dan filter berdasarkan no_surat_jalan atau nama customer jika ada query search
+        $query = SuratJalan::with(['kkpoManagement.customer', 'kkpoManagement.styles', 'kkpoManagement.colors', 'kkpoManagement.categories']);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -29,10 +34,11 @@ class WarehouseController extends Controller
         }
 
         $orders = $query->paginate(10)->withQueryString();
-        $kkpoManagements = KkpoManagement::with(['category', 'customer', 'style', 'color', 'suratJalan'])->get();
+        $kkpoManagements = KkpoManagement::with(['categories', 'customer', 'styles', 'colors', 'suratJalan'])->get();
 
         return view('warehouse.suratjalan', compact('orders', 'kkpoManagements'));
     }
+
     public function orderStore(Request $request)
     {
         $request->validate([
@@ -62,7 +68,8 @@ class WarehouseController extends Controller
                 ->with('error', 'Gagal membuat surat jalan: ' . $e->getMessage());
         }
     }
-    public function orderUpdate(Request $request, $id)
+
+    public function orderUpdate(Request $request, int $id)
     {
         $surat_jalan = SuratJalan::findOrFail($id);
 
@@ -95,7 +102,8 @@ class WarehouseController extends Controller
                 ->with('error', 'Gagal memperbarui surat jalan: ' . $e->getMessage());
         }
     }
-    public function orderDelete($id)
+
+    public function orderDelete(int $id)
     {
         $surat_jalan = SuratJalan::findOrFail($id);
         try {
@@ -110,9 +118,10 @@ class WarehouseController extends Controller
                 ->with('error', 'Gagal menghapus surat jalan: ' . $e->getMessage());
         }
     }
+
     public function pecah(Request $request)
     {
-        $query = SuratJalan::with(['kkpoManagement.customer', 'kkpoManagement.style', 'kkpoManagement.color', 'kkpoManagement.category', 'travelers']);
+        $query = SuratJalan::with(['kkpoManagement.customer', 'kkpoManagement.styles', 'kkpoManagement.colors', 'kkpoManagement.categories', 'travelers']);
 
         if ($request->filled('search')) {
 
@@ -131,11 +140,12 @@ class WarehouseController extends Controller
 
         return view('warehouse.pecah', compact('pecahTravelers'));
     }
+
     public function pecahStore(Request $request)
     {
         $request->validate([
             'surat_jalan_id' => 'required|exists:surat_jalans,id',
-            'tanggal' => 'required|date',
+            // 'tanggal' => 'required|date',
 
             'no_traveler' => 'required|array',
             'no_traveler.*' => 'required|string',
@@ -145,6 +155,9 @@ class WarehouseController extends Controller
 
             'dept_tujuan_id' => 'required|array',
             'dept_tujuan_id.*' => 'required|exists:departments,id',
+            'tanggal' => 'required|array',
+            'tanggal.*' => 'required|date',
+            
 
             'notes' => 'nullable|string'
         ]);
@@ -163,7 +176,7 @@ class WarehouseController extends Controller
                     'dept_tujuan_id' => $deptTujuan,
                     'current_dept_id' => $deptTujuan,
                     // 'parent_traveler_id' => null,
-                    'tanggal' => $request->tanggal,
+                    'tanggal' => $request->tanggal[$index],
                     'notes' => $request->notes,
                     'status' => $status
                 ]);
@@ -174,7 +187,7 @@ class WarehouseController extends Controller
                     'current_dept_id' => $deptTujuan,
                     'dept_tujuan_id' => $deptTujuan,
                     'qty_out' => $request->qty_split[$index],
-                    'date_out' => now(),
+                    'date_out' => $request->tanggal[$index],
                 ]);
             } catch (QueryException $e) {
                 if ($e->errorInfo[1] == 1062) {
@@ -192,6 +205,7 @@ class WarehouseController extends Controller
             ->route('warehouse.pecah')
             ->with('success', 'Traveler berhasil dibuat');
     }
+
     public function rework(Request $request)
     {
         $query = TravelerMovement::with(['traveler', 'deptAsal', 'deptTujuan'])
@@ -220,7 +234,7 @@ class WarehouseController extends Controller
     }
 
     // untuk membuat traveler turunan dari traveler yang dirework, dengan no_traveler_turunan yang diinputkan oleh user
-    public function reworkStore(Request $request, $id)
+    public function reworkStore(Request $request, int $id)
     {
         $request->validate([
             'no_traveler_turunan' => 'required|string|unique:travelers,no_traveler',
@@ -278,14 +292,15 @@ class WarehouseController extends Controller
         $reworkTravelers = TravelerMovement::with('traveler')->where('qty_reject', '>', 0)->orderBy('date_in', 'desc')->paginate(10)->withQueryString();
         return view('warehouse.list', compact('travelers', 'reworkTravelers'));
     }
-    public function travelerDetail($id)
+
+    public function travelerDetail(int $id)
     {
         $traveler = Traveler::with(['suratJalan.kkpoManagement.customer', 'deptAsal', 'deptTujuan'])->findOrFail($id);
         $movements = TravelerMovement::with(['deptAsal', 'deptTujuan'])->where('traveler_id', $id)->orderBy('date_in', 'desc')->get();
 
         return view('warehouse.traveler_detail', compact('traveler', 'movements'));
     }
-    public function travelerDelete($id)
+    public function travelerDelete(int $id)
     {
         $traveler = Traveler::findOrFail($id);
         try {

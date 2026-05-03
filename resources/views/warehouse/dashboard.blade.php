@@ -17,8 +17,8 @@
                     </svg>
                 </div>
                 <div>
-                    <p class="text-gray-500">Total Orders</p>
-                    <p class="text-xl font-bold">150</p>
+                    <p class="text-gray-500">Total Qty Masuk</p>
+                    <p class="text-xl font-bold">{{ $totalQtyTraveler }}</p>
                 </div>
             </div>
         </div>
@@ -32,8 +32,8 @@
                     </svg>
                 </div>
                 <div>
-                    <p class="text-gray-500">Completed Orders</p>
-                    <p class="text-xl font-bold">120</p>
+                    <p class="text-gray-500">Total Qty Bongkar</p>
+                    <p class="text-xl font-bold">{{ $totalQtyKeluar }}</p>
                 </div>
             </div>
         </div>
@@ -47,8 +47,8 @@
                     </svg>
                 </div>
                 <div>
-                    <p class="text-gray-500">Pending Orders</p>
-                    <p class="text-xl font-bold">30</p>
+                    <p class="text-gray-500">Balance Bongkar</p>
+                    <p class="text-xl font-bold">{{ $balanceBongkar }}</p>
                 </div>
             </div>
         </div>

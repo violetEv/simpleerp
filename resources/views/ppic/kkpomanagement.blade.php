@@ -42,8 +42,7 @@
 
                             {{-- APPLY --}}
                             <button
-                                class="h-9 px-4 text-sm rounded-md bg-[#0f4f50] text-white hover:bg-[#136566]
-            active:scale-[0.98] flex items-center gap-1 transition">
+                                class="h-9 px-4 text-sm rounded-md bg-[#0f4f50] text-white hover:bg-[#136566] active:scale-[0.98] flex items-center gap-1 transition">
 
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor">
@@ -56,8 +55,7 @@
 
                             {{-- RESET --}}
                             <a href="{{ route('ppic.kkpomanagement') }}"
-                                class="h-9 px-3 text-sm rounded-md text-gray-500 hover:text-gray-700
-            flex items-center transition">
+                                class="h-9 px-3 text-sm rounded-md text-gray-500 hover:text-gray-700 flex items-center transition">
                                 Reset
                             </a>
 
@@ -68,8 +66,7 @@
 
                             {{-- ADD --}}
                             <button type="button" onclick="openAddModal()"
-                                class="h-8 px-3 text-xs rounded bg-[#0f4f50] text-white
-            hover:bg-[#136566] flex items-center gap-1 transition">
+                                class="h-8 px-3 text-xs rounded bg-[#0f4f50] text-white hover:bg-[#136566] flex items-center gap-1 transition">
 
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor">
@@ -161,16 +158,15 @@
                                     {{-- CATEGORY --}}
                                     <td class="px-4 py-3 border-r border-gray-100 align-top">
                                         <div class="font-medium text-gray-800">
-                                            {{ $kkpomanagement->category->name ?? '-' }}
-                                        </div>
+                                            {{ $kkpomanagement->categories->pluck('name')->join(', ') ?: '-' }} </div>
                                         <div class="text-gray-500 text-xs">
-                                            {{ $kkpomanagement->style->name ?? '-' }}
+                                            {{ $kkpomanagement->styles->pluck('name')->join(', ') ?: '-' }}
                                         </div>
                                     </td>
 
                                     {{-- ITEM --}}
                                     <td class="px-4 py-3 border-r border-gray-100 align-top">
-                                        {{ $kkpomanagement->item->name ?? '-' }}
+                                        {{ $kkpomanagement->items->pluck('name')->join(', ') ?: '-' }}
                                     </td>
 
                                     {{-- KP --}}
@@ -180,7 +176,7 @@
 
                                     {{-- COLOR --}}
                                     <td class="px-4 py-3 border-r border-gray-100 align-top">
-                                        {{ $kkpomanagement->color->name ?? '-' }}
+                                        {{ $kkpomanagement->colors->pluck('name')->join(', ') ?: '-' }}
                                     </td>
 
                                     {{-- QTY --}}
@@ -303,51 +299,49 @@
                                     searchPlaceholder="Search Customer..." required />
                             </div>
                             <div>
-                                <x-select-search name="category_id" id="category_id" label="Category Process"
+                                <x-select-search name="category_id[]" id="category_id" label="Category Process"
                                     :options="$categories->map(
                                         fn($category) => [
                                             'value' => $category->id,
                                             'label' => $category->name,
                                         ],
-                                    )" placeholder="Select Category Process"
+                                    )" multiple placeholder="Select Category Process"
                                     searchPlaceholder="Search Category Process..." required />
                             </div>
                             <div>
-                                <x-select-search name="style_id" id="style_id" label="Style" :options="$styles->map(
+                                <x-select-search name="style_id[]" id="style_id" label="Style" :options="$styles->map(
                                     fn($style) => [
                                         'value' => $style->id,
                                         'label' => $style->name,
                                     ],
                                 )"
-                                    placeholder="Select Style" searchPlaceholder="Search Style..." required />
+                                    multiple placeholder="Select Style" searchPlaceholder="Search Style..."
+                                    required />
                             </div>
                             <div>
-                                <x-select-search name="color_id" id="color_id" label="Color" :options="$colors->map(
-                                    fn($color) => [
-                                        'value' => $color->id,
-                                        'label' => $color->name,
-                                    ],
-                                )"
-                                    placeholder="Select Color" searchPlaceholder="Search Color..." required />
+                                <x-select-search name="color_id[]" id="color_id" label="Color" :options="$colors->map(fn($c) => ['value' => $c->id, 'label' => $c->name])"
+                                    multiple placeholder="Select Colors" searchPlaceholder="Search Colors..."
+                                    required />
                             </div>
                             {{-- item --}}
                             <div>
-                                <x-select-search name="item_id" id="item_id" label="Item" :options="$items->map(
+                                <x-select-search name="item_id[]" id="item_id" label="Item" :options="$items->map(
                                     fn($item) => [
                                         'value' => $item->id,
                                         'label' => $item->name,
                                     ],
                                 )"
-                                    placeholder="Select Item" searchPlaceholder="Search Item..." required />
+                                    multiple placeholder="Select Item" searchPlaceholder="Search Item..." required />
                             </div>
                             <div>
-                                <x-select-search name="brand_id" id="brand_id" label="Brand" :options="$brands->map(
+                                <x-select-search name="brand_id[]" id="brand_id" label="Brand" :options="$brands->map(
                                     fn($brand) => [
                                         'value' => $brand->id,
                                         'label' => $brand->name,
                                     ],
                                 )"
-                                    placeholder="Select Brand" searchPlaceholder="Search Brand..." required />
+                                    multiple placeholder="Select Brand" searchPlaceholder="Search Brand..."
+                                    required />
                             </div>
 
                             <div>
@@ -486,13 +480,21 @@
             setTimeout(() => {
                 document.getElementById('no_kkpo').value = kkpomanagement.no_kkpo;
 
+                //  IMPORTANT: pakai mapping array
                 document.getElementById('customer_id')._x_dataStack[0].selected = kkpomanagement.customer_id;
-                document.getElementById('category_id')._x_dataStack[0].selected = kkpomanagement.category_id;
-                document.getElementById('style_id')._x_dataStack[0].selected = kkpomanagement.style_id;
-                document.getElementById('color_id')._x_dataStack[0].selected = kkpomanagement.color_id;
-                document.getElementById('item_id')._x_dataStack[0].selected = kkpomanagement.item_id;
-                document.getElementById('brand_id')._x_dataStack[0].selected = kkpomanagement.brand_id;
+
+                document.getElementById('category_id')._x_dataStack[0].selected = kkpomanagement.categories?.map(c => c.id) ?? [];
+
+                document.getElementById('style_id')._x_dataStack[0].selected = kkpomanagement.styles?.map(s => s.id) ?? [];
+
+                document.getElementById('color_id')._x_dataStack[0].selected = kkpomanagement.colors?.map(c => c.id) ?? [];
+
+                document.getElementById('item_id')._x_dataStack[0].selected = kkpomanagement.items?.map(i => i.id) ?? [];
+
+                document.getElementById('brand_id')._x_dataStack[0].selected = kkpomanagement.brands?.map(b => b.id) ?? [];
+
                 document.getElementById('unit_id')._x_dataStack[0].selected = kkpomanagement.unit_id;
+                
                 document.getElementById('currency_id')._x_dataStack[0].selected = kkpomanagement.currency_id;
 
                 document.getElementById('kp_po').value = kkpomanagement.kp_po;

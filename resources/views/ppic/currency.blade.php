@@ -5,15 +5,15 @@
             {{-- search form & add currency --}}
             <div class="flex items-center justify-between mb-4">
                 <form action="{{ route('ppic.currency') }}" method="GET" class="flex items-center gap-2">
-                    <input type="text" name="search" placeholder="Cari mata uang..." value="{{ request('search') }}"
+                    <input type="text" name="search" placeholder="Search currency..." value="{{ request('search') }}"
                         class="border border-gray-300 rounded-lg px-4 py-2">
                     <button type="submit" class="bg-[#136566] text-white px-4 py-2 rounded-lg hover:bg-[#0f4f50]">
-                        Cari
+                        Search
                     </button>
                 </form>
                 <button onClick="openAddModal()"
                     class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
-                    + Tambah Mata Uang
+                    + Add Currency
                 </button>
             </div>
             {{-- table currency --}}
@@ -22,11 +22,11 @@
                     <thead class="bg-gray-50 text-gray-700 uppercase tracking wider">
                         <tr>
                             <th class="px-4 py-2 text-left text-xs font-semibold">
-                                Nama Mata Uang</th>
+                                Currency Name</th>
                             <th class="px-4 py-2 text-left text-xs font-semibold">
-                                Kode</th>
+                                Code</th>
                             <th class="px-4 py-2 text-left text-xs font-semibold">
-                                Aksi</th>
+                                Actions</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200 text-sm">
@@ -53,7 +53,7 @@
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" title="Delete"
-                                                onclick="return confirm('Apakah Anda yakin ingin menghapus {{ $currency->name }} ?')">
+                                                onclick="return confirm('Are you sure you want to delete {{ $currency->name }} ?')">
                                                 <svg class="w-6 h-6 text-red-500 hover:text-red-700" aria-hidden="true"
                                                     xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                     fill="none" viewBox="0 0 24 24">
@@ -69,7 +69,7 @@
                         @else
                             <tr>
                                 <td colspan="3" class="px-4 py-2 whitespace-nowrap text-gray-500 text-center">
-                                    Mata uang tidak ditemukan.</td>
+                                    Currency not found.</td>
                             </tr>
                         @endif
                     </tbody>
@@ -83,7 +83,7 @@
                 class="hidden fixed inset-0 z-50 bg-gray-600 bg-opacity-50 items-center justify-center">
                 <div class="bg-white rounded-lg p-6 w-full max-w-md">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 id="modal-title" class="text-lg font-medium">Tambah Mata Uang</h3>
+                        <h3 id="modal-title" class="text-lg font-medium">Add Currency</h3>
                         <button onClick="closeAddModal()" class="text-gray-500 text-2xl hover:text-gray-700">
                             &times;
                         </button>
@@ -92,19 +92,19 @@
                         @csrf
                         <input type="hidden" name="_method" id="form-method" value="POST">
                         <div class="mb-4">
-                            <label for="name" class="block text-sm font-medium text-gray-700">Nama Mata Uang</label>
+                            <label for="name" class="block text-sm font-medium text-gray-700">Currency Name</label>
                             <input type="text" name="name" id="name" required
                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                         </div>
                         <div class="mb-4">
-                            <label for="code" class="block text-sm font-medium text-gray-700">Kode Mata Uang</label>
+                            <label for="code" class="block text-sm font-medium text-gray-700">Currency Code</label>
                             <input type="text" name="code" id="code" required
                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                         </div>
 
                         <button type="submit" 
                             class="bg-[#136566] text-white px-4 py-2 rounded-lg hover:bg-[#0f4f50]">
-                            Simpan
+                            Save
                         </button>
 
                     </form>
@@ -114,8 +114,8 @@
     </div>
     <script>
         function openAddModal() {
-            document.getElementById('modal-title').textContent = 'Tambah Mata Uang';
-            // document.getElementById('submit-button').textContent = 'Simpan Mata Uang';
+            document.getElementById('modal-title').textContent = 'Add Currency';
+            // document.getElementById('submit-button').textContent = 'Save Currency';
             document.getElementById('crud-form').action = "{{ route('ppic.currency.store') }}";
             document.getElementById('form-method').value = 'POST';
             document.getElementById('addCurrencyModal').classList.remove('hidden');
@@ -128,8 +128,8 @@
         }
 
         function openEditModal(id, name, code) {
-            document.getElementById('modal-title').textContent = 'Edit Mata Uang';
-            // document.getElementById('submit-button').textContent = 'Simpan';
+            document.getElementById('modal-title').textContent = 'Edit Currency';
+            // document.getElementById('submit-button').textContent = 'Save';
             let url = "{{ route('ppic.currency.update', ':id') }}";
             url = url.replace(':id', id);
             document.getElementById('crud-form').action = url;

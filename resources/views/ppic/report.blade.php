@@ -4,9 +4,10 @@
     </h2> --}}
     {{-- data count --}}
     {{-- {{ $data->count() }} data ditemukan. --}}
-    <p class="text-sm text-gray-500 mb-4">
-        Menampilkan data KKPO yang telah selesai (memiliki surat jalan keluar). Klik "Detail" untuk melihat informasi
-        traveler dan pergerakannya.
+    <p class="text-sm text-gray-500 mb-4"> 
+        Displaying KKPO data that has been completed (has an outgoing delivery order). Click "Detail" to view traveler information and its movements.
+        {{-- Menampilkan data KKPO yang telah selesai (memiliki surat jalan keluar). Klik "Detail" untuk melihat informasi
+        traveler dan pergerakannya. --}}
     </p>
 
     <div class="py-3">
@@ -91,44 +92,49 @@
                     {{-- ADVANCED FILTER --}}
                     <div x-show="open" x-transition class="grid grid-cols-3 md:grid-cols-3 gap-2 pt-2 border-t">
 
-                        <x-select-search name="kkpo" :value="request('kkpo')" :options="$kkpo->map(fn($k) => ['value' => $k, 'label' => $k])" placeholder="KKPO" />
+                        <x-select-search name="kkpo" :value="request('kkpo')" :options="$filterKkpo->map(fn($k) => ['value' => $k, 'label' => $k])" placeholder="KKPO" />
 
-                        <x-select-search name="no_surat_jalan" :value="request('no_surat_jalan')" :options="$suratJalan->map(fn($s) => ['value' => $s, 'label' => $s])"
+                        <x-select-search name="no_surat_jalan" :value="request('no_surat_jalan')" :options="$filterSuratJalan->map(fn($s) => ['value' => $s->id , 'label' => $s->no_surat_jalan])"
                             placeholder="Surat Jalan" />
 
-                        <x-select-search name="customer" :value="request('customer')" :options="$customer->map(fn($c) => ['value' => $c, 'label' => $c])" placeholder="Customer" />
+                        <x-select-search name="customer" :value="request('customer')" :options="$filterCustomer->map(fn($c) => ['value' => $c->id, 'label' => $c->name])" placeholder="Customer" />
 
-                        <x-select-search name="style" :value="request('style')" :options="$style->map(fn($s) => ['value' => $s, 'label' => $s])" placeholder="Style" />
+                        <x-select-search name="style" :value="request('style')" :options="$filterStyle->map(fn($s) => ['value' => $s->id, 'label' => $s->name])" placeholder="Style" />
 
-                        <x-select-search name="category" :value="request('category')" :options="$category->map(fn($c) => ['value' => $c, 'label' => $c])"
+                        <x-select-search name="category" :value="request('category')" :options="$filterCategory->map(fn($c) => ['value' => $c->id, 'label' => $c->name])"
                             placeholder="Category Process" />
 
-                        <x-select-search name="color" :value="request('color')" :options="$color->map(fn($c) => ['value' => $c, 'label' => $c])" placeholder="Color" />
+                        <x-select-search name="color" :value="request('color')" :options="$filterColor->map(fn($c) => ['value' => $c->id, 'label' => $c->name])" placeholder="Color" />
 
                     </div>
 
                 </form>
             </div>
 
-            <div class="bg-white shadow rounded-lg overflow-hidden p-2">
+            <div
+                class="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition overflow-visible">
 
-                <div class="overflow-x-auto">
-                    <table class="min-w-full table-fixed text-gray-800">
-                        <thead class="bg-gray-50 text-gray-700 uppercase tracking wider">
+                <table class="min-w-full table-fixed text-gray-800">
+
+                    {{-- THEAD --}}
+                    <thead
+                        class="bg-[#136566]/10 text-gray-700 border-b border-[#136566]/30 text-[11px] uppercase tracking-wide">
                             <tr>
                                 <th class="px-4 py-2 text-left text-xs font-semibold">
                                     KKPO
                                 </th>
                                 <th class="px-4 py-2 text-left text-xs font-semibold">
                                     No
-                                    Surat
-                                    Jalan IN</th>
+                                    SJ IN</th>
                                 <th class="px-4 py-2 text-left text-xs font-semibold">
-                                    Pelanggan</th>
+                                    No
+                                    SJ OUT</th>
                                 <th class="px-4 py-2 text-left text-xs font-semibold">
-                                    Kategori Proses</th>
+                                    Customer</th>
                                 <th class="px-4 py-2 text-left text-xs font-semibold">
-                                    Model
+                                    Category Process</th>
+                                <th class="px-4 py-2 text-left text-xs font-semibold">
+                                    Style
                                 </th>
                                 <th class="px-4 py-2 text-left text-xs font-semibold">
                                     Qty
@@ -141,7 +147,7 @@
                                 <th class="px-4 py-2 text-left text-xs font-semibold">
                                     Balance</th>
                                 <th class="px-4 py-2 text-left text-xs font-semibold">
-                                    Aksi</th>
+                                    Action</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200 text-sm">
@@ -154,13 +160,18 @@
                                         <td class="px-4 py-2 whitespace-nowrap">
                                             {{ $sj->no_surat_jalan ?? '-' }}</td>
                                         <td class="px-4 py-2 whitespace-nowrap">
+                                            -
+                                            {{-- {{ $sj->kkpoManagement->suratJalanOut->no_surat_jalan ?? '-' }} --}}
+                                            {{-- {{ $sj->kkpoManagement->suratJalan()->where('type', 'out')->first()->no_surat_jalan ?? '-' }} --}}
+                                        </td>
+                                        <td class="px-4 py-2 whitespace-nowrap">
                                             {{ $sj->kkpoManagement->customer->name ?? '-' }}
                                         </td>
                                         <td class="px-4 py-2 whitespace-nowrap">
-                                            {{ $sj->kkpoManagement->category->name ?? '-' }}
+                                            {{ $sj->kkpoManagement->categories->first()->name ?? '-' }}
                                         </td>
                                         <td class="px-4 py-2 whitespace-nowrap">
-                                            {{ $sj->kkpoManagement->style->name ?? '-' }}
+                                            {{ $sj->kkpoManagement->styles->first()->name ?? '-' }}
                                         </td>
 
                                         @php
@@ -190,8 +201,8 @@
                                 @endforeach
                             @else
                                 <tr>
-                                    <td colspan="10" class="px-4 py-2 text-center text-gray-500">Data tidak
-                                        tersedia.
+                                    <td colspan="10" class="px-4 py-2 text-center text-gray-500">
+                                        No data found.
                                     </td>
                                 </tr>
                             @endif
@@ -201,7 +212,8 @@
                         {{ $data->links() }}
                     </div>
                 </div>
-            </div>
+            
+            
         </div>
     </div>
     {{-- auto filter tanggal tanpa submit --}}

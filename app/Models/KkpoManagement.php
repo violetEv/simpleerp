@@ -17,25 +17,25 @@ class KkpoManagement extends Model
     {
         return $this->belongsTo(Customer::class);
     }
-    public function category()
+    public function categories()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsToMany(Category::class, 'kkpo_management_category');
     }
-    public function style()
+    public function styles()
     {
-        return $this->belongsTo(Style::class);
+        return $this->belongsToMany(Style::class, 'kkpo_management_style');
     }
-    public function color()
+    public function colors()
     {
-        return $this->belongsTo(Color::class);
+        return $this->belongsToMany(Color::class, 'kkpo_management_color');
     }
-    public function brand()
+    public function brands()
     {
-        return $this->belongsTo(Brand::class);
+        return $this->belongsToMany(Brand::class, 'kkpo_management_brand');
     }
-    public function item()
+    public function items()
     {
-        return $this->belongsTo(Item::class);
+        return $this->belongsToMany(Item::class, 'kkpo_management_item');
     }
     public function unit()
     {

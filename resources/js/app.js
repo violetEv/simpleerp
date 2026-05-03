@@ -1,7 +1,6 @@
 import './bootstrap';
 import Alpine from 'alpinejs'
 import collapse from '@alpinejs/collapse'
-// preline
 import 'preline'
 
 window.Alpine = Alpine
@@ -30,43 +29,59 @@ Alpine.data('selectSearch', (config = {}) => ({
     search: '',
     options: config.options || [],
     selected: config.selected || '',
+    selectedOption: null,
     placeholder: config.placeholder || 'Pilih data...',
+    searchPlaceholder: config.searchPlaceholder || 'Cari',
+    disabled: false,
+    onChange: config.onChange || null,
+
+    init() {
+        this.syncSelected()
+
+        this.$watch('selected', () => {
+            this.syncSelected()
+        })
+    },
+
+    syncSelected() {
+        this.selectedOption = this.options.find(o => o.value == this.selected) || null
+    },
 
     toggle() {
+        if (this.disabled) return
         this.open = !this.open
     },
 
     select(option) {
         this.selected = option.value
+        this.selectedOption = option
         this.open = false
-    },
 
-    isSelected(value) {
-        return this.selected == value
+        if (this.onChange && typeof window[this.onChange] === 'function') {
+            window[this.onChange](option)
+        }
     },
 
     get selectedLabel() {
-        const found = this.options.find(o => o.value == this.selected)
-        return found ? found.label : ''
+        return this.selectedOption ? this.selectedOption.label : this.placeholder
     },
 
+    // untuk search
     get filteredOptions() {
         if (!this.search) return this.options
-
-        return this.options.filter(o =>
-            o.label.toLowerCase().includes(this.search.toLowerCase())
-        )
+        return this.options.filter(option => option.label.toLowerCase().includes(this.search.toLowerCase()))
     }
 }))
 
-
 Alpine.start()
+
 window.addEventListener('load', () => {
     if (window.HSStaticMethods) {
         window.HSStaticMethods.autoInit();
     }
 });
-// refresh table tanpa load halaman
+
+// refresh table
 document.addEventListener("DOMContentLoaded", () => {
     const tables = document.querySelectorAll("[data-autorefresh]");
 
@@ -88,10 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 .catch(err => console.error("Auto refresh error:", err));
         };
 
-        // load pertama
         loadData();
-
-        // interval
         setInterval(loadData, interval);
     });
 });
