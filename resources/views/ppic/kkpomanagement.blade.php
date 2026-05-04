@@ -483,18 +483,23 @@
                 //  IMPORTANT: pakai mapping array
                 document.getElementById('customer_id')._x_dataStack[0].selected = kkpomanagement.customer_id;
 
-                document.getElementById('category_id')._x_dataStack[0].selected = kkpomanagement.categories?.map(c => c.id) ?? [];
+                document.getElementById('category_id')._x_dataStack[0].selected = kkpomanagement.categories?.map(
+                    c => c.id) ?? [];
 
-                document.getElementById('style_id')._x_dataStack[0].selected = kkpomanagement.styles?.map(s => s.id) ?? [];
+                document.getElementById('style_id')._x_dataStack[0].selected = kkpomanagement.styles?.map(s => s
+                    .id) ?? [];
 
-                document.getElementById('color_id')._x_dataStack[0].selected = kkpomanagement.colors?.map(c => c.id) ?? [];
+                document.getElementById('color_id')._x_dataStack[0].selected = kkpomanagement.colors?.map(c => c
+                    .id) ?? [];
 
-                document.getElementById('item_id')._x_dataStack[0].selected = kkpomanagement.items?.map(i => i.id) ?? [];
+                document.getElementById('item_id')._x_dataStack[0].selected = kkpomanagement.items?.map(i => i
+                    .id) ?? [];
 
-                document.getElementById('brand_id')._x_dataStack[0].selected = kkpomanagement.brands?.map(b => b.id) ?? [];
+                document.getElementById('brand_id')._x_dataStack[0].selected = kkpomanagement.brands?.map(b => b
+                    .id) ?? [];
 
                 document.getElementById('unit_id')._x_dataStack[0].selected = kkpomanagement.unit_id;
-                
+
                 document.getElementById('currency_id')._x_dataStack[0].selected = kkpomanagement.currency_id;
 
                 document.getElementById('kp_po').value = kkpomanagement.kp_po;
@@ -508,5 +513,28 @@
                 document.getElementById('notes').value = kkpomanagement.notes;
             }, 150);
         }
+        document.getElementById('no_kkpo').addEventListener('blur', function() {
+            let noKkpo = this.value;
+
+            if (!noKkpo) return;
+
+            fetch(`/ppic/kkpo/check?no_kkpo=${noKkpo}`)
+                .then(res => res.json())
+                .then(data => {
+                    let customerSelect = document.getElementById('customer_id');
+
+                    if (data.exists) {
+                        // auto set customer
+                        customerSelect._x_dataStack[0].selected = data.customer_id;
+
+                        // disable biar ga bisa selingkuh 😏
+                        customerSelect.setAttribute('disabled', true);
+                    } else {
+                        // kalau baru, boleh pilih customer
+                        customerSelect.removeAttribute('disabled');
+                        customerSelect._x_dataStack[0].selected = null;
+                    }
+                });
+        });
     </script>
 </x-app-layout>

@@ -7,12 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 class KkpoManagement extends Model
 {
     protected $table = 'kkpo_managements';
-    protected $fillable = ['no_kkpo','customer_id', 'category_id', 'style_id', 'color_id', 'unit_id', 'brand_id', 'item_id', 'kp_po', 'qty_total', 'currency_id', 'price', 'reject_allowance','payment_terms','notes', 'npwp', 'remark', 'tanggal'];
+    protected $fillable = ['no_kkpo','customer_id', 'kp_po', 'qty_total', 'currency_id', 'price', 'reject_allowance','payment_terms','notes', 'npwp', 'remark', 'tanggal'];
 
     // public function kkpo()
     // {
     //     return $this->belongsTo(Kkpo::class, 'kkpo_id');
     // }
+
+    // KKPO.php
+public function details()
+{
+    return $this->hasMany(KkpoDetail::class);
+}
     public function customer()
     {
         return $this->belongsTo(Customer::class);

@@ -95,6 +95,7 @@ Route::middleware('role:ppic')->group(function () {
 
     Route::get('/ppic/customer', [PpicController::class, 'customer'])->name('ppic.customer');
     Route::post('/ppic/customer', [PpicController::class, 'customerStore'])->name('ppic.customer.store');
+    Route::post('/ppic/customer/import', [PpicController::class, 'import'])->name('ppic.customer.import');
     Route::put('/ppic/customer/update/{id}', [PpicController::class, 'customerUpdate'])->name('ppic.customer.update');
     Route::delete('/ppic/customer/delete/{id}', [PpicController::class, 'customerDelete'])->name('ppic.customer.delete');
 
@@ -135,6 +136,7 @@ Route::middleware('role:ppic')->group(function () {
 
     Route::get('/ppic/kkpo', [PpicController::class, 'kkpo'])->name('ppic.kkpo');
     Route::post('/ppic/kkpo', [PpicController::class, 'kkpoStore'])->name('ppic.kkpo.store');
+    Route::get('/ppic/kkpo/check', [PpicController::class, 'getKkpoInfo']);
     Route::put('/ppic/kkpo/update/{id}', [PpicController::class, 'kkpoUpdate'])->name('ppic.kkpo.update');
     Route::delete('/ppic/kkpo/delete/{id}', [PpicController::class, 'kkpoDelete'])->name('ppic.kkpo.delete');
 
