@@ -13,6 +13,7 @@ class Traveler extends Model
         'surat_jalan_id',
         'parent_traveler_id',
         'no_traveler',
+        'pic',
         'qty',
         'dept_asal_id',
         'dept_tujuan_id',

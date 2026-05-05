@@ -98,7 +98,6 @@
 
                         {{-- <x-select-search name="currency" :value="request('currency')" :options="$currencies->map(fn($c) => ['value' => $c->id, 'label' => $c->code])" placeholder="Currency" /> --}}
 
-
                     </div>
 
                 </form>
@@ -143,110 +142,114 @@
                     <tbody class="bg-white text-sm">
                         @if ($kkpomanagements->count())
                             @foreach ($kkpomanagements as $kkpomanagement)
-                                <tr class="hover:bg-gray-50 even:bg-gray-50/40 transition">
+                                @foreach ($kkpomanagement->details as $detail)
+                                    <tr class="hover:bg-gray-50 even:bg-gray-50/40 transition">
 
-                                    {{-- KKPO --}}
-                                    <td class="px-4 py-3 border-r border-gray-100 last:border-r-0 align-top">
-                                        <div class="font-semibold text-gray-900">
-                                            {{ $kkpomanagement->no_kkpo ?? '-' }}
-                                        </div>
-                                        <div class="text-gray-500 text-xs">
-                                            {{ $kkpomanagement->customer->name ?? '-' }}
-                                        </div>
-                                    </td>
-
-                                    {{-- CATEGORY --}}
-                                    <td class="px-4 py-3 border-r border-gray-100 align-top">
-                                        <div class="font-medium text-gray-800">
-                                            {{ $kkpomanagement->categories->pluck('name')->join(', ') ?: '-' }} </div>
-                                        <div class="text-gray-500 text-xs">
-                                            {{ $kkpomanagement->styles->pluck('name')->join(', ') ?: '-' }}
-                                        </div>
-                                    </td>
-
-                                    {{-- ITEM --}}
-                                    <td class="px-4 py-3 border-r border-gray-100 align-top">
-                                        {{ $kkpomanagement->items->pluck('name')->join(', ') ?: '-' }}
-                                    </td>
-
-                                    {{-- KP --}}
-                                    <td class="px-4 py-3 border-r border-gray-100 align-top">
-                                        {{ $kkpomanagement->kp_po ?? '-' }}
-                                    </td>
-
-                                    {{-- COLOR --}}
-                                    <td class="px-4 py-3 border-r border-gray-100 align-top">
-                                        {{ $kkpomanagement->colors->pluck('name')->join(', ') ?: '-' }}
-                                    </td>
-
-                                    {{-- QTY --}}
-                                    <td class="px-4 py-3 border-r border-gray-100 align-top">
-                                        <div class="font-semibold">
-                                            {{ $kkpomanagement->qty_total ?? '-' }}
-                                        </div>
-                                        <div class="text-gray-500 text-xs">
-                                            {{ $kkpomanagement->unit->name ?? '-' }}
-                                        </div>
-                                    </td>
-
-                                    {{-- PRICE --}}
-                                    <td class="px-4 py-3 border-r border-gray-100 align-top">
-                                        <div class="font-semibold">
-                                            {{ number_format($kkpomanagement->price, 0, ',', '.') }}
-                                        </div>
-                                        <div class="text-gray-500 text-xs">
-                                            {{ $kkpomanagement->currency->code ?? '-' }}
-                                        </div>
-                                    </td>
-
-                                    {{-- TOLERANCE --}}
-                                    <td class="px-4 py-3 border-r border-gray-100 align-top">
-                                        {{ $kkpomanagement->reject_allowance ?? '-' }}%
-                                    </td>
-
-                                    <td class="px-4 py-3">
-                                        <div class="inline-block text-left relative" x-data="{ menu: false }">
-
-                                            <button @click="menu = !menu" class="text-gray-400 hover:text-gray-600">
-                                                <svg class="h-5 w-5 pointer-events-none" fill="currentColor"
-                                                    viewBox="0 0 20 20">
-                                                    <path
-                                                        d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                                                </svg>
-                                            </button>
-
-                                            {{-- DROPDOWN --}}
-                                            <div x-show="menu" @click.outside="menu = false" x-transition x-cloak
-                                                class="absolute right-0 mt-2 w-36 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
-
-                                                <button
-                                                    onclick="window.location='{{ route('ppic.kkpomanagement.show', $kkpomanagement->id) }}'"
-                                                    class="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-50">
-                                                    Detail
-                                                </button>
-
-                                                <button type="button"
-                                                    onclick='openEditModal(@json($kkpomanagement))'
-                                                    class="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-50">
-                                                    Edit
-                                                </button>
-
-                                                <form
-                                                    action="{{ route('ppic.kkpomanagement.delete', $kkpomanagement->id) }}"
-                                                    method="POST">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" onclick="return confirm('Are you sure?')"
-                                                        class="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50">
-                                                        Delete
-                                                    </button>
-                                                </form>
-
+                                        {{-- KKPO --}}
+                                        <td class="px-4 py-3 border-r border-gray-100 last:border-r-0 align-top">
+                                            <div class="font-semibold text-gray-900">
+                                                {{ $kkpomanagement->no_kkpo ?? '-' }}
                                             </div>
-                                        </div>
-                                    </td>
+                                            <div class="text-gray-500 text-xs">
+                                                {{ $kkpomanagement->customer->name ?? '-' }}
+                                            </div>
+                                        </td>
 
-                                </tr>
+                                        {{-- CATEGORY --}}
+                                        <td class="px-4 py-3 border-r border-gray-100 align-top">
+                                            <div class="font-medium text-gray-800">
+                                                {{ $detail->category->name ?? '-' }} </div>
+                                            <div class="text-gray-500 text-xs">
+                                                {{ $detail->style->name ?? '-' }}
+                                            </div>
+                                        </td>
+
+                                        {{-- ITEM --}}
+                                        <td class="px-4 py-3 border-r border-gray-100 align-top">
+                                            {{ $detail->item->name ?? '-' }}
+                                        </td>
+
+                                        {{-- KP --}}
+                                        <td class="px-4 py-3 border-r border-gray-100 align-top">
+                                            {{ $kkpomanagement->kp_po ?? '-' }}
+                                        </td>
+
+                                        {{-- COLOR --}}
+                                        <td class="px-4 py-3 border-r border-gray-100 align-top">
+                                            {{ $detail->color->name ?? '-' }}
+                                        </td>
+
+                                        {{-- QTY --}}
+                                        <td class="px-4 py-3 border-r border-gray-100 align-top">
+                                            <div class="font-semibold">
+                                                {{ $detail->qty ?? '-' }}
+                                            </div>
+                                            <div class="text-gray-500 text-xs">
+                                                {{ $detail->unit->name ?? '-' }}
+                                            </div>
+                                        </td>
+
+                                        {{-- PRICE --}}
+                                        <td class="px-4 py-3 border-r border-gray-100 align-top">
+                                            <div class="font-semibold">
+                                                {{ number_format($detail->price, 0, ',', '.') }}
+                                            </div>
+                                            <div class="text-gray-500 text-xs">
+                                                {{ $detail->currency->code ?? '-' }}
+                                            </div>
+                                        </td>
+
+                                        {{-- TOLERANCE --}}
+                                        <td class="px-4 py-3 border-r border-gray-100 align-top">
+                                            {{ $detail->reject_allowance ?? '-' }}%
+                                        </td>
+
+                                        <td class="px-4 py-3">
+                                            <div class="inline-block text-left relative" x-data="{ menu: false }">
+
+                                                <button @click="menu = !menu"
+                                                    class="text-gray-400 hover:text-gray-600">
+                                                    <svg class="h-5 w-5 pointer-events-none" fill="currentColor"
+                                                        viewBox="0 0 20 20">
+                                                        <path
+                                                            d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                                                    </svg>
+                                                </button>
+
+                                                {{-- DROPDOWN --}}
+                                                <div x-show="menu" @click.outside="menu = false" x-transition x-cloak
+                                                    class="absolute right-0 mt-2 w-36 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+
+                                                    <button
+                                                        onclick="window.location='{{ route('ppic.kkpomanagement.show', $kkpomanagement->id) }}'"
+                                                        class="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-50">
+                                                        Detail
+                                                    </button>
+
+                                                    <button type="button"
+                                                        onclick='openEditModal(@json($kkpomanagement))'
+                                                        class="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-50">
+                                                        Edit
+                                                    </button>
+
+                                                    <form
+                                                        action="{{ route('ppic.kkpomanagement.delete', $kkpomanagement->id) }}"
+                                                        method="POST">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit"
+                                                            onclick="return confirm('Are you sure?')"
+                                                            class="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50">
+                                                            Delete
+                                                        </button>
+                                                    </form>
+
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                    </tr>
+                                @endforeach
                             @endforeach
                         @else
                             <tr>
@@ -299,48 +302,49 @@
                                     searchPlaceholder="Search Customer..." required />
                             </div>
                             <div>
-                                <x-select-search name="category_id[]" id="category_id" label="Category Process"
-                                    :options="$categories->map(
+                                <x-select-search name="details[0][category_id]" id="category_id"
+                                    label="Category Process" :options="$categories->map(
                                         fn($category) => [
                                             'value' => $category->id,
                                             'label' => $category->name,
                                         ],
-                                    )" multiple placeholder="Select Category Process"
+                                    )" placeholder="Select Category Process"
                                     searchPlaceholder="Search Category Process..." required />
                             </div>
                             <div>
-                                <x-select-search name="style_id[]" id="style_id" label="Style" :options="$styles->map(
-                                    fn($style) => [
-                                        'value' => $style->id,
-                                        'label' => $style->name,
-                                    ],
-                                )"
-                                    multiple placeholder="Select Style" searchPlaceholder="Search Style..."
+                                <x-select-search name="details[0][style_id]" id="style_id" label="Style"
+                                    :options="$styles->map(
+                                        fn($style) => [
+                                            'value' => $style->id,
+                                            'label' => $style->name,
+                                        ],
+                                    )" placeholder="Select Style" searchPlaceholder="Search Style..."
                                     required />
                             </div>
                             <div>
-                                <x-select-search name="color_id[]" id="color_id" label="Color" :options="$colors->map(fn($c) => ['value' => $c->id, 'label' => $c->name])"
-                                    multiple placeholder="Select Colors" searchPlaceholder="Search Colors..."
-                                    required />
+                                <x-select-search name="details[0][color_id]" id="color_id" label="Color"
+                                    :options="$colors->map(fn($c) => ['value' => $c->id, 'label' => $c->name])" placeholder="Select Colors"
+                                    searchPlaceholder="Search Colors..." required />
                             </div>
                             {{-- item --}}
                             <div>
-                                <x-select-search name="item_id[]" id="item_id" label="Item" :options="$items->map(
-                                    fn($item) => [
-                                        'value' => $item->id,
-                                        'label' => $item->name,
-                                    ],
-                                )"
-                                    multiple placeholder="Select Item" searchPlaceholder="Search Item..." required />
+                                <x-select-search name="details[0][item_id]" id="item_id" label="Item"
+                                    :options="$items->map(
+                                        fn($item) => [
+                                            'value' => $item->id,
+                                            'label' => $item->name,
+                                        ],
+                                    )" placeholder="Select Item" searchPlaceholder="Search Item..."
+                                    required />
                             </div>
                             <div>
-                                <x-select-search name="brand_id[]" id="brand_id" label="Brand" :options="$brands->map(
-                                    fn($brand) => [
-                                        'value' => $brand->id,
-                                        'label' => $brand->name,
-                                    ],
-                                )"
-                                    multiple placeholder="Select Brand" searchPlaceholder="Search Brand..."
+                                <x-select-search name="details[0][brand_id]" id="brand_id" label="Brand"
+                                    :options="$brands->map(
+                                        fn($brand) => [
+                                            'value' => $brand->id,
+                                            'label' => $brand->name,
+                                        ],
+                                    )" placeholder="Select Brand" searchPlaceholder="Search Brand..."
                                     required />
                             </div>
 
@@ -354,20 +358,21 @@
 
 
                             <div>
-                                <label for="qty_total" class="block text-gray-700">Qty</label>
-                                <input type="number" name="qty_total" id="qty_total" min="0"
+                                <label for="details[0][qty]" class="block text-gray-700">Qty</label>
+                                <input type="number" name="details[0][qty]" id="qty" min="0"
                                     class="w-full border border-gray-300 rounded px-3 py-2 mt-1 focus:ring-2 focus:ring-[#136566] focus:border-[#136566]"
                                     required>
                             </div>
 
                             <div>
-                                <x-select-search name="unit_id" id="unit_id" label="Unit" :options="$units->map(
-                                    fn($unit) => [
-                                        'value' => $unit->id,
-                                        'label' => $unit->name,
-                                    ],
-                                )"
-                                    placeholder="Select Unit" searchPlaceholder="Search Unit..." required />
+                                <x-select-search name="details[0][unit_id]" id="details[0][unit_id]" label="Unit"
+                                    :options="$units->map(
+                                        fn($unit) => [
+                                            'value' => $unit->id,
+                                            'label' => $unit->name,
+                                        ],
+                                    )" placeholder="Select Unit" searchPlaceholder="Search Unit..."
+                                    required />
                             </div>
 
                             <div>
@@ -376,13 +381,13 @@
                                     class="w-full border border-gray-300 rounded px-3 py-2 mt-1 focus:ring-2 focus:ring-[#136566] focus:border-[#136566]">
                             </div>
                             <div>
-                                <label for="remark" class="block text-gray-700">Remark</label>
-                                <textarea name="remark" rows="1" id="remark"
+                                <label for="details[0][remark]" class="block text-gray-700">Remark</label>
+                                <textarea name="details[0][remark]" rows="1" id="remark"
                                     class="w-full border border-gray-300 rounded px-3 py-2 mt-1 focus:ring-2 focus:ring-[#136566] focus:border-[#136566]"></textarea>
                             </div>
 
                             <div>
-                                <x-select-search name="currency_id" id="currency_id" label="Currency"
+                                <x-select-search name="details[0][currency_id]" id="currency_id" label="Currency"
                                     :options="$currencies->map(
                                         fn($currency) => [
                                             'value' => $currency->id,
@@ -392,15 +397,16 @@
                                     searchPlaceholder="Search Currency..." required />
                             </div>
                             <div>
-                                <label for="price" class="block text-gray-700">Unit Price</label>
-                                <input type="number" name="price" id="price" min="0"
+                                <label for="details[0][price]" class="block text-gray-700">Unit Price</label>
+                                <input type="number" name="details[0][price]" id="price" min="0"
                                     class="w-full border border-gray-300 rounded px-3 py-2 mt-1 focus:ring-2 focus:ring-[#136566] focus:border-[#136566]"
                                     required>
                             </div>
                             <div>
-                                <label for="reject_allowance" class="block text-gray-700">Tolerance</label>
-                                <input type="number" step="0.01" name="reject_allowance" id="reject_allowance"
-                                    min="0"
+                                <label for="details[0][reject_allowance]"
+                                    class="block text-gray-700">Tolerance</label>
+                                <input type="number" step="0.01" name="details[0][reject_allowance]"
+                                    id="reject_allowance" min="0"
                                     class="w-full border border-gray-300 rounded px-3 py-2 mt-1 focus:ring-2 focus:ring-[#136566] focus:border-[#136566]"
                                     required>
                             </div>
@@ -476,38 +482,32 @@
 
             document.getElementById('crud-form').action = url;
             document.getElementById('form-method').value = 'PUT';
-
             setTimeout(() => {
                 document.getElementById('no_kkpo').value = kkpomanagement.no_kkpo;
 
-                //  IMPORTANT: pakai mapping array
                 document.getElementById('customer_id')._x_dataStack[0].selected = kkpomanagement.customer_id;
 
-                document.getElementById('category_id')._x_dataStack[0].selected = kkpomanagement.categories?.map(
-                    c => c.id) ?? [];
+                let detail = kkpomanagement.details?.[0];
 
-                document.getElementById('style_id')._x_dataStack[0].selected = kkpomanagement.styles?.map(s => s
-                    .id) ?? [];
+                if (detail) {
+                    document.getElementById('category_id')._x_dataStack[0].selected = detail.category_id;
+                    document.getElementById('style_id')._x_dataStack[0].selected = detail.style_id;
+                    document.getElementById('color_id')._x_dataStack[0].selected = detail.color_id;
+                    document.getElementById('item_id')._x_dataStack[0].selected = detail.item_id;
+                    document.getElementById('brand_id')._x_dataStack[0].selected = detail.brand_id;
 
-                document.getElementById('color_id')._x_dataStack[0].selected = kkpomanagement.colors?.map(c => c
-                    .id) ?? [];
+                    document.getElementById('qty').value = detail.qty;
+                    document.getElementById('price').value = detail.price;
+                    document.getElementById('reject_allowance').value = detail.reject_allowance;
 
-                document.getElementById('item_id')._x_dataStack[0].selected = kkpomanagement.items?.map(i => i
-                    .id) ?? [];
+                    document.getElementById('unit_id')._x_dataStack[0].selected = detail.unit_id;
+                    document.getElementById('currency_id')._x_dataStack[0].selected = detail.currency_id;
 
-                document.getElementById('brand_id')._x_dataStack[0].selected = kkpomanagement.brands?.map(b => b
-                    .id) ?? [];
-
-                document.getElementById('unit_id')._x_dataStack[0].selected = kkpomanagement.unit_id;
-
-                document.getElementById('currency_id')._x_dataStack[0].selected = kkpomanagement.currency_id;
+                    document.getElementById('remark').value = detail.remark ?? '';
+                }
 
                 document.getElementById('kp_po').value = kkpomanagement.kp_po;
-                document.getElementById('qty_total').value = kkpomanagement.qty_total;
-                document.getElementById('price').value = kkpomanagement.price;
-                document.getElementById('reject_allowance').value = kkpomanagement.reject_allowance;
                 document.getElementById('npwp').value = kkpomanagement.npwp;
-                document.getElementById('remark').value = kkpomanagement.remark;
                 document.getElementById('payment_terms').value = kkpomanagement.payment_terms;
                 document.getElementById('tanggal').value = kkpomanagement.tanggal;
                 document.getElementById('notes').value = kkpomanagement.notes;
@@ -524,15 +524,10 @@
                     let customerSelect = document.getElementById('customer_id');
 
                     if (data.exists) {
-                        // auto set customer
                         customerSelect._x_dataStack[0].selected = data.customer_id;
-
-                        // disable biar ga bisa selingkuh 😏
-                        customerSelect.setAttribute('disabled', true);
+                        customerSelect.setAttribute('disabled', true); // KUNCI
                     } else {
-                        // kalau baru, boleh pilih customer
                         customerSelect.removeAttribute('disabled');
-                        customerSelect._x_dataStack[0].selected = null;
                     }
                 });
         });

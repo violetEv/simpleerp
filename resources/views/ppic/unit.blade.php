@@ -10,86 +10,113 @@
                 </div>
             </div> --}}
             {{-- SEARCH & ADD SATUAN --}}
-            <div class="flex items-center justify-between mb-4">
-                <form action="{{ route('ppic.unit') }}" method="GET" class="flex items-center gap-2">
-                    <input type="text" name="search" placeholder="Search unit..."
-                        class="border border-gray-300 rounded-lg px-4 py-2" value="{{ request('search') }}">
-                    <button type="submit" class="bg-[#136566] text-white px-4 py-2 rounded-lg hover:bg-[#0f4f50]">
-                        Search
-                    </button>
-                </form>
-                <button onClick="openAddModal()"
-                    class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
-                    + Add Unit
-                </button>
+            <div class="bg-white shadow-sm rounded-lg mb-3 border border-gray-100 p-3">
+
+                <div class="flex flex-wrap items-center justify-between gap-2">
+
+                    {{-- LEFT GROUP --}}
+                    <form action="{{ route('ppic.unit') }}" method="GET" class="flex items-center gap-2">
+                        <div class="relative">
+                            <input type="text" name="search" value="{{ request('search') }}"
+                                placeholder="Search unit..."
+                                class="h-9 pl-9 pr-3 text-sm border border-gray-200 rounded-md focus:ring-1 focus:ring-[#0f4f50] focus:border-[#0f4f50] w-52">
+
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                    d="m21 21-4.35-4.35m1.85-5.65a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" />
+                            </svg>
+                        </div>
+                    </form>
+
+                    {{-- RIGHT GROUP --}}
+                    <div class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-md p-1">
+                        {{-- ADD --}}
+                        <button onClick="openAddModal()"
+                            class="h-8 px-3 text-xs rounded bg-[#0f4f50] text-white hover:bg-[#136566] flex items-center gap-1 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4v16m8-8H4" />
+                            </svg>
+                            Add Unit
+                        </button>
+
+                    </div>
+
+                </div>
+
             </div>
-            {{-- SATUAN TABLE --}}
-            <div class="bg-white overflow-hidden shadow rounded-lg p-2">
-                {{-- <div class="p-4 bg-white border-b border-gray-200"> --}}
-                    <table class="min-w-full table-fixed text-gray-800">
-                        <thead class="bg-gray-50 text-gray-700 uppercase tracking wider">
-                            <tr>
-                                <th
-                                    class="px-4 py-2 text-left text-xs font-semibold">
-                                    Unit Name</th>
-                                <th
-                                    class="px-4 py-2 text-left text-xs font-semibold">
-                                    Actions
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200 text-sm">
-                            @if ($units->count())
-                                @foreach ($units as $unit)
-                                    <tr>
-                                        <td class="px-4 py-2 whitespace-nowrap">{{ $unit->name }}</td>
-                                        <td class="px-4 py-2 whitespace-nowrap">
-                                            <button onClick="editUnit({{ $unit->id }}, '{{ $unit->name }}')"
-                                                class="mr-2" title="Edit">
-                                                <svg class="w-6 h-6 text-blue-500 hover:text-blue-700"
-                                                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
-                                                    height="24" fill="none" viewBox="0 0 24 24">
+            {{-- UNIT TABLE --}}
+            <div
+                class="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition overflow-visible">
+
+                <table class="min-w-full table-fixed text-gray-800">
+
+                    {{-- THEAD --}}
+                    <thead
+                        class="bg-[#136566]/10 text-gray-700 border-b border-[#136566]/30 text-[11px] uppercase tracking-wide">
+                        <tr>
+                            <th class="px-4 py-2 text-left text-xs font-semibold">
+                                Unit Name</th>
+                            <th class="px-4 py-2 text-left text-xs font-semibold">
+                                Actions
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200 text-sm">
+                        @if ($units->count())
+                            @foreach ($units as $unit)
+                                <tr>
+                                    <td class="px-4 py-2 whitespace-nowrap">{{ $unit->name }}</td>
+                                    <td class="px-4 py-2 whitespace-nowrap">
+                                        <button onClick="editUnit({{ $unit->id }}, '{{ $unit->name }}')"
+                                            class="mr-2" title="Edit">
+                                            <svg class="w-6 h-6 text-blue-500 hover:text-blue-700" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                fill="none" viewBox="0 0 24 24">
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2"
+                                                    d="M10.779 17.779 4.36 19.918 6.5 13.5m4.279 4.279 8.364-8.643a3.027 3.027 0 0 0-2.14-5.165 3.03 3.03 0 0 0-2.14.886L6.5 13.5m4.279 4.279L6.499 13.5m2.14 2.14 6.213-6.504M12.75 7.04 17 11.28" />
+                                            </svg>
+                                        </button>
+                                        <form action="{{ route('ppic.unit.delete', $unit->id) }}" method="POST"
+                                            class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                onclick="return confirm('Are you sure you want to delete {{ $unit->name }}?')"
+                                                title="Delete">
+                                                <svg class="w-6 h-6 text-red-500 hover:text-red-700" aria-hidden="true"
+                                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    fill="none" viewBox="0 0 24 24">
                                                     <path stroke="currentColor" stroke-linecap="round"
                                                         stroke-linejoin="round" stroke-width="2"
-                                                        d="M10.779 17.779 4.36 19.918 6.5 13.5m4.279 4.279 8.364-8.643a3.027 3.027 0 0 0-2.14-5.165 3.03 3.03 0 0 0-2.14.886L6.5 13.5m4.279 4.279L6.499 13.5m2.14 2.14 6.213-6.504M12.75 7.04 17 11.28" />
+                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                 </svg>
                                             </button>
-                                            <form action="{{ route('ppic.unit.delete', $unit->id) }}" method="POST"
-                                                class="inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" onclick="return confirm('Are you sure you want to delete {{ $unit->name }}?')" title="Delete">
-                                                    <svg class="w-6 h-6 text-red-500 hover:text-red-700"
-                                                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                                        width="24" height="24" fill="none"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke="currentColor" stroke-linecap="round"
-                                                            stroke-linejoin="round" stroke-width="2"
-                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                    </svg>
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            @else
-                                <tr>
-                                    <td colspan="2" class="px-4 py-2 whitespace-nowrap text-center text-gray-500">
-                                        Unit not found.
+                                        </form>
                                     </td>
                                 </tr>
-                            @endif
-                        </tbody>
-                    </table>
-                    <div class="p-3">
-                        {{ $units->links() }}
-                    </div>
+                            @endforeach
+                        @else
+                            <tr>
+                                <td colspan="2" class="px-4 py-2 whitespace-nowrap text-center text-gray-500">
+                                    Unit not found.
+                                </td>
+                            </tr>
+                        @endif
+                    </tbody>
+                </table>
+                <div class="p-3">
+                    {{ $units->links() }}
+                </div>
 
                 {{-- </div> --}}
             </div>
             {{-- MODAL ADD & EDIT UNIT --}}
-            <div id="unitModal"
-                class="hidden fixed inset-0 z-50 bg-gray-600 bg-opacity-50 items-center justify-center">
+            <div id="unitModal" class="hidden fixed inset-0 z-50 bg-gray-600 bg-opacity-50 items-center justify-center">
                 <div class="bg-white rounded-lg p-6 w-full max-w-md">
                     <div class="flex justify-between items-center mb-4">
                         <h3 id="modal-title" class="text-lg font-medium">Add Unit</h3>

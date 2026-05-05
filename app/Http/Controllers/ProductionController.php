@@ -62,7 +62,7 @@ class ProductionController extends Controller
             ->with('success', 'Order berhasil ditambahkan');
     }
 
-    public function createSuratJalanOut($id)
+    public function createSuratJalanOut(int $id)
     {
         $traveler = Traveler::findOrFail($id);
         $kkpoManagements = KkpoManagement::with(['category', 'customer', 'style', 'color', 'item'])->get();
@@ -103,7 +103,7 @@ class ProductionController extends Controller
         return view('produksi.proses.index', compact('travelers'));
     }
 
-    public function process($id)
+    public function process(int $id)
     {
         $traveler = Traveler::findOrFail($id);
         // 🔹 movement yang BELUM OUT (aktif)
@@ -331,7 +331,7 @@ class ProductionController extends Controller
         return view('produksi.logproduksi', compact('movements', 'dept'));
     }
 
-    public function logDetail($id)
+    public function logDetail(int $id)
     {
         $movement = TravelerMovement::with([
             'traveler',

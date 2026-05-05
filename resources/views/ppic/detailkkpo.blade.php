@@ -38,26 +38,26 @@
                         <div>
                             <div class="text-gray-500 text-xs">Style / Color</div>
                             <div class="text-gray-800">
-                                {{ $kkpomanagement->style->name }} • {{ $kkpomanagement->color->name }}
+                                {{ $kkpomanagement->details->first()->style->name }} • {{ $kkpomanagement->details->first()->color->name }}
                             </div>
                         </div>
 
                         <div>
                             <div class="text-gray-500 text-xs">Brand</div>
-                            <div>{{ $kkpomanagement->brand->name }}</div>
+                            <div>{{ $kkpomanagement->details->first()->brand->name }}</div>
                         </div>
 
                         <div>
                             <div class="text-gray-500 text-xs">Category</div>
-                            <div>{{ $kkpomanagement->category->name }}</div>
+                            <div>{{ $kkpomanagement->details->first()->category->name }}</div>
                         </div>
 
                         <div>
                             <div class="text-gray-500 text-xs">Qty</div>
                             <div class="font-semibold">
-                                {{ $kkpomanagement->qty_total }}
+                                {{ $kkpomanagement->details->first()->qty }}
                                 <span class="text-gray-500 text-xs">
-                                    {{ $kkpomanagement->unit->name ?? '-' }}
+                                    {{ $kkpomanagement->details->first()->unit->name ?? '-' }}
                                 </span>
                             </div>
                         </div>
@@ -65,16 +65,16 @@
                         <div>
                             <div class="text-gray-500 text-xs">Unit Price</div>
                             <div class="font-semibold">
-                                {{ number_format($kkpomanagement->price, 0, ',', '.') }}
+                                {{ number_format($kkpomanagement->details->first()->price, 0, ',', '.') }}
                                 <span class="text-gray-500 text-xs">
-                                    {{ $kkpomanagement->currency->code ?? '-' }}
+                                    {{ $kkpomanagement->details->first()->currency->code ?? '-' }}
                                 </span>
                             </div>
                         </div>
 
                         <div>
                             <div class="text-gray-500 text-xs">Tolerance</div>
-                            <div>{{ $kkpomanagement->reject_allowance ?? '-' }}%</div>
+                            <div>{{ $kkpomanagement->details->first()->reject_allowance ?? '-' }}%</div>
                         </div>
 
                         <div>
@@ -171,13 +171,13 @@
                                         {{ $traveler->no_traveler }}
                                     </td>
                                     <td class="px-4 py-3">
-                                        {{ $traveler->suratJalan->kkpomanagement->style->name ?? '-' }}
+                                        {{ $traveler->suratJalan->kkpomanagement->details->first()->style->name ?? '-' }}
                                     </td>
                                     <td class="px-4 py-3">
-                                        {{ $traveler->suratJalan->kkpomanagement->color->name ?? '-' }}
+                                        {{ $traveler->suratJalan->kkpomanagement->details->first()->color->name ?? '-' }}
                                     </td>
                                     <td class="px-4 py-3">
-                                        {{ $traveler->suratJalan->kkpomanagement->category->name ?? '-' }}
+                                        {{ $traveler->suratJalan->kkpomanagement->details->first()->category->name ?? '-' }}
                                     </td>
                                 </tr>
                             @endforeach

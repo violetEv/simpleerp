@@ -10,30 +10,59 @@
                 </div>
             </div> --}}
             {{-- SEARCH & ADD BRAND --}}
-            <div class="flex items-center justify-between mb-4">
-                <form action="{{ route('ppic.brand') }}" method="GET" class="flex items-center gap-2">
-                    <input type="text" name="search" placeholder="Cari merek..."
-                        class="border border-gray-300 rounded-lg px-4 py-2" value="{{ request('search') }}">
-                    <button type="submit" class="bg-[#136566] text-white px-4 py-2 rounded-lg hover:bg-[#0f4f50]">
-                        Cari
-                    </button>
-                </form>
-                <button onClick="openAddModal()"
-                    class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
-                    + Tambah Merek
-                </button>
+            <div class="bg-white shadow-sm rounded-lg mb-3 border border-gray-100 p-3">
+
+                <div class="flex flex-wrap items-center justify-between gap-2">
+
+                    {{-- LEFT GROUP --}}
+                    <form action="{{ route('ppic.brand') }}" method="GET" class="flex items-center gap-2">
+                        <div class="relative">
+                            <input type="text" name="search" value="{{ request('search') }}"
+                                placeholder="Search brand..."
+                                class="h-9 pl-9 pr-3 text-sm border border-gray-200 rounded-md focus:ring-1 focus:ring-[#0f4f50] focus:border-[#0f4f50] w-52">
+
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                    d="m21 21-4.35-4.35m1.85-5.65a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" />
+                            </svg>
+                        </div>
+                    </form>
+
+                    {{-- RIGHT GROUP --}}
+                    <div class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-md p-1">
+                        {{-- ADD --}}
+                        <button onClick="openAddModal()"
+                            class="h-8 px-3 text-xs rounded bg-[#0f4f50] text-white hover:bg-[#136566] flex items-center gap-1 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4v16m8-8H4" />
+                            </svg>
+                            Add Brand
+                        </button>
+
+                    </div>
+
+                </div>
+
             </div>
             {{-- BRAND TABLE --}}
-            <div class="bg-white overflow-hidden shadow rounded-lg p-2">
-                {{-- <div class="p-4 bg-white border-b border-gray-200"> --}}
+            <div
+                class="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition overflow-visible">
+
                 <table class="min-w-full table-fixed text-gray-800">
-                    <thead class="bg-gray-50 text-gray-700 uppercase tracking wider">
+
+                    {{-- THEAD --}}
+                    <thead
+                        class="bg-[#136566]/10 text-gray-700 border-b border-[#136566]/30 text-[11px] uppercase tracking-wide">
                         <tr>
                             {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th> --}}
                             <th class="px-4 py-2 text-left text-xs font-semibold">
-                                Nama Merek</th>
+                                Brand Name</th>
                             <th class="px-4 py-2 text-left text-xs font-semibold">
-                                Aksi
+                                Actions
                             </th>
                         </tr>
                     </thead>
@@ -75,7 +104,7 @@
                         @else
                             <tr>
                                 <td colspan="2" class="px-4 py-2 whitespace-nowrap text-center text-gray-500">
-                                    Merek tidak ditemukan.
+                                    Brand not found.
                                 </td>
                             </tr>
                         @endif
@@ -91,7 +120,7 @@
         <div id="addModal" class="hidden fixed inset-0 z-50 bg-gray-600 bg-opacity-50 items-center justify-center">
             <div class="bg-white rounded-lg p-6 w-full max-w-md">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 id="modal-title" class="text-lg font-medium">Tambah Merek</h3>
+                    <h3 id="modal-title" class="text-lg font-medium">Add Brand</h3>
                     <button onClick="closeAddModal()" class="text-gray-500 text-2xl hover:text-gray-700">
                         &times;
                     </button>
@@ -101,13 +130,13 @@
                     <input type="hidden" name="_method" id="brandMethod" value="POST">
                     <input type="hidden" name="brand_id" id="brandId">
                     <div class="mb-4">
-                        <label for="name" class="block text-gray-700 font-medium mb-2">Nama Merek</label>
+                        <label for="name" class="block text-gray-700 font-medium mb-2">Brand Name</label>
                         <input type="text" name="name" id="name" required
                             class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#136566]">
                     </div>
                     <button type="submit"
                         class="bg-[#136566] text-white px-4 py-2 rounded-lg hover:bg-[#0f4f50]">
-                        Simpan
+                        Save
                     </button>
                 </form>
             </div>
@@ -118,7 +147,7 @@
         function openAddModal() {
             document.getElementById('addModal').classList.remove('hidden');
             document.getElementById('addModal').classList.add('flex');
-            document.getElementById('modal-title').textContent = 'Tambah Merek';
+            document.getElementById('modal-title').textContent = 'Add Brand';
             // document.getElementById('submit-button').textContent = 'Tambah Merek';
             document.getElementById('brandForm').action = "{{ route('ppic.brand.store') }}";
             document.getElementById('brandMethod').value = 'POST';
@@ -133,7 +162,7 @@
 
         function editBrand(id, name) {
             openAddModal();
-            document.getElementById('modal-title').textContent = 'Edit Merek';
+            document.getElementById('modal-title').textContent = 'Edit Brand';
             // document.getElementById('submit-button').textContent = 'Update Merek';
             let url = "{{ route('ppic.brand.update', ':id') }}";
             url = url.replace(':id', id);

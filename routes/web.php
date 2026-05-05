@@ -59,6 +59,8 @@ Route::middleware('role:super_admin')->group(function () {
 
     Route::get('/superadmin/report', [AdminController::class, 'report'])
         ->name('superadmin.report');
+        Route::get('/superadmin/report/export', [AdminController::class, 'exportReport'])
+        ->name('superadmin.report.export');
     Route::get('/superadmin/approval', [AdminController::class, 'approval'])
         ->name('superadmin.approval');
      // Route::get('/superadmin/activitylog', [AdminController::class, 'activityLog'])->name('superadmin.activitylog');
@@ -176,6 +178,7 @@ Route::middleware('role:warehouse')->group(function () {
     Route::delete('/warehouse/pecah/delete/{id}', [WarehouseController::class, 'pecahDelete'])->name('warehouse.pecah.delete');
 
     Route::get('/warehouse/list', [WarehouseController::class, 'list'])->name('warehouse.list');
+    Route::put('/warehouse/list/update/{id}', [WarehouseController::class, 'editTraveler'])->name('warehouse.list.update');
     Route::get('/warehouse/list/{id}', [WarehouseController::class, 'travelerDetail'])->name('warehouse.list.show');
     Route::delete('/warehouse/list/delete/{id}', [WarehouseController::class, 'travelerDelete'])->name('warehouse.list.delete');
     // Route::get('/warehouse/rework', [WarehouseController::class, 'rework'])->name('warehouse.rework');

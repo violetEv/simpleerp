@@ -67,10 +67,14 @@
 
             </div>
             {{-- Customer Table --}}
-            <div class="bg-white shadow overflow-hidden p-2 rounded-lg">
+            <div
+                class="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition overflow-visible">
 
                 <table class="min-w-full table-fixed text-gray-800">
-                    <thead class="bg-gray-50 text-gray-700 uppercase tracking-wider">
+
+                    {{-- THEAD --}}
+                    <thead
+                        class="bg-[#136566]/10 text-gray-700 border-b border-[#136566]/30 text-[11px] uppercase tracking-wide">
                         <tr>
                             {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     ID</th> --}}

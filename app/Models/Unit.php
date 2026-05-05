@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Unit extends Model
 {
     protected $fillable = ['name'];
-    public function kkpoManagements()
+    public function details()
     {
-        return $this->hasMany(KkpoManagement::class);
+        return $this->hasMany(KkpoDetail::class);
     }
 }

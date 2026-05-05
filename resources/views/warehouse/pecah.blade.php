@@ -7,7 +7,9 @@
     </h2> --}}
     {{-- deskripsi halaman --}}
     <p class="text-sm text-gray-500 mb-4">
-        Halaman ini digunakan untuk membuat traveler dari surat jalan yang sudah ada. Pastikan untuk mengisi data dengan benar karena data yang sudah diinput tidak dapat diubah.
+        Halaman ini digunakan untuk membuat traveler dari surat jalan yang sudah ada. Pastikan untuk mengisi data dengan
+        benar.
+        {{-- karena data yang sudah diinput tidak dapat diubah. --}}
     </p>
     <div class="py-4">
         <div class="max-w-7xl mx-auto">
@@ -15,10 +17,10 @@
             {{-- SEARCH --}}
             <div class="flex items-center justify-between mb-4">
                 <form action="{{ route('warehouse.pecah') }}" method="GET" class="flex items-center gap-2">
-                    <input type="text" name="search" placeholder="Search surat jalan..."
+                    <input type="text" name="search" placeholder="Cari surat jalan..."
                         class="border border-gray-300 rounded-lg px-4 py-2" value="{{ request('search') }}">
                     <button type="submit" class="bg-[#136566] text-white px-4 py-2 rounded-lg hover:bg-[#0f4f50]">
-                        Search
+                        Cari
                     </button>
                 </form>
             </div>
@@ -27,43 +29,53 @@
             {{-- <div class="bg-white shadow rounded-lg p-6"> --}}
             {{-- TAB NAVIGATION --}}
             <div id="tab-content-baru">
+                <div
+                    class="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition overflow-visible">
 
-                <div class="bg-white shadow p-2 rounded-lg overflow-hidden">
-                    <table class="min-w-full table-fixed">
+                    <table class="min-w-full table-fixed text-gray-800">
 
-                        <thead class="bg-gray-50">
+                        {{-- THEAD --}}
+                        <thead
+                            class="bg-[#136566]/10 text-gray-700 border-b border-[#136566]/30 text-[11px] uppercase tracking-wide">
                             <tr>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                                <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase">
                                     No Surat Jalan
                                 </th>
 
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                                <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase">
                                     Customer
                                 </th>
+                                <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase">
+                                    Category Process
+                                </th>
 
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                                <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase">
                                     Style
                                 </th>
 
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                                <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase">
+                                    Color
+                                </th>
+
+                                <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase">
                                     Qty Awal
                                 </th>
 
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                                <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase">
                                     Qty Sisa
                                 </th>
 
-                                {{-- <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                                {{-- <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase">
                                     Status
                                 </th> --}}
 
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                                <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase">
                                     Aksi
                                 </th>
                             </tr>
                         </thead>
 
-                        <tbody class="bg-white divide-y divide-gray-200">
+                        <tbody class="bg-white divide-y divide-gray-200 text-sm">
                             @if ($pecahTravelers->count())
                                 @foreach ($pecahTravelers as $pecahTraveler)
                                     <tr>
@@ -74,10 +86,17 @@
                                         <td class="px-4 py-2 whitespace-nowrap">
                                             {{ $pecahTraveler->kkpoManagement->customer->name ?? '-' }}
                                         </td>
+
                                         <td class="px-4 py-2 whitespace-nowrap">
-                                            {{ $pecahTraveler->kkpoManagement->styles->first()->name ?? '-' }}
+                                            {{ $pecahTraveler->kkpoManagement->details->first()->category->name ?? '-' }}
+                                        </td>
+                                        <td class="px-4 py-2 whitespace-nowrap">
+                                            {{ $pecahTraveler->kkpoManagement->details->first()->style->name ?? '-' }}
                                         </td>
 
+                                        <td class="px-4 py-2 whitespace-nowrap">
+                                            {{ $pecahTraveler->kkpoManagement->details->first()->color->name ?? '-' }}
+                                        </td>
                                         <td class="px-4 py-2 whitespace-nowrap">
                                             {{ $pecahTraveler->qty }}
                                         </td>
@@ -105,6 +124,7 @@
                                         {{-- {{ $pecahTraveler->status ?? '-' }} --}}
                                         {{-- </td> --}}
                                         <td class="px-4 py-2 whitespace-nowrap">
+
                                             @if ($sisaQty <= 0)
                                                 <button disabled
                                                     class="px-2 py-1 bg-gray-400 text-white rounded-lg cursor-not-allowed">

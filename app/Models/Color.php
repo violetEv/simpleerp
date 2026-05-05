@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Color extends Model
 {
     protected $fillable = ['name'];
-    public function kkpoManagements()
+    public function details()
     {
-        return $this->belongsToMany(KkpoManagement::class, 'kkpo_management_color');
+        return $this->hasMany(KkpoDetail::class);
     }
 }

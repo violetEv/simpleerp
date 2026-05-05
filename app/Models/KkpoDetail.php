@@ -18,6 +18,8 @@ class KkpoDetail extends Model
         'qty',
         'unit_id',
         'price',
+        'currency_id',
+        'reject_allowance',
         'remark',
     ];
 
@@ -27,7 +29,7 @@ class KkpoDetail extends Model
         return $this->belongsTo(KkpoManagement::class, 'kkpo_management_id');
     }
 
-    //  RELASI MASTER (INI PENTING)
+    //  RELASI MASTER 
     public function category()
     {
         return $this->belongsTo(Category::class);
@@ -56,5 +58,10 @@ class KkpoDetail extends Model
     public function unit()
     {
         return $this->belongsTo(Unit::class);
+    }
+
+    public function currency()
+    {
+        return $this->belongsTo(Currency::class);
     }
 }

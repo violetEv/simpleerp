@@ -24,8 +24,7 @@ class WarehouseController extends Controller
     }
     public function order(Request $request)
     {
-        // ambil data surat jalan dengan relasi kkpoManagement, customer, style, color, category, dan filter berdasarkan no_surat_jalan atau nama customer jika ada query search
-        $query = SuratJalan::with(['kkpoManagement.customer', 'kkpoManagement.styles', 'kkpoManagement.colors', 'kkpoManagement.categories']);
+        $query = SuratJalan::with(['kkpoManagement.customer', 'kkpoManagement.details.style', 'kkpoManagement.details.color', 'kkpoManagement.details.category']);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -34,7 +33,7 @@ class WarehouseController extends Controller
         }
 
         $orders = $query->paginate(10)->withQueryString();
-        $kkpoManagements = KkpoManagement::with(['categories', 'customer', 'styles', 'colors', 'suratJalan'])->get();
+        $kkpoManagements = KkpoManagement::with(['details.category', 'customer', 'details.style', 'details.color', 'suratJalan'])->get();
 
         return view('warehouse.suratjalan', compact('orders', 'kkpoManagements'));
     }
@@ -48,6 +47,7 @@ class WarehouseController extends Controller
             'tanggal' => 'required|date',
             'notes' => 'nullable|string',
         ]);
+        // ketika qty 0 atau kurang, statusnya closed, dan row hilang dari list surat jalan di halaman warehouse, di view
         $status = $request->qty <= 0 ? 'closed' : 'open';
         try {
             SuratJalan::create([
@@ -121,7 +121,7 @@ class WarehouseController extends Controller
 
     public function pecah(Request $request)
     {
-        $query = SuratJalan::with(['kkpoManagement.customer', 'kkpoManagement.styles', 'kkpoManagement.colors', 'kkpoManagement.categories', 'travelers']);
+        $query = SuratJalan::with(['kkpoManagement.customer', 'kkpoManagement.details.style', 'kkpoManagement.details.color', 'kkpoManagement.details.category', 'travelers']);
 
         if ($request->filled('search')) {
 
@@ -150,6 +150,8 @@ class WarehouseController extends Controller
             'no_traveler' => 'required|array',
             'no_traveler.*' => 'required|string',
 
+            'pic' => 'required|string|max:255',
+
             'qty_split' => 'required|array',
             'qty_split.*' => 'required|integer|min:1',
 
@@ -157,7 +159,7 @@ class WarehouseController extends Controller
             'dept_tujuan_id.*' => 'required|exists:departments,id',
             'tanggal' => 'required|array',
             'tanggal.*' => 'required|date',
-            
+
 
             'notes' => 'nullable|string'
         ]);
@@ -178,9 +180,10 @@ class WarehouseController extends Controller
                     // 'parent_traveler_id' => null,
                     'tanggal' => $request->tanggal[$index],
                     'notes' => $request->notes,
-                    'status' => $status
+                    'status' => $status,
+                    'pic' => $request->pic
                 ]);
-                
+
                 TravelerMovement::create([
                     'traveler_id' => $travelerBaru->id,
                     'dept_asal_id' => FacadesAuth::user()->department_id,
@@ -205,6 +208,7 @@ class WarehouseController extends Controller
             ->route('warehouse.pecah')
             ->with('success', 'Traveler berhasil dibuat');
     }
+
 
     public function rework(Request $request)
     {
@@ -295,7 +299,7 @@ class WarehouseController extends Controller
 
     public function travelerDetail(int $id)
     {
-        $traveler = Traveler::with(['suratJalan.kkpoManagement.customer', 'deptAsal', 'deptTujuan'])->findOrFail($id);
+        $traveler = Traveler::with(['suratJalan.kkpoManagement.customer', 'suratJalan.kkpoManagement.details.style', 'suratJalan.kkpoManagement.category', 'suratJalan.kkpoManagement.color', 'deptAsal', 'deptTujuan'])->findOrFail($id);
         $movements = TravelerMovement::with(['deptAsal', 'deptTujuan'])->where('traveler_id', $id)->orderBy('date_in', 'desc')->get();
 
         return view('warehouse.traveler_detail', compact('traveler', 'movements'));
@@ -314,5 +318,28 @@ class WarehouseController extends Controller
                 ->route('warehouse.list')
                 ->with('error', 'Gagal menghapus traveler: ' . $e->getMessage());
         }
+    }
+    // fungsi untuk mengubah data traveler, hanya no travelernya saja, tidak berpindah halaman , hanya pake modal
+    public function editTraveler(int $id)
+    {
+        $traveler = Traveler::findOrFail($id);
+        try {
+            $newNoTraveler = request()->input('no_traveler');
+            if (Traveler::where('no_traveler', $newNoTraveler)->where('id', '!=', $id)->exists()) {
+                return redirect()
+                    ->route('warehouse.list')
+                    ->with('error', 'No traveler sudah ada: ' . $newNoTraveler);
+            }
+            $traveler->no_traveler = $newNoTraveler;
+            $traveler->save();
+        } catch (QueryException $e) {
+            // return ke halaman list dengan pesan error jika terjadi error, misalnya no traveler sudah ada atau error lainnya
+            return redirect()
+                ->route('warehouse.list')
+                ->with('error', 'Gagal mengubah traveler: ' . $e->getMessage());
+        }
+        return redirect()
+            ->route('warehouse.list')
+            ->with('success', 'No traveler berhasil diubah: ' . $newNoTraveler);
     }
 }

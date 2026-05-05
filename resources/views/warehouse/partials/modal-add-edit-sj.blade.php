@@ -22,13 +22,16 @@
                                 'value' => $k->id,
                                 'label' => $k->no_kkpo,
                                 'data' => [
-                                    'qty_total' => $k->qty_total,
+                                    'qty_total' => $k->details->sum('qty'),
                                     'qty_used' => $k->suratJalan->sum('qty'),
                     
                                     'customer' => $k->customer
                                         ? ['id' => $k->customer->id, 'name' => $k->customer->name]
                                         : null,
-                                    'styles' => $k->styles
+                                    'styles' => $k->details
+                                        ->pluck('style')
+                                        ->filter()
+                                        ->unique('id')
                                         ->map(
                                             fn($s) => [
                                                 'id' => $s->id,
@@ -38,7 +41,10 @@
                                         ->values()
                                         ->toArray(),
                     
-                                    'colors' => $k->colors
+                                    'colors' => $k->details
+                                        ->pluck('color')
+                                        ->filter()
+                                        ->unique('id')
                                         ->map(
                                             fn($c) => [
                                                 'id' => $c->id,
@@ -48,7 +54,10 @@
                                         ->values()
                                         ->toArray(),
                     
-                                    'categories' => $k->categories
+                                    'categories' => $k->details
+                                        ->pluck('category')
+                                        ->filter()
+                                        ->unique('id')
                                         ->map(
                                             fn($c) => [
                                                 'id' => $c->id,

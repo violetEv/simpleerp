@@ -3,11 +3,7 @@
         List Traveler
     </h2> --}}
 
-    {{-- ALERT --}}
-    @if (session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-    <div class="py-6">
+    <div class="py-4">
         <div class="max-w-7xl mx-auto">
             {{-- SEARCH --}}
             <div class="flex items-center justify-between mb-4">

@@ -88,6 +88,14 @@ x-data="selectSearch({
     @endif
 
     <input type="hidden" name="{{ $name }}" :value="selected">
+    {{-- validation trigger --}}
+    <input 
+        type="text" 
+        x-model="selected" 
+        class="absolute opacity-0 pointer-events-none" 
+        tabindex="-1"
+        {{ $required ? 'required' : '' }}
+    >
 
     <div @click="if(!disabled) toggle()" class="w-full border border-gray-300 rounded px-3 py-2 bg-white cursor-pointer"
         :class="{ 'bg-gray-100 cursor-not-allowed': disabled }">
@@ -108,7 +116,7 @@ x-data="selectSearch({
                 </li>
             </template>
             <li x-show="filteredOptions.length === 0" class="px-3 py-2 text-gray-500">
-                Tidak ada data
+                No data found.
             </li>
         </ul>
     </div>

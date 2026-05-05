@@ -69,18 +69,18 @@ class AdminController extends Controller
 
             return redirect()
                 ->route('superadmin.user')
-                ->with('success', 'User berhasil ditambahkan');
+                ->with('success', 'User successfully added');
         } catch (QueryException $e) {
 
             if ($e->errorInfo[1] == 1062) {
-                return back()->with('error', 'Email sudah digunakan');
+                return back()->with('error', 'Email already in use');
             }
 
-            return back()->with('error', 'Gagal menambahkan user');
+            return back()->with('error', 'Failed to add user');
         }
     }
 
-    function delete($id)
+    function delete(int $id)
     {
         $user = User::findOrFail($id);
         try {
@@ -88,15 +88,15 @@ class AdminController extends Controller
 
             return redirect()
                 ->route('superadmin.user')
-                ->with('success', 'User berhasil dihapus');
+                ->with('success', 'User successfully deleted');
         } catch (QueryException $e) {
             return redirect()
                 ->route('superadmin.user')
-                ->with('error', 'Gagal menghapus user: ' . $e->getMessage());
+                ->with('error', 'Failed to delete user: ' . $e->getMessage());
         }
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id)
     {
         $user = User::findOrFail($id);
 
@@ -111,14 +111,14 @@ class AdminController extends Controller
 
             return redirect()
                 ->route('superadmin.user')
-                ->with('success', 'User berhasil diperbarui');
+                ->with('success', 'User successfully updated');
         } catch (QueryException $e) {
 
             if ($e->errorInfo[1] == 1062) {
-                return back()->with('error', 'Email sudah digunakan');
+                return back()->with('error', 'Email already in use');
             }
 
-            return back()->with('error', 'Gagal memperbarui user');
+            return back()->with('error', 'Failed to update user');
         }
     }
 
@@ -150,17 +150,17 @@ class AdminController extends Controller
 
             return redirect()
                 ->route('superadmin.department')
-                ->with('success', 'Department berhasil ditambahkan');
+                ->with('success', 'Department successfully added');
         } catch (QueryException $e) {
             if ($e->errorInfo[1] == 1062) {
-                return back()->with('error', 'Nama department sudah digunakan');
+                return back()->with('error', 'Department name already in use');
             }
 
-            return back()->with('error', 'Gagal menambahkan department');
+            return back()->with('error', 'Failed to add department');
         }
     }
 
-    public function updateDepartment(Request $request, $id)
+    public function updateDepartment(Request $request, int $id)
     {
         $request->validate([
             'name' => 'required|string|max:255',
@@ -174,16 +174,16 @@ class AdminController extends Controller
 
             return redirect()
                 ->route('superadmin.department')
-                ->with('success', 'Department berhasil diperbarui');
+                ->with('success', 'Department successfully updated');
         } catch (QueryException $e) {
             // if ($e->errorInfo[1] == 1062) {
-            return back()->with('error', 'Nama department sudah digunakan');
+            return back()->with('error', 'Department name already in use');
             // }
 
-            // return back()->with('error', 'Gagal memperbarui department');
+            // return back()->with('error', 'Failed to update department');
         }
     }
-    public function deleteDepartment($id)
+    public function deleteDepartment(int $id)
     {
         $department = Departments::findOrFail($id);
         // $department->name = request('name');
@@ -192,16 +192,16 @@ class AdminController extends Controller
 
             return redirect()
                 ->route('superadmin.department')
-                ->with('success', 'Department berhasil dihapus');
+                ->with('success', 'Department successfully deleted');
         } catch (QueryException $e) {
             if ($e->errorInfo[1] == 1451) {
-                return back()->with('error', 'Department tidak dapat dihapus karena masih digunakan');
+                return back()->with('error', 'Department cannot be deleted because it is still in use');
             }
 
-            return back()->with('error', 'Gagal menghapus department');
+            return back()->with('error', 'Failed to delete department');
         }
 
-        return redirect()->route('superadmin.department')->with('success', 'Department berhasil dihapus');
+        return redirect()->route('superadmin.department')->with('success', 'Department successfully deleted');
     }
 
     public function machines(Request $request)
@@ -234,16 +234,16 @@ class AdminController extends Controller
 
             return redirect()
                 ->route('superadmin.machine')
-                ->with('success', 'Mesin berhasil ditambahkan');
+                ->with('success', 'Machine successfully added');
         } catch (QueryException $e) {
             if ($e->errorInfo[1] == 1062) {
-                return back()->with('error', 'Nama mesin sudah digunakan');
+                return back()->with('error', 'Machine name already in use');
             }
 
-            return back()->with('error', 'Gagal menambahkan mesin');
+            return back()->with('error', 'Failed to add machine');
         }
     }
-    public function updateMachine(Request $request, $id)
+    public function updateMachine(Request $request, int $id)
     {
         $request->validate([
             'name' => 'required|string|max:255',
@@ -259,16 +259,16 @@ class AdminController extends Controller
 
             return redirect()
                 ->route('superadmin.machine')
-                ->with('success', 'Mesin berhasil diperbarui');
+                ->with('success', 'Machine successfully updated');
         } catch (QueryException $e) {
             // if ($e->errorInfo[1] == 1062) {
-            return back()->with('error', 'Nama mesin sudah digunakan');
+            return back()->with('error', 'Machine name already in use');
             // }
 
-            // return back()->with('error', 'Gagal memperbarui mesin');
+            // return back()->with('error', 'Failed to update machine');
         }
     }
-    public function deleteMachine($id)
+    public function deleteMachine(int $id)
     {
         $machine = Machine::findOrFail($id);
         // $machine->name = request('name');
@@ -277,16 +277,16 @@ class AdminController extends Controller
 
             return redirect()
                 ->route('superadmin.machine')
-                ->with('success', 'Mesin berhasil dihapus');
+                ->with('success', 'Machine successfully deleted');
         } catch (QueryException $e) {
             if ($e->errorInfo[1] == 1451) {
-                return back()->with('error', 'Mesin tidak dapat dihapus karena masih digunakan');
+                return back()->with('error', 'Machine cannot be deleted because it is still in use');
             }
 
-            return back()->with('error', 'Gagal menghapus mesin');
+            return back()->with('error', 'Failed to delete machine');
         }
 
-        return redirect()->route('superadmin.machine')->with('success', 'Mesin berhasil dihapus');
+        return redirect()->route('superadmin.machine')->with('success', 'Machine successfully deleted');
     }
 
     public function approval(Request $request)
@@ -300,7 +300,7 @@ class AdminController extends Controller
 
             return view('superadmin.approval', compact('suratJalans'));
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal memuat data approval: ' . $e->getMessage());
+            return back()->with('error', 'Failed to load approval data: ' . $e->getMessage());
         }
     }
 public function travelerMonitoring(Request $request)
@@ -350,10 +350,10 @@ public function travelerMonitoring(Request $request)
             $totalOut += $movement->qty_out ?? 0;
         }
 
-        // 🔥 WIP REAL (AMAN)
+        //  WIP REAL (AMAN)
         $row['wip'] = max($totalIn - $totalOut, 0);
 
-        // 🔥 OPTIONAL: HILANGKAN YANG SUDAH SELESAI
+        //  OPTIONAL: HILANGKAN YANG SUDAH SELESAI
         $row['is_finished'] = $row['wip'] == 0;
 
         return $row;
@@ -369,110 +369,99 @@ public function travelerMonitoring(Request $request)
 
     public function report(Request $request)
     {
-        $suratJalan = SuratJalan::whereHas('travelers.movements')->select('no_surat_jalan')->distinct()->pluck('no_surat_jalan');
-        $kkpo = KkpoManagement::whereHas('travelers.movements')->select('no_kkpo')->distinct()->pluck('no_kkpo');
-        $customer = Customer::whereHas('kkpoManagement.travelers.movements')->select('name')->distinct()->pluck('name');
-        $style = Style::whereHas('kkpoManagement.travelers.movements')->select('name')->distinct()->pluck('name');
-        $category = Category::whereHas('kkpoManagement.travelers.movements')->select('name')->distinct()->pluck('name');
-        $color = Color::whereHas('kkpoManagement.travelers.movements')->select('name')->distinct()->pluck('name');
-
         $query = SuratJalan::with([
-            'kkpoManagement',
             'kkpoManagement.customer',
-            'kkpoManagement.category',
-            'kkpoManagement.style',
-            'kkpoManagement.color',
-            'travelers.movements' // relasi ke traveler movements
+            'kkpoManagement.categories',
+            'kkpoManagement.styles',
+            'kkpoManagement.colors',
+            'travelers.movements'
         ])
-            // search
+
+            //  WAJIB: hanya yg sudah ada SJ OUT (status send)
+            ->whereHas('travelers.movements', function ($q) {
+                $q->where('status', 'send');
+            })
+
+            // SEARCH
             ->when($request->search, function ($q, $search) {
                 $q->where(function ($query) use ($search) {
                     $query->whereHas('kkpoManagement', function ($k) use ($search) {
                         $k->where('no_kkpo', 'like', "%{$search}%");
                     })
+                        ->orWhere('no_surat_jalan', 'like', "%{$search}%")
                         ->orWhereHas('kkpoManagement.customer', function ($c) use ($search) {
-                            $c->where('name', 'like', "%{$search}%");
-                        })
-                        ->orWhereHas('kkpoManagement.category', function ($c) use ($search) {
-                            $c->where('name', 'like', "%{$search}%");
-                        })
-                        ->orWhereHas('kkpoManagement.style', function ($s) use ($search) {
-                            $s->where('name', 'like', "%{$search}%");
-                        })
-                        ->orWhereHas('kkpoManagement.color', function ($c) use ($search) {
                             $c->where('name', 'like', "%{$search}%");
                         });
                 });
             })
 
-            // harusnya kkpo yg muncul hanya yg punya surat jalan out/sampai warehouse send, jadi filter berdasarkan surat jalan dulu baru filter kkpo, customer, style, category, color
-
+            // FILTER ID BASED (FIX SEMUA)
             ->when($request->kkpo, function ($q, $kkpo) {
-                $q->whereHas('kkpoManagement', function ($k) use ($kkpo) {
-                    $k->where('no_kkpo', $kkpo);
-                });
+                $q->whereHas('kkpoManagement', fn($k) => $k->where('no_kkpo', $kkpo));
             })
 
             ->when($request->no_surat_jalan, function ($q, $sj) {
-                $q->where('no_surat_jalan', $sj);
+                $q->where('id', $sj);
             })
 
             ->when($request->customer, function ($q, $customer) {
-                $q->whereHas('kkpoManagement.customer', function ($c) use ($customer) {
-                    $c->where('name', $customer);
-                });
+                $q->whereHas('kkpoManagement.customer', fn($c) => $c->where('id', $customer));
             })
 
             ->when($request->style, function ($q, $style) {
-                $q->whereHas('kkpoManagement.style', function ($s) use ($style) {
-                    $s->where('name', $style);
-                });
+                $q->whereHas('kkpoManagement.styles', fn($s) => $s->where('id', $style));
             })
 
             ->when($request->category, function ($q, $category) {
-                $q->whereHas('kkpoManagement.category', function ($c) use ($category) {
-                    $c->where('name', $category);
-                });
+                $q->whereHas('kkpoManagement.categories', fn($c) => $c->where('id', $category));
             })
 
             ->when($request->color, function ($q, $color) {
-                $q->whereHas('kkpoManagement.color', function ($c) use ($color) {
-                    $c->where('name', $color);
-                });
+                $q->whereHas('kkpoManagement.colors', fn($c) => $c->where('id', $color));
             });
 
-        $data = $query->paginate(10);
+        $data = $query->paginate(10)->withQueryString();
 
-        return view('ppic.report', compact(
+        //  FILTER DATA (HARUS ADA ID + NAME)
+        $filterSuratJalan = SuratJalan::select('id', 'no_surat_jalan')->get();
+
+        $filterKkpo = KkpoManagement::select('no_kkpo')->distinct()->pluck('no_kkpo');
+
+        $filterCustomer = Customer::select('id', 'name')->get();
+        $filterStyle = Style::select('id', 'name')->get();
+        $filterCategory = Category::select('id', 'name')->get();
+        $filterColor = Color::select('id', 'name')->get();
+
+        return view('superadmin.report', compact(
             'data',
-            'suratJalan',
-            'kkpo',
-            'customer',
-            'style',
-            'category',
-            'color'
+            'filterSuratJalan',
+            'filterKkpo',
+            'filterCustomer',
+            'filterStyle',
+            'filterCategory',
+            'filterColor'
         ));
     }
 
-    public function show($id)
+    public function show(int $id)
     {
         $sj = SuratJalan::with([
             'kkpoManagement.customer',
-            'kkpoManagement.category',
-            'kkpoManagement.style',
-            'kkpoManagement.color',
-            'kkpoManagement.item',
-            'kkpoManagement.brand',
+            'kkpoManagement.categories',
+            'kkpoManagement.styles',
+            'kkpoManagement.colors',
+            'kkpoManagement.items',
+            'kkpoManagement.brands',
             'kkpoManagement.unit',
             'travelers.movements.currentDepartment'
         ])->findOrFail($id);
 
-        return view('ppic.detailreport', compact('sj'));
+        return view('superadmin.detailreport', compact('sj'));
     }
     public function exportReport(Request $request)
     {
         return Excel::download(
-            new TravelerMovementExport($request),
+            new TravelerMovementExport($request->all()),
             'report-traveler.xlsx'
         );
     }
