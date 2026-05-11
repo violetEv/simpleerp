@@ -111,58 +111,95 @@
                         @endif
                     </tbody>
                 </table>
-            </div>
-            {{-- ITEM MODAL --}}
-            <div id="item-modal"
-                class="hidden fixed inset-0 z-50 bg-gray-600 bg-opacity-50 items-center justify-center">
-                <div class="bg-white rounded-lg p-6 w-full max-w-md">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 id="modal-title" class="text-lg font-medium">Add Item</h3>
-                        <button onClick="closeAddModal()" class="text-gray-500 text-2xl hover:text-gray-700">
-                            &times;
-                        </button>
+                <div class="flex items-center justify-between p-3">
+                    <div class="text-sm text-gray-500">
+                        Showing {{ $items->firstItem() }} to {{ $items->lastItem() }} of
+                        {{ $items->total() }} results
                     </div>
-                    <form id="item-form" method="POST" action="{{ route('ppic.item.store') }}">
-                        @csrf
-                        <input type="hidden" name="_method" id="form-method" value="POST">
-                        <div class="mb-4">
-                            <label for="name" class="block text-gray-700">Item Name</label>
-                            <input type="text" name="name" id="name"
-                                class="w-full border border-gray-300 rounded px-3 py-2 mt-1" required>
+
+                    {{ $items->links() }}
+                </div>
+                {{-- ITEM MODAL --}}
+                <div id="item-modal"
+                    class="hidden fixed inset-0 z-50 bg-gray-600 bg-opacity-50 items-center justify-center">
+
+                    <div class="bg-white rounded-xl p-5 w-full max-w-md shadow-lg">
+
+                        {{-- HEADER --}}
+                        <div class="flex items-center justify-between mb-4 border-b pb-2">
+                            <h3 id="modal-title" class="text-lg font-semibold text-gray-800">
+                                Add Item
+                            </h3>
+
+                            <button onClick="closeAddModal()"
+                                class="text-gray-400 hover:text-gray-600 text-2xl leading-none">
+                                &times;
+                            </button>
                         </div>
-                        <button type="submit" class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
-                            Save
-                        </button>
-                    </form>
+
+                        {{-- FORM --}}
+                        <form id="item-form" method="POST" action="{{ route('ppic.item.store') }}">
+                            @csrf
+                            <input type="hidden" name="_method" id="form-method" value="POST">
+                            <input type="hidden" name="item_id" id="item_id" value="">
+                            <div class="mb-4">
+                                <label class="block text-sm text-gray-700 mb-1">
+                                    Item Name
+                                </label>
+
+                                <input type="text" name="name" id="name"
+                                    class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm
+                    focus:outline-none focus:ring-1 focus:ring-[#0f4f50] focus:border-[#0f4f50]"
+                                    required>
+                            </div>
+
+                            {{-- BUTTON --}}
+                            <div class="flex justify-between gap-2 pt-2">
+
+                                <button type="button" onClick="closeAddModal()"
+                                    class="px-4 py-2 text-sm rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 w-1/2">
+                                    Cancel
+                                </button>
+
+                                <button type="submit"
+                                    class="px-4 py-2 text-sm rounded-md bg-[#136566] text-white hover:bg-[#0f4f50] w-1/2">
+                                    Save
+                                </button>
+
+                            </div>
+                        </form>
+
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <script>
-        function openAddModal() {
-            document.getElementById('item-modal').classList.remove('hidden');
-            document.getElementById('item-modal').classList.add('flex');
-            document.getElementById('modal-title').textContent = 'Add Item';
-            document.getElementById('form-method').value = 'POST';
-            document.getElementById('item-form').action = "{{ route('ppic.item.store') }}";
-            document.getElementById('name').value = '';
-        }
+        <script>
+            function openAddModal() {
+                document.getElementById('item-modal').classList.remove('hidden');
+                document.getElementById('item-modal').classList.add('flex');
+                document.getElementById('modal-title').textContent = 'Add Item';
+                document.getElementById('form-method').value = 'POST';
+                document.getElementById('item-form').action = "{{ route('ppic.item.store') }}";
+                document.getElementById('name').value = '';
+                document.getElementById('item_id').value = '';
+            }
 
-        function closeAddModal() {
-            document.getElementById('item-modal').classList.add('hidden');
-            document.getElementById('item-modal').classList.remove('flex');
-        }
+            function closeAddModal() {
+                document.getElementById('item-modal').classList.add('hidden');
+                document.getElementById('item-modal').classList.remove('flex');
+            }
 
-        function editItem(id, name) {
-            document.getElementById('item-modal').classList.remove('hidden');
-            document.getElementById('item-modal').classList.add('flex');
-            document.getElementById('modal-title').textContent = 'Edit Item';
-            document.getElementById('form-method').value = 'PUT';
-            let url = "{{ route('ppic.item.update', ':id') }}";
-            url = url.replace(':id', id);
+            function editItem(id, name) {
+                document.getElementById('item-modal').classList.remove('hidden');
+                document.getElementById('item-modal').classList.add('flex');
+                document.getElementById('modal-title').textContent = 'Edit Item';
+                document.getElementById('form-method').value = 'PUT';
+                let url = "{{ route('ppic.item.update', ':id') }}";
+                url = url.replace(':id', id);
 
-            document.getElementById('item-form').action = url;
-            document.getElementById('name').value = name;
-        }
-    </script>
+                document.getElementById('item-form').action = url;
+                document.getElementById('item_id').value = id;
+                document.getElementById('name').value = name;
+            }
+        </script>
 </x-app-layout>

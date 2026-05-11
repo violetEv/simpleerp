@@ -23,7 +23,7 @@ class PPICMenu
                     // ['name' => 'KKPO', 'route' => 'ppic.kkpo']
                 ]
             ],
-            ['name' => 'KK / PO', 'route' => 'ppic.kkpomanagement', 'icon' => 'fas fa-file-alt'],
+            ['name' => 'KK / PO', 'route' => 'ppic.kkpo', 'icon' => 'fas fa-file-alt'],
             ['name' => 'Monitoring', 'route' => 'ppic.monitoring', 'icon' => 'fas fa-industry'],
             ['name' => 'Report','route' => 'ppic.report', 'icon' => 'fas fa-chart-bar']
         ];

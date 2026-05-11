@@ -104,38 +104,75 @@
                         @endif
                     </tbody>
                 </table>
-                <div class="p-3">
+                <div class="flex items-center justify-between p-3">
+                    <div class="text-sm text-gray-500">
+                        Showing {{ $currencies->firstItem() }} to {{ $currencies->lastItem() }} of
+                        {{ $currencies->total() }} results
+                    </div>
+
                     {{ $currencies->links() }}
                 </div>
             </div>
             {{-- modal add & edit currency --}}
+            {{-- modal add & edit currency --}}
             <div id="addCurrencyModal"
                 class="hidden fixed inset-0 z-50 bg-gray-600 bg-opacity-50 items-center justify-center">
-                <div class="bg-white rounded-lg p-6 w-full max-w-md">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 id="modal-title" class="text-lg font-medium">Add Currency</h3>
-                        <button onClick="closeAddModal()" class="text-gray-500 text-2xl hover:text-gray-700">
+
+                <div class="bg-white rounded-xl p-5 w-full max-w-md shadow-lg">
+
+                    {{-- HEADER --}}
+                    <div class="flex items-center justify-between mb-4 border-b pb-2">
+                        <h3 id="modal-title" class="text-lg font-semibold text-gray-800">
+                            Add Currency
+                        </h3>
+
+                        <button onClick="closeAddModal()"
+                            class="text-gray-400 hover:text-gray-600 text-2xl leading-none">
                             &times;
                         </button>
                     </div>
+
+                    {{-- FORM --}}
                     <form id="crud-form" action="{{ route('ppic.currency.store') }}" method="POST">
                         @csrf
                         <input type="hidden" name="_method" id="form-method" value="POST">
+
+                        {{-- NAME --}}
                         <div class="mb-4">
-                            <label for="name" class="block text-sm font-medium text-gray-700">Currency Name</label>
+                            <label class="block text-sm text-gray-700 mb-1">
+                                Currency Name
+                            </label>
+
                             <input type="text" name="name" id="name" required
-                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                        </div>
-                        <div class="mb-4">
-                            <label for="code" class="block text-sm font-medium text-gray-700">Currency Code</label>
-                            <input type="text" name="code" id="code" required
-                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm
+                    focus:outline-none focus:ring-1 focus:ring-[#0f4f50] focus:border-[#0f4f50]">
                         </div>
 
-                        <button type="submit"
-                            class="bg-[#136566] text-white px-4 py-2 rounded-lg hover:bg-[#0f4f50]">
-                            Save
-                        </button>
+                        {{-- CODE --}}
+                        <div class="mb-4">
+                            <label class="block text-sm text-gray-700 mb-1">
+                                Currency Code
+                            </label>
+
+                            <input type="text" name="code" id="code" required
+                                class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm
+                    focus:outline-none focus:ring-1 focus:ring-[#0f4f50] focus:border-[#0f4f50]">
+                        </div>
+
+                        {{-- BUTTON --}}
+                        <div class="flex justify-between gap-2 pt-2">
+
+                            <button type="button" onClick="closeAddModal()"
+                                class="px-4 py-2 text-sm rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 w-1/2">
+                                Cancel
+                            </button>
+
+                            <button type="submit"
+                                class="px-4 py-2 text-sm rounded-md bg-[#136566] text-white hover:bg-[#0f4f50] w-1/2">
+                                Save
+                            </button>
+
+                        </div>
 
                     </form>
                 </div>

@@ -109,35 +109,68 @@
                         @endif
                     </tbody>
                 </table>
-                <div class="p-3">
+                <div class="flex items-center justify-between p-3">
+                    <div class="text-sm text-gray-500">
+                        Showing {{ $units->firstItem() }} to {{ $units->lastItem() }} of
+                        {{ $units->total() }} results
+                    </div>
+
                     {{ $units->links() }}
                 </div>
 
                 {{-- </div> --}}
             </div>
             {{-- MODAL ADD & EDIT UNIT --}}
+            {{-- MODAL ADD & EDIT UNIT --}}
             <div id="unitModal" class="hidden fixed inset-0 z-50 bg-gray-600 bg-opacity-50 items-center justify-center">
-                <div class="bg-white rounded-lg p-6 w-full max-w-md">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 id="modal-title" class="text-lg font-medium">Add Unit</h3>
-                        <button onClick="closeModal()" class="text-gray-500 text-2xl hover:text-gray-700">
+
+                <div class="bg-white rounded-xl p-5 w-full max-w-md shadow-lg">
+
+                    {{-- HEADER --}}
+                    <div class="flex items-center justify-between mb-4 border-b pb-2">
+                        <h3 id="modal-title" class="text-lg font-semibold text-gray-800">
+                            Add Unit
+                        </h3>
+
+                        <button onClick="closeModal()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">
                             &times;
                         </button>
                     </div>
+
+                    {{-- FORM --}}
                     <form id="unitForm" method="POST" action="{{ route('ppic.unit.store') }}">
                         @csrf
                         <input type="hidden" name="_method" id="unitMethod" value="POST">
                         <input type="hidden" name="unit_id" id="unitId">
+
                         <div class="mb-4">
-                            <label for="name" class="block text-gray-700">Unit Name</label>
+                            <label class="block text-sm text-gray-700 mb-1">
+                                Unit Name
+                            </label>
+
                             <input type="text" name="name" id="unitName"
-                                class="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1" required>
+                                class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm
+                    focus:outline-none focus:ring-1 focus:ring-[#0f4f50] focus:border-[#0f4f50]"
+                                required>
                         </div>
-                        <button type="submit" class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
-                            Save
-                        </button>
+
+                        {{-- BUTTON --}}
+                        <div class="flex justify-between gap-2 mt-5">
+
+                            <button type="button" onClick="closeModal()"
+                                class="px-4 py-2 text-sm rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 w-1/2">
+                                Cancel
+                            </button>
+
+                            <button type="submit"
+                                class="px-4 py-2 text-sm rounded-md bg-[#136566] text-white hover:bg-[#0f4f50] w-1/2">
+                                Save
+                            </button>
+
+                        </div>
 
                     </form>
+
                 </div>
             </div>
         </div>

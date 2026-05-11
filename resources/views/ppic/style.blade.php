@@ -51,90 +51,119 @@
                     <thead
                         class="bg-[#136566]/10 text-gray-700 border-b border-[#136566]/30 text-[11px] uppercase tracking-wide">
                         <tr>
-                                {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th> --}}
-                                <th
-                                    class="px-4 py-2 text-left text-xs font-semibold">
-                                    Style Name</th>
-                                <th
-                                    class="px-4 py-2 text-left text-xs font-semibold">
-                                    Actions
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200 text-sm">
-                            @if ($styles->count())
-                                @foreach ($styles as $style)
-                                    <tr>
-                                        {{-- <td class="px-6 py-4 whitespace-nowrap">{{ $style->id }}</td> --}}
-                                        <td class="px-4 py-2 whitespace-nowrap">{{ $style->name }}</td>
-                                        <td class="px-4 py-2 whitespace-nowrap">
-                                            <button onClick="editStyle({{ $style->id }}, '{{ $style->name }}')"
-                                                class="mr-2" title="Edit">
-                                                <svg class="w-6 h-6 text-blue-500 hover:text-blue-700"
-                                                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
-                                                    height="24" fill="none" viewBox="0 0 24 24">
+                            {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th> --}}
+                            <th class="px-4 py-2 text-left text-xs font-semibold">
+                                Style Name</th>
+                            <th class="px-4 py-2 text-left text-xs font-semibold">
+                                Actions
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200 text-sm">
+                        @if ($styles->count())
+                            @foreach ($styles as $style)
+                                <tr>
+                                    {{-- <td class="px-6 py-4 whitespace-nowrap">{{ $style->id }}</td> --}}
+                                    <td class="px-4 py-2 whitespace-nowrap">{{ $style->name }}</td>
+                                    <td class="px-4 py-2 whitespace-nowrap">
+                                        <button onClick="editStyle({{ $style->id }}, '{{ $style->name }}')"
+                                            class="mr-2" title="Edit">
+                                            <svg class="w-6 h-6 text-blue-500 hover:text-blue-700" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                fill="none" viewBox="0 0 24 24">
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2"
+                                                    d="M10.779 17.779 4.36 19.918 6.5 13.5m4.279 4.279 8.364-8.643a3.027 3.027 0 0 0-2.14-5.165 3.03 3.03 0 0 0-2.14.886L6.5 13.5m4.279 4.279L6.499 13.5m2.14 2.14 6.213-6.504M12.75 7.04 17 11.28" />
+                                            </svg>
+                                        </button>
+                                        <form action="{{ route('ppic.style.delete', $style->id) }}" method="POST"
+                                            class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" title="Delete"
+                                                onclick="return confirm('Are you sure you want to delete {{ $style->name }}?')">
+                                                <svg class="w-6 h-6 text-red-500 hover:text-red-700" aria-hidden="true"
+                                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    fill="none" viewBox="0 0 24 24">
                                                     <path stroke="currentColor" stroke-linecap="round"
                                                         stroke-linejoin="round" stroke-width="2"
-                                                        d="M10.779 17.779 4.36 19.918 6.5 13.5m4.279 4.279 8.364-8.643a3.027 3.027 0 0 0-2.14-5.165 3.03 3.03 0 0 0-2.14.886L6.5 13.5m4.279 4.279L6.499 13.5m2.14 2.14 6.213-6.504M12.75 7.04 17 11.28" />
+                                                        d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
                                                 </svg>
                                             </button>
-                                            <form action="{{ route('ppic.style.delete', $style->id) }}" method="POST"
-                                                class="inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" title="Delete"
-                                                    onclick="return confirm('Are you sure you want to delete {{ $style->name }}?')">
-                                                    <svg class="w-6 h-6 text-red-500 hover:text-red-700"
-                                                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                                        width="24" height="24" fill="none"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke="currentColor" stroke-linecap="round"
-                                                            stroke-linejoin="round" stroke-width="2"
-                                                            d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
-                                                    </svg>
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            @else
-                                <tr>
-                                    <td colspan="2" class="px-4 py-2 whitespace-nowrap text-center text-gray-500">
-                                        Style not found.
+                                        </form>
                                     </td>
                                 </tr>
-                            @endif
-                        </tbody>
-                    </table>
-                    <div class="p-3">
-                        {{ $styles->links() }}
+                            @endforeach
+                        @else
+                            <tr>
+                                <td colspan="2" class="px-4 py-2 whitespace-nowrap text-center text-gray-500">
+                                    Style not found.
+                                </td>
+                            </tr>
+                        @endif
+                    </tbody>
+                </table>
+                <div class="flex items-center justify-between p-3">
+                    <div class="text-sm text-gray-500">
+                        Showing {{ $styles->firstItem() }} to {{ $styles->lastItem() }} of
+                        {{ $styles->total() }} results
                     </div>
-                {{-- </div> --}}
+
+                    {{ $styles->links() }}
+                </div>
             </div>
             {{-- Modal Add & Edit Style --}}
-            <div id="addModal"
-                class="hidden fixed inset-0 bg-gray-600  bg-opacity-50 items-center justify-center z-50">
-                <div class="bg-white p-6 rounded-lg w-full max-w-md">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 id="modal-title" class="text-lg font-medium">Add Style</h3>
-                        <button onClick="closeAddModal()" class="text-gray-500 text-2xl hover:text-gray-700">
+            <div id="addModal" class="hidden fixed inset-0 z-50 bg-gray-600 bg-opacity-50 items-center justify-center">
+
+                <div class="bg-white rounded-xl shadow-lg w-full max-w-md mx-4 overflow-hidden">
+
+                    {{-- HEADER --}}
+                    <div class="flex justify-between items-center px-5 py-3 border-b border-gray-100">
+                        <h3 id="modal-title" class="text-base font-semibold text-gray-800">
+                            Add Style
+                        </h3>
+
+                        <button onClick="closeAddModal()"
+                            class="text-gray-400 hover:text-gray-600 text-2xl leading-none">
                             &times;
                         </button>
                     </div>
-                    <form id="crud-form" action="{{ route('ppic.style.store') }}" method="POST">
+
+                    {{-- FORM --}}
+                    <form id="crud-form" action="{{ route('ppic.style.store') }}" method="POST" class="p-5">
                         @csrf
+
                         <input type="hidden" name="_method" id="form-method" value="POST">
                         <input type="hidden" name="style_id" id="style_id">
+
+                        {{-- INPUT --}}
                         <div class="mb-4">
-                            <label for="name" class="block text-gray-700">Style Name</label>
+                            <label for="name" class="block text-sm text-gray-600 mb-1">
+                                Style Name
+                            </label>
+
                             <input type="text" name="name" id="name" required
-                                class="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1">
+                                class="w-full h-9 px-3 text-sm border border-gray-200 rounded-md
+                    focus:outline-none focus:ring-1 focus:ring-[#0f4f50] focus:border-[#0f4f50]">
                         </div>
-                        <button type="submit" 
-                            class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
-                            Save
-                        </button>
+
+                        {{-- FOOTER --}}
+                        <div class="flex justify-between gap-2 pt-2">
+
+                            <button type="button" onClick="closeAddModal()"
+                                class="px-4 py-2 text-sm rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 w-1/2">
+                                Cancel
+                            </button>
+
+                            <button type="submit"
+                                class="px-4 py-2 text-sm rounded-md bg-[#136566] text-white hover:bg-[#0f4f50] w-1/2">
+                                Save
+                            </button>
+
+                        </div>
+
                     </form>
+
                 </div>
             </div>
         </div>

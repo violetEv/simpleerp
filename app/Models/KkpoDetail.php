@@ -18,7 +18,7 @@ class KkpoDetail extends Model
         'qty',
         'unit_id',
         'price',
-        'currency_id',
+        // 'currency_id',
         'reject_allowance',
         'remark',
     ];
@@ -28,7 +28,10 @@ class KkpoDetail extends Model
     {
         return $this->belongsTo(KkpoManagement::class, 'kkpo_management_id');
     }
-
+    public function suratJalans()
+    {
+        return $this->hasMany(SuratJalan::class);
+    }
     //  RELASI MASTER 
     public function category()
     {
@@ -60,8 +63,8 @@ class KkpoDetail extends Model
         return $this->belongsTo(Unit::class);
     }
 
-    public function currency()
-    {
-        return $this->belongsTo(Currency::class);
-    }
+    // public function currency()
+    // {
+    //     return $this->belongsTo(Currency::class);
+    // }
 }

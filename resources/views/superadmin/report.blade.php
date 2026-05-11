@@ -198,9 +198,15 @@
                             @endif
                         </tbody>
                     </table>
-                    <div class="p-3">
-                        {{ $data->links() }}
+                    <div class="flex items-center justify-between p-3">
+                    <div class="text-sm text-gray-500">
+                        Showing 
+                         {{ $data->firstItem() }} to {{ $data->lastItem() }} of 
+                         {{ $data->total() }} results
                     </div>
+
+                    {{ $data->links() }}
+                </div>
                 </div>
             </div>
         </div>

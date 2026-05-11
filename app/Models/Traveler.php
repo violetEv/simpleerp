@@ -26,6 +26,15 @@ class Traveler extends Model
     {
         return $this->belongsTo(SuratJalan::class);
     }
+    public function suratJalanOuts()
+    {
+        return $this->belongsToMany(
+            SuratJalanOut::class,
+            'surat_jalan_out_traveler',
+            'traveler_id',
+            'surat_jalan_out_id'
+        );
+    }
 
     public function parent()
     {

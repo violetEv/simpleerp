@@ -249,7 +249,13 @@
                     </tbody>
                 </table>
 
-                <div class="p-3">
+                <div class="flex items-center justify-between p-3">
+                    <div class="text-sm text-gray-500">
+                        Showing 
+                         {{ $users->firstItem() }} to {{ $users->lastItem() }} of 
+                         {{ $users->total() }} results
+                    </div>
+
                     {{ $users->links() }}
                 </div>
                 {{-- </div> --}}

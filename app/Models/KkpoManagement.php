@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class KkpoManagement extends Model
 {
     protected $table = 'kkpo_managements';
-    protected $fillable = ['no_kkpo', 'customer_id', 'kp_po', 'payment_terms', 'notes', 'npwp', 'tanggal'];
+    protected $fillable = ['no_kkpo', 'customer_id', 'kp_po', 'payment_terms', 'npwp', 'date', 'currency_id'];
 
     public function details()
     {
@@ -16,6 +16,10 @@ class KkpoManagement extends Model
     public function customer()
     {
         return $this->belongsTo(Customer::class);
+    }
+    public function currency()
+    {
+        return $this->belongsTo(Currency::class);
     }
     // public function categories()
     // {

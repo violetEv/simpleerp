@@ -157,10 +157,14 @@
                         @endif
                     </tbody>
                 </table>
-                <div class="p-3">
+                <div class="flex items-center justify-between p-3">
+                    <div class="text-sm text-gray-500">
+                        Showing {{ $machines->firstItem() }} to {{ $machines->lastItem() }} of
+                         {{ $machines->total() }} results
+                    </div>
+
                     {{ $machines->links() }}
                 </div>
-                {{-- </div> --}}
             </div>
 
         </div>

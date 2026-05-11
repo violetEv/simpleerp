@@ -60,11 +60,17 @@
                         <tr>
                             <th class="px-4 py-2 text-left text-xs font-semibold uppercase">
                                 No Surat Jalan IN</th>
-                            <th class="px-4 py-2 text-left text-xs font-semibold uppercase">
+                            {{-- <th class="px-4 py-2 text-left text-xs font-semibold uppercase">
                                 KKPO
-                            </th>
+                            </th> --}}
                             <th class="px-4 py-2 text-left text-xs font-semibold uppercase">
                                 Customer</th>
+                            <th class="px-4 py-2 text-left text-xs font-semibold uppercase">
+                                Category Process</th>
+                            <th class="px-4 py-2 text-left text-xs font-semibold uppercase">
+                                Style</th>
+                            <th class="px-4 py-2 text-left text-xs font-semibold uppercase">
+                                Color</th>
                             <th class="px-4 py-2 text-left text-xs font-semibold uppercase">
                                 Qty
                             </th>
@@ -79,14 +85,19 @@
                             @foreach ($orders as $order)
                                 <tr>
                                     <td class="px-4 py-2 whitespace-nowrap">{{ $order->no_surat_jalan }}</td>
-                                    <td class="px-4 py-2 whitespace-nowrap">
-                                        {{ $order->kkpoManagement->no_kkpo ?? '-' }}</td>
+                                    {{-- <td class="px-4 py-2 whitespace-nowrap">
+                                        {{ $order->kkpoManagement->no_kkpo ?? '-' }}</td> --}}
                                     <td class="px-4 py-2 whitespace-nowrap">
                                         {{ $order->kkpoManagement->customer->name ?? '-' }}</td>
-                                    <td class="px-4 py-2 whitespace-nowrap">{{ $order->qty }}</td>
-
                                     <td class="px-4 py-2 whitespace-nowrap">
+                                        {{ $order->kkpoManagement->details->first()->style->name ?? '-' }}</td>
+                                    <td class="px-4 py-2 whitespace-nowrap">
+                                        {{ $order->kkpoManagement->details->first()->color->name ?? '-' }}</td>
+                                    <td class="px-4 py-2 whitespace-nowrap">
+                                        {{ $order->kkpoManagement->details->first()->category->name ?? '-' }}</td>
+                                    <td class="px-4 py-2 whitespace-nowrap">{{ $order->qty }}</td>
                                         {{-- format tanggal 12 Maret 2024 --}}
+                                        <td class="px-4 py-2 whitespace-nowrap">
                                         {{ \Carbon\Carbon::parse($order->tanggal)->format('d F Y') }}
                                     </td>
                                     {{-- <td class="px-4 py-2 whitespace-nowrap">
@@ -163,7 +174,7 @@
 
             @include('warehouse.partials.modal-add-edit-sj')
 
-            @include('warehouse.partials.modal-detail-sj')
+            @include('warehouse.partials.modal-detail-sj-in')
 
         </div>
     </div>

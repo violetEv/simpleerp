@@ -11,11 +11,15 @@ class SuratJalan extends Model
     protected $fillable = [
         'no_surat_jalan',
         'kkpo_management_id',
+        'kkpo_detail_id',
         'qty',
         'tanggal',
         'notes',
     ];
-
+    public function detail()
+    {
+        return $this->belongsTo(KkpoDetail::class);
+    }
     public function kkpoManagement()
     {
         return $this->belongsTo(KkpoManagement::class, 'kkpo_management_id');
@@ -26,6 +30,6 @@ class SuratJalan extends Model
     }
     public function suratJalanOut()
     {
-        return $this->hasMany(SuratJalanOut::class);
+        return $this->hasMany(SuratJalanOut::class, 'surat_jalan_in_id');
     }
 }

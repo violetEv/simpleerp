@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\KkpoDetail;
 use App\Models\KkpoManagement;
 use App\Models\SuratJalan;
 use App\Models\Traveler;
@@ -16,113 +17,378 @@ class WarehouseController extends Controller
 {
     public function dashboard()
     {
-        $totalQtyTraveler = Traveler::sum('qty');
-        $totalQtyKeluar = TravelerMovement::sum('qty_out');
+        // total qty harusnya dari total qty suratjalan
+        $totalQtyTraveler = SuratJalan::sum('qty');
+        $totalQtyKeluar = Traveler::sum('qty');
         $balanceBongkar = $totalQtyTraveler - $totalQtyKeluar;
+        //recent activities, ambil dari surat jalan yang belum dipecah, urutkan berdasarkan tanggal terbaru, ambil 5 data terbaru
+        //
+        $recentActivities = SuratJalan::whereRaw('qty - COALESCE((SELECT SUM(qty) FROM travelers WHERE travelers.surat_jalan_id = surat_jalans.id), 0) > 0')
+            ->latest()
+            ->take(5)
+            ->get();
 
-        return view('warehouse.dashboard', compact('totalQtyTraveler', 'totalQtyKeluar', 'balanceBongkar'));
+        return view('warehouse.dashboard', compact('totalQtyTraveler', 'totalQtyKeluar', 'balanceBongkar', 'recentActivities'));
     }
     public function order(Request $request)
     {
-        $query = SuratJalan::with(['kkpoManagement.customer', 'kkpoManagement.details.style', 'kkpoManagement.details.color', 'kkpoManagement.details.category']);
+        $query = SuratJalan::with([
 
+            'kkpoManagement.customer',
+
+            'detail.style',
+            'detail.color',
+            'detail.category',
+        ]);
+
+        // SEARCH
         if ($request->filled('search')) {
+
             $search = $request->search;
 
-            $query->where('no_surat_jalan', 'like', "%{$search}%");
+            $query->where(
+                'no_surat_jalan',
+                'like',
+                "%{$search}%"
+            );
         }
 
-        $orders = $query->paginate(10)->withQueryString();
-        $kkpoManagements = KkpoManagement::with(['details.category', 'customer', 'details.style', 'details.color', 'suratJalan'])->get();
+        $orders = $query
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
 
-        return view('warehouse.suratjalan', compact('orders', 'kkpoManagements'));
+        $kkpoManagements = KkpoManagement::with([
+
+            'customer',
+
+            'details.style',
+            'details.color',
+            'details.category',
+
+            // penting untuk hitung qty terpakai
+            'details.suratJalans',
+
+        ])->get();
+
+        return view(
+            'warehouse.suratjalan',
+            compact(
+                'orders',
+                'kkpoManagements'
+            )
+        );
     }
 
     public function orderStore(Request $request)
     {
         $request->validate([
-            'kkpo_management_id' => 'required|exists:kkpo_managements,id',
-            'no_surat_jalan' => 'required|string|max:255',
-            'qty' => 'required|integer',
-            'tanggal' => 'required|date',
-            'notes' => 'nullable|string',
+
+            'kkpo_management_id' =>
+            'required|exists:kkpo_managements,id',
+
+            'kkpo_detail_id' =>
+            'required|exists:kkpo_details,id',
+
+            'style_id' =>
+            'required|exists:styles,id',
+
+            'color_id' =>
+            'required|exists:colors,id',
+
+            'category_id' =>
+            'required|exists:categories,id',
+
+            'no_surat_jalan' =>
+            'required|string|max:255',
+
+            'qty' =>
+            'required|integer|min:1',
+
+            'tanggal' =>
+            'required|date',
+
+            'notes' =>
+            'nullable|string',
         ]);
-        // ketika qty 0 atau kurang, statusnya closed, dan row hilang dari list surat jalan di halaman warehouse, di view
-        $status = $request->qty <= 0 ? 'closed' : 'open';
+
         try {
+
+            // DETAIL KKPO
+            $detail = KkpoDetail::with([
+                'style',
+                'color',
+                'category',
+                'suratJalans',
+            ])->findOrFail(
+                $request->kkpo_detail_id
+            );
+
+            // VALIDASI DETAIL HARUS SESUAI
+            if (
+
+                $detail->style_id != $request->style_id ||
+
+                $detail->color_id != $request->color_id ||
+
+                $detail->category_id != $request->category_id
+
+            ) {
+
+                return redirect()
+                    ->back()
+                    ->withInput()
+                    ->with(
+                        'error',
+                        'Detail KKPO tidak sesuai'
+                    );
+            }
+
+            // TOTAL TERPAKAI
+            $usedQty = $detail
+                ->suratJalans()
+                ->sum('qty');
+
+            // SISA
+            $sisaQty = $detail->qty - $usedQty;
+
+            // VALIDASI QTY
+            if ($request->qty > $sisaQty) {
+
+                return redirect()
+                    ->back()
+                    ->withInput()
+                    ->with(
+                        'error',
+                        'Qty melebihi sisa qty KKPO'
+                    );
+            }
+
+            // STATUS
+            $status = 'open';
+
+            // CREATE
             SuratJalan::create([
-                'kkpo_management_id' => $request->kkpo_management_id,
-                'no_surat_jalan' => $request->no_surat_jalan,
-                'qty' => $request->qty,
-                'tanggal' => $request->tanggal,
-                'notes' => $request->notes,
-                'status' => $status
+
+                'kkpo_management_id' =>
+                $request->kkpo_management_id,
+
+                'kkpo_detail_id' =>
+                $request->kkpo_detail_id,
+
+                'no_surat_jalan' =>
+                $request->no_surat_jalan,
+
+                'qty' =>
+                $request->qty,
+
+                'tanggal' =>
+                $request->tanggal,
+
+                'notes' =>
+                $request->notes,
+
+                'status' =>
+                $status,
             ]);
 
             return redirect()
                 ->route('warehouse.suratjalan')
-                ->with('success', 'Order berhasil dibuat');
+                ->with(
+                    'success',
+                    'Surat Jalan berhasil dibuat'
+                );
         } catch (\Exception $e) {
+
             return redirect()
                 ->route('warehouse.suratjalan')
-                ->with('error', 'Gagal membuat surat jalan: ' . $e->getMessage());
+                ->with(
+                    'error',
+                    'Gagal membuat surat jalan : '
+                        . $e->getMessage()
+                );
         }
     }
 
     public function orderUpdate(Request $request, int $id)
     {
-        $surat_jalan = SuratJalan::findOrFail($id);
+        $suratJalan = SuratJalan::findOrFail($id);
 
         $request->validate([
-            'kkpo_management_id' => 'required|exists:kkpo_managements,id',
-            'no_surat_jalan' => 'required|string|max:255',
-            'qty' => 'required|integer',
-            'tanggal' => 'required|date',
-            'notes' => 'nullable|string',
+
+            'kkpo_management_id' =>
+            'required|exists:kkpo_managements,id',
+
+            'kkpo_detail_id' =>
+            'required|exists:kkpo_details,id',
+
+            'style_id' =>
+            'required|exists:styles,id',
+
+            'color_id' =>
+            'required|exists:colors,id',
+
+            'category_id' =>
+            'required|exists:categories,id',
+
+            'no_surat_jalan' =>
+            'required|string|max:255',
+
+            'qty' =>
+            'required|integer|min:1',
+
+            'tanggal' =>
+            'required|date',
+
+            'notes' =>
+            'nullable|string',
         ]);
 
         try {
-            $status = $request->qty <= 0 ? 'closed' : 'open';
 
-            $surat_jalan->update([
-                'kkpo_management_id' => $request->kkpo_management_id,
-                'no_surat_jalan' => $request->no_surat_jalan,
-                'qty' => $request->qty,
-                'tanggal' => $request->tanggal,
-                'notes' => $request->notes,
-                'status' => $status
+            // DETAIL
+            $detail = KkpoDetail::with([
+                'suratJalans'
+            ])->findOrFail(
+                $request->kkpo_detail_id
+            );
+
+            // VALIDASI DETAIL
+            if (
+
+                $detail->style_id != $request->style_id ||
+
+                $detail->color_id != $request->color_id ||
+
+                $detail->category_id != $request->category_id
+
+            ) {
+
+                return redirect()
+                    ->back()
+                    ->withInput()
+                    ->with(
+                        'error',
+                        'Detail KKPO tidak sesuai'
+                    );
+            }
+
+            // TOTAL TERPAKAI
+            // kecuali data yg sedang diedit
+            $usedQty = SuratJalan::where(
+                'kkpo_detail_id',
+                $detail->id
+            )
+                ->where('id', '!=', $id)
+                ->sum('qty');
+
+            // SISA
+            $sisaQty = $detail->qty - $usedQty;
+
+            // VALIDASI QTY
+            if ($request->qty > $sisaQty) {
+
+                return redirect()
+                    ->back()
+                    ->withInput()
+                    ->with(
+                        'error',
+                        'Qty melebihi sisa qty KKPO'
+                    );
+            }
+
+            // TRAVELER
+            $totalTravelerQty = Traveler::where(
+                'surat_jalan_id',
+                $id
+            )->sum('qty');
+
+            // STATUS
+            if ($request->qty <= $totalTravelerQty) {
+
+                $status = 'closed';
+            } elseif ($totalTravelerQty > 0) {
+
+                $status = 'in_process';
+            } else {
+
+                $status = 'open';
+            }
+
+            // UPDATE
+            $suratJalan->update([
+
+                'kkpo_management_id' =>
+                $request->kkpo_management_id,
+
+                'kkpo_detail_id' =>
+                $request->kkpo_detail_id,
+
+                'no_surat_jalan' =>
+                $request->no_surat_jalan,
+
+                'qty' =>
+                $request->qty,
+
+                'tanggal' =>
+                $request->tanggal,
+
+                'notes' =>
+                $request->notes,
+
+                'status' =>
+                $status,
             ]);
 
             return redirect()
                 ->route('warehouse.suratjalan')
-                ->with('success', 'Order berhasil diperbarui');
+                ->with(
+                    'success',
+                    'Surat Jalan berhasil diperbarui'
+                );
         } catch (\Exception $e) {
+
             return redirect()
                 ->route('warehouse.suratjalan')
-                ->with('error', 'Gagal memperbarui surat jalan: ' . $e->getMessage());
+                ->with(
+                    'error',
+                    'Gagal update surat jalan : '
+                        . $e->getMessage()
+                );
         }
     }
 
     public function orderDelete(int $id)
     {
-        $surat_jalan = SuratJalan::findOrFail($id);
+        $suratJalan = SuratJalan::findOrFail($id);
+
         try {
-            $surat_jalan->delete();
+
+            $suratJalan->delete();
 
             return redirect()
                 ->route('warehouse.suratjalan')
-                ->with('success', 'Order berhasil dihapus');
+                ->with(
+                    'success',
+                    'Surat Jalan berhasil dihapus'
+                );
         } catch (\Exception $e) {
+
             return redirect()
                 ->route('warehouse.suratjalan')
-                ->with('error', 'Gagal menghapus surat jalan: ' . $e->getMessage());
+                ->with(
+                    'error',
+                    'Gagal menghapus surat jalan : '
+                        . $e->getMessage()
+                );
         }
     }
 
     public function pecah(Request $request)
     {
-        $query = SuratJalan::with(['kkpoManagement.customer', 'kkpoManagement.details.style', 'kkpoManagement.details.color', 'kkpoManagement.details.category', 'travelers']);
-
+        $query = SuratJalan::with(['kkpoManagement.customer', 'kkpoManagement.details.style', 'kkpoManagement.details.color', 'kkpoManagement.details.category', 'travelers'])
+            ->whereIn('status', ['open', 'in_process'])
+            ->whereRaw('qty - COALESCE((SELECT SUM(qty) FROM travelers WHERE travelers.surat_jalan_id = surat_jalans.id), 0) > 0');
         if ($request->filled('search')) {
 
             $search = $request->search;
@@ -137,6 +403,7 @@ class WarehouseController extends Controller
         }
 
         $pecahTravelers = $query->paginate(10)->withQueryString();
+
 
         return view('warehouse.pecah', compact('pecahTravelers'));
     }
@@ -163,7 +430,24 @@ class WarehouseController extends Controller
 
             'notes' => 'nullable|string'
         ]);
-        $status = $request->qty <= 0 ? 'closed' : 'open';
+
+        $suratJalan = SuratJalan::findOrFail($request->surat_jalan_id);
+
+        $totalTravelerQty = Traveler::where('surat_jalan_id', $suratJalan->id)->sum('qty');
+
+        $sisaQty = $suratJalan->qty - $totalTravelerQty;
+
+        if ($sisaQty <= 0) {
+            $status = 'closed';
+        } elseif ($totalTravelerQty > 0) {
+            $status = 'in_process';
+        } else {
+            $status = 'open';
+        }
+
+        $suratJalan->update([
+            'status' => $status
+        ]);
 
         foreach ($request->no_traveler as $index => $traveler) {
 
@@ -234,7 +518,7 @@ class WarehouseController extends Controller
             });
         }
         $reworkTravelers = $query->paginate(10)->withQueryString();
-        return view('warehouse.list', compact('reworkTravelers'));
+        return view('warehouse.list-rework', compact('reworkTravelers'));
     }
 
     // untuk membuat traveler turunan dari traveler yang dirework, dengan no_traveler_turunan yang diinputkan oleh user
@@ -262,11 +546,11 @@ class WarehouseController extends Controller
             ]);
 
             return redirect()
-                ->route('warehouse.rework')
+                ->route('warehouse.list-rework')
                 ->with('success', 'Traveler rework berhasil dibuat');
         } catch (\Exception $e) {
             return redirect()
-                ->route('warehouse.rework')
+                ->route('warehouse.list-rework')
                 ->with('error', 'Gagal membuat traveler rework: ' . $e->getMessage());
         }
     }
@@ -294,7 +578,7 @@ class WarehouseController extends Controller
 
         $travelers = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
         $reworkTravelers = TravelerMovement::with('traveler')->where('qty_reject', '>', 0)->orderBy('date_in', 'desc')->paginate(10)->withQueryString();
-        return view('warehouse.list', compact('travelers', 'reworkTravelers'));
+        return view('warehouse.list-new', compact('travelers', 'reworkTravelers'));
     }
 
     public function travelerDetail(int $id)
@@ -311,35 +595,61 @@ class WarehouseController extends Controller
             $traveler->delete();
 
             return redirect()
-                ->route('warehouse.list')
+                ->route('warehouse.list-new')
                 ->with('success', 'Traveler berhasil dihapus');
         } catch (QueryException $e) {
             return redirect()
-                ->route('warehouse.list')
+                ->route('warehouse.list-new')
                 ->with('error', 'Gagal menghapus traveler: ' . $e->getMessage());
         }
     }
     // fungsi untuk mengubah data traveler, hanya no travelernya saja, tidak berpindah halaman , hanya pake modal
     public function editTraveler(int $id)
     {
+        // edit no traveler dan catatan
         $traveler = Traveler::findOrFail($id);
         try {
             $newNoTraveler = request()->input('no_traveler');
             if (Traveler::where('no_traveler', $newNoTraveler)->where('id', '!=', $id)->exists()) {
                 return redirect()
-                    ->route('warehouse.list')
+                    ->route('warehouse.list-new')
                     ->with('error', 'No traveler sudah ada: ' . $newNoTraveler);
             }
             $traveler->no_traveler = $newNoTraveler;
+            $traveler->notes = request()->input('notes');
             $traveler->save();
         } catch (QueryException $e) {
             // return ke halaman list dengan pesan error jika terjadi error, misalnya no traveler sudah ada atau error lainnya
             return redirect()
-                ->route('warehouse.list')
+                ->route('warehouse.list-new')
                 ->with('error', 'Gagal mengubah traveler: ' . $e->getMessage());
         }
         return redirect()
-            ->route('warehouse.list')
+            ->route('warehouse.list-new')
             ->with('success', 'No traveler berhasil diubah: ' . $newNoTraveler);
+    }
+    public function logWarehouse(Request $request)
+    {
+        $query = TravelerMovement::with(['traveler', 'deptAsal', 'deptTujuan']);
+
+        if ($request->filled('search')) {
+
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+
+                $q->whereHas('traveler', function ($q2) use ($search) {
+                    $q2->where('no_traveler', 'like', "%{$search}%");
+                })
+                    ->orWhereHas('deptAsal', function ($q3) use ($search) {
+                        $q3->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('deptTujuan', function ($q4) use ($search) {
+                        $q4->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
+        $movements = $query->orderBy('date_out', 'desc')->paginate(10)->withQueryString();
+        return view('warehouse.log-warehouse', compact('movements'));
     }
 }

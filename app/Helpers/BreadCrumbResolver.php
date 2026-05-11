@@ -74,7 +74,7 @@ class BreadcrumbResolver
     }
 
     /**
-     * 🔥 HANDLE DETAIL / CREATE / EDIT
+     *  HANDLE DETAIL / CREATE / EDIT
      */
     private static function appendChild(&$breadcrumbs, $route)
     {

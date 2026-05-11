@@ -5,7 +5,7 @@
     {{-- card detail monitoring --}}
     <div class="mt-6 bg-white shadow rounded-lg p-6">
         <h3 class="text-lg font-medium text-gray-900 mb-4">Traveler: {{ $movement->traveler->no_traveler }}</h3>
-        <p><strong>Posisi Sekarang:</strong> {{ $movement->traveler->deptAsal->name }}</p>
+        <p><strong>Current Department:</strong> {{ $movement->traveler->deptAsal->name }}</p>
         {{-- <p><strong>Status:</strong> {{ $movement->status }}</p>
         <p><strong>Start Time:</strong> {{ $movement->start_time }}</p>
         <p><strong>End Time:</strong> {{ $movement->end_time }}</p> --}}

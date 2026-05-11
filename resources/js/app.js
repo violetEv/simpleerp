@@ -31,7 +31,7 @@ Alpine.data('selectSearch', (config = {}) => ({
     selected: config.selected || '',
     selectedOption: null,
     placeholder: config.placeholder || 'Pilih data...',
-    searchPlaceholder: config.searchPlaceholder || 'Cari',
+    searchPlaceholder: config.searchPlaceholder || '...',
     disabled: false,
     onChange: config.onChange || null,
 
@@ -44,7 +44,8 @@ Alpine.data('selectSearch', (config = {}) => ({
     },
 
     syncSelected() {
-        this.selectedOption = this.options.find(o => o.value == this.selected) || null
+        this.selectedOption =
+            this.options.find(o => String(o.value) === String(this.selected)) || null
     },
 
     toggle() {

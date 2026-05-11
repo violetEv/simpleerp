@@ -1,4 +1,4 @@
-<x-app-layout>
+ <x-app-layout>
     {{-- <h2 class="font-semibold text-xl text-gray-800 leading-tight">
         List Traveler
     </h2> --}}

@@ -9,6 +9,7 @@ use App\Models\SuratJalan;
 use App\Models\SuratJalanOut;
 use App\Models\Traveler;
 use App\Models\TravelerMovement;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -17,57 +18,149 @@ class ProductionController extends Controller
 {
     public function dashboard()
     {
-        return view('produksi.dashboard');
+        // total traveler  masuk ke departemen, total traveler keluar dari departemen, balance
+        $deptId = Auth::user()->department_id;
+        $totalIn = TravelerMovement::where('current_dept_id', $deptId)
+            ->whereNotNull('date_in')
+            ->count();
+        $totalOut = TravelerMovement::where('dept_asal_id', $deptId)
+            ->whereNotNull('date_out')
+            ->count();
+        $balance = $totalIn - $totalOut;
+
+        // Generate chart labels untuk 12 bulan ke belakang
+        $chartLabels = [];
+        $chartDataMasuk = [];
+        $chartDataKeluar = [];
+
+        for ($i = 11; $i >= 0; $i--) {
+            $date = Carbon::now()->subMonths($i);
+            $monthYear = $date->format('M Y');
+            $chartLabels[] = $monthYear;
+
+            // Data traveler masuk per bulan
+            $masuk = TravelerMovement::where('current_dept_id', $deptId)
+                ->whereNotNull('date_in')
+                ->whereYear('date_in', $date->year)
+                ->whereMonth('date_in', $date->month)
+                ->count();
+            $chartDataMasuk[] = $masuk;
+
+            // Data traveler keluar per bulan
+            $keluar = TravelerMovement::where('dept_asal_id', $deptId)
+                ->whereNotNull('date_out')
+                ->whereYear('date_out', $date->year)
+                ->whereMonth('date_out', $date->month)
+                ->count();
+            $chartDataKeluar[] = $keluar;
+        }
+
+        return view('produksi.dashboard', compact('totalIn', 'totalOut', 'balance', 'chartLabels', 'chartDataMasuk', 'chartDataKeluar'));
     }
     public function suratjalanout(Request $request)
     {
-        $query = SuratJalanOut::with(['suratJalanIn', 'kkpoManagement.customer', 'kkpoManagement.style', 'kkpoManagement.color', 'kkpoManagement.item', 'kkpoManagement.category']);
+        $query = SuratJalanOut::with([
+            'suratJalanIn.travelers'
+        ]);
 
         if ($request->filled('search')) {
-            $search = $request->search;
-
-            $query->where('no_surat_jalan', 'like', "%{$search}%");
+            $query->where('no_surat_jalan', 'like', "%{$request->search}%");
         }
 
         $orders = $query->paginate(10)->withQueryString();
-        $kkpoManagements = KkpoManagement::with(['categories', 'customer', 'styles', 'colors', 'items'])->get();
-        $suratJalanIns = SuratJalan::with('kkpoManagement')->get();
-        $travelers = Traveler::with('suratJalan')->get();
 
-        return view('produksi.suratjalanout.index', compact('orders', 'kkpoManagements', 'suratJalanIns', 'travelers'));
+        $suratJalanIns = SuratJalan::with([
+            'kkpoManagement.customer',
+            'kkpoManagement.details.style',
+            'kkpoManagement.details.color',
+            'travelers'
+        ])
+            ->whereHas('travelers.movements.currentDepartment', function ($q) {
+                $q->where('name', 'Warehouse Send');
+            })
+            ->whereHas('travelers.movements', function ($q) {
+                $q->whereNotNull('qty_out');
+            })
+            ->get();
+
+        return view('produksi.suratjalanout.index', compact(
+            'orders',
+            'suratJalanIns'
+        ));
     }
     public function suratJalanOutStore(Request $request)
     {
         $request->validate([
-            'kkpo_management_id' => 'required|exists:kkpo_managements,id',
             'surat_jalan_in_id' => 'required|exists:surat_jalans,id',
+            'traveler_id' => 'required|array',
+            'traveler_id.*' => 'exists:travelers,id',
+
+            'no_surat_jalan' => 'required|string',
+            'qty' => 'required|integer',
+            'tanggal' => 'required|date',
+        ]);
+
+        $sjOut = SuratJalanOut::create([
+            'surat_jalan_in_id' => $request->surat_jalan_in_id,
+            'no_surat_jalan' => $request->no_surat_jalan,
+            'qty' => $request->qty,
+            'tanggal' => $request->tanggal,
+            'status' => $request->qty <= 0 ? 'closed' : 'open',
+        ]);
+
+        $sjOut->travelers()->attach($request->traveler_id);
+
+        return back()->with('success', 'Surat Jalan Out berhasil dibuat');
+    }
+    public function updateSuratJalanOut(Request $request, int $id)
+    {
+        $request->validate([
+            'surat_jalan_in_id' => 'required|exists:surat_jalans,id',
+            'traveler_id' => 'required|array',
+            'traveler_id.*' => 'exists:travelers,id',
+
             'no_surat_jalan' => 'required|string|max:255',
             'qty' => 'required|integer',
             'tanggal' => 'required|date',
             'notes' => 'nullable|string',
         ]);
+
         $status = $request->qty <= 0 ? 'closed' : 'open';
-        SuratJalanOut::create([
-            'kkpo_management_id' => $request->kkpo_management_id,
-            'surat_jalan_in_id' => $request->surat_jalan_in_id,
-            'no_surat_jalan' => $request->no_surat_jalan,
-            'qty' => $request->qty,
-            'tanggal' => $request->tanggal,
-            'notes' => $request->notes,
-            'status' => $status
-        ]);
 
-        return redirect()
-            ->route('produksi.suratjalanout.index')
-            ->with('success', 'Order berhasil ditambahkan');
+        try {
+            $sjOut = SuratJalanOut::findOrFail($id);
+
+            $sjOut->update([
+                'surat_jalan_in_id' => $request->surat_jalan_in_id,
+                'no_surat_jalan' => $request->no_surat_jalan,
+                'qty' => $request->qty,
+                'tanggal' => $request->tanggal,
+                'notes' => $request->notes,
+                'status' => $status,
+            ]);
+
+            $sjOut->travelers()->sync($request->traveler_id);
+
+            return redirect()
+                ->route('produksi.suratjalanout.index')
+                ->with('success', 'Updated');
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
     }
-
-    public function createSuratJalanOut(int $id)
+    public function deleteSuratJalanOut(int $id)
     {
-        $traveler = Traveler::findOrFail($id);
-        $kkpoManagements = KkpoManagement::with(['category', 'customer', 'style', 'color', 'item'])->get();
-        $suratJalanIns = SuratJalan::with('kkpoManagement')->get();
-        return view('produksi.suratjalanout.create', compact('traveler', 'kkpoManagements', 'suratJalanIns'));
+        try {
+            $sjOut = SuratJalanOut::findOrFail($id);
+            $sjOut->travelers()->detach();
+            $sjOut->delete();
+
+            return redirect()
+                ->route('produksi.suratjalanout.index')
+                ->with('success', 'Deleted');
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
     }
 
     public function index(Request $request)
@@ -180,22 +273,27 @@ class ProductionController extends Controller
 
     public function storeOut(Request $request)
     {
-        $request->validate([
+        $rules = [
             'traveler_id' => 'required|exists:travelers,id',
             'updated_by' => 'required|string|max:255',
             'qty_out' => 'required|integer|min:0',
-            'dept_tujuan_id' => 'required|exists:departments,id',
             'type_reject' => 'nullable|string',
             'qty_reject' => 'nullable|integer|min:0',
-            'notes' => 'nullable|string'
-        ]);
+            'notes' => 'nullable|string',
+        ];
+
+        // 🔥 dept_tujuan hanya wajib kalau BUKAN Warehouse Send
+        if (Auth::user()->department->name !== 'Warehouse Send') {
+            $rules['dept_tujuan_id'] = 'required|exists:departments,id';
+        }
+
+        $request->validate($rules);
 
         DB::beginTransaction();
 
         try {
             $traveler = Traveler::lockForUpdate()->findOrFail($request->traveler_id);
 
-            // 🔹 ambil movement aktif (yang belum OUT)
             $movement = TravelerMovement::where('traveler_id', $traveler->id)
                 ->where('current_dept_id', Auth::user()->department_id)
                 ->whereNull('date_out')
@@ -213,7 +311,6 @@ class ProductionController extends Controller
 
             $total = $qty_out + $qty_reject;
 
-            // tidak boleh kosong semua
             if ($qty_out === 0 && $qty_reject === 0) {
                 DB::rollBack();
                 return back()->with('error', 'Qty OUT dan Reject tidak boleh kosong semua');
@@ -224,10 +321,7 @@ class ProductionController extends Controller
                 return back()->with('error', 'Qty OUT + Reject melebihi Qty IN');
             }
 
-
             $qty_loss = $qty_in - $total;
-
-            // status
             $statusCase = ($qty_loss > 0) ? 'selisih' : 'normal';
 
             if ($qty_loss > 0 && trim($request->notes) === '') {
@@ -235,7 +329,10 @@ class ProductionController extends Controller
                 return back()->with('error', 'Ada selisih qty, wajib isi keterangan!');
             }
 
-            //  UPDATE movement
+            // 🔥 kalau WS, auto pakai dept sendiri
+            $deptTujuan = $request->dept_tujuan_id
+                ?? Auth::user()->department_id;
+
             $movement->update([
                 'updated_by' => $request->updated_by,
                 'qty_out' => $qty_out,
@@ -243,16 +340,15 @@ class ProductionController extends Controller
                 'type_reject' => $request->type_reject,
                 'qty_loss' => $qty_loss,
                 'status_case' => $statusCase,
-                'dept_tujuan_id' => $request->dept_tujuan_id,
+                'dept_tujuan_id' => $deptTujuan,
                 'date_out' => now(),
                 'notes' => $request->notes
             ]);
 
-            //  UPDATE traveler
             if (Auth::user()->department->name !== 'Warehouse Send') {
                 $traveler->update([
-                    'current_dept_id' => $request->dept_tujuan_id,
-                    'dept_tujuan_id' => $request->dept_tujuan_id,
+                    'current_dept_id' => $deptTujuan,
+                    'dept_tujuan_id' => $deptTujuan,
                     'status' => 'in_progress'
                 ]);
             } else {

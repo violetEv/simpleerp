@@ -1,72 +1,74 @@
 <x-app-layout>
-    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        {{ auth()->user()->department_id ? auth()->user()->department->name : 'No Department'    }}  Dashboard
-    </h2>
-     {{-- Card statistic --}}
-    {{-- <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-        <div class="bg-white shadow rounded-lg p-4">
-            <div class="flex items-center">
-                <div class="bg-blue-500 text-white rounded-full p-3">
-                    <i class="fas fa-boxes"></i>
-                </div>
-                <div class="ml-4">
-                    <h3 class="text-sm font-medium text-gray-500">Traveler Masuk</h3>
-                    <p class="text-xl font-semibold text-gray-800">{{ $travelerMasuk }}</p>
-                </div>
-            </div>
-        </div>
-        <div class="bg-white shadow rounded-lg p-4">
-            <div class="flex items-center">
-                <div class="bg-green-500 text-white rounded-full p-3">
-                    <i class="fas fa-truck"></i>
-                </div>
-                <div class="ml-4">
-                    <h3 class="text-sm font-medium text-gray-500">Selesai Hari Ini</h3>
-                    <p class="text-xl font-semibold text-gray-800">{{ $selesaiHariIni }}</p>
-                </div>
-            </div>
-        </div>
-        <div class="bg-white shadow rounded-lg p-4">
-            <div class="flex items-center">
-                <div class="bg-yellow-500 text-white rounded-full p-3">
-                    <i class="fas fa-hourglass-half"></i>
-                </div>
-                <div class="ml-4">
-                    <h3 class="text-sm font-medium text-gray-500">Problem</h3>
-                    <p class="text-xl font-semibold text-gray-800">{{ $problem }}</p>
-                </div>
-            </div>
-        </div>
-    </div> --}}
+    <div class="py-3">
+        <div class="max-w-7xl mx-auto">
+            {{-- Card statistic qty traveler masuk di departemen {{ auth()->user()->department->name ?? 'No Department' }}, keluar, balance --}}
+            {{-- total traveler masuk diambil dari traveler yang memiliki surat jalan masuk dengan tujuan departemen user
+             --}}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
 
-     {{-- Table list traveler siap proses--}}
-     {{-- <div class="mt-8">
-        <h3 class="text-lg font-medium text-gray-800 mb-4">Traveler Siap Proses</h3>
-        <div class="bg-white shadow rounded-lg overflow-hidden">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No Traveler</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Qty</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dari</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @foreach($travelerSiapProses as $traveler)
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $traveler->no_traveler }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $traveler->quantity }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $traveler->dari }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $traveler->status }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <a href="{{ route('traveler.show', $traveler->id) }}" class="text-blue-500 hover:text-blue-700">Proses</a>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                {{-- Card Total Traveler Masuk --}}
+                <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-4">
+                    <h3 class="text-sm font-medium text-gray-500">Total Traveler Masuk</h3>
+                    <p class="mt-2 text-2xl font-semibold text-gray-800">{{ $totalIn }}</p>
+                </div>
+
+                {{-- Card Total Traveler Keluar --}}
+                <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-4">
+                    <h3 class="text-sm font-medium text-gray-500">Total Traveler Keluar</h3>
+                    <p class="mt-2 text-2xl font-semibold text-gray-800">{{ $totalOut }}</p>
+                </div>
+
+                {{-- Card Balance --}}
+                <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-4">
+                    <h3 class="text-sm font-medium text-gray-500">Balance Traveler</h3>
+                    <p class="mt-2 text-2xl font-semibold text-gray-800">{{ $balance }}</p>
+                </div>
+
+            </div>
+
+            {{-- Chart jumlah traveler masuk dan keluar per bulan di departemen user --}}
+            <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-4">
+                <h3 class="text-sm font-medium text-gray-500 mb-4">Jumlah Traveler Masuk dan Keluar per Bulan</h3>
+                <canvas id="travelerChart" height="100"></canvas>
+            </div>
         </div>
-    </div> --}}
+    </div>
+
+    @push('scripts')
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            const ctx = document.getElementById('travelerChart').getContext('2d');
+            const travelerChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: {!! json_encode($chartLabels) !!},
+                    datasets: [
+                        {
+                            label: 'Traveler Masuk',
+                            data: {!! json_encode($chartDataMasuk) !!},
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            fill: true,
+                        },
+                        {
+                            label: 'Traveler Keluar',
+                            data: {!! json_encode($chartDataKeluar) !!},
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            fill: true,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            stepSize: 1,
+                        }
+                    }
+                }
+            });
+        </script>
+    @endpush
 </x-app-layout>

@@ -105,34 +105,68 @@
                         @endif
                     </tbody>
                 </table>
-                <div class="p-3">
+                <div class="flex items-center justify-between p-3">
+                    <div class="text-sm text-gray-500">
+                        Showing {{ $colors->firstItem() }} to {{ $colors->lastItem() }} of
+                        {{ $colors->total() }} results
+                    </div>
+
                     {{ $colors->links() }}
                 </div>
                 {{-- </div> --}}
             </div>
             {{-- Modal Add & Edit Color --}}
-            <div id="addModal"
-                class="hidden fixed inset-0 bg-gray-600  bg-opacity-50 items-center justify-center z-50">
-                <div class="bg-white p-6 rounded-lg w-full max-w-md">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 id="modal-title" class="text-lg font-medium">Add Color</h3>
-                        <button onClick="closeAddModal()" class="text-gray-500 text-2xl hover:text-gray-700">
+            <div id="addModal" class="hidden fixed inset-0 z-50 bg-gray-600 bg-opacity-50 items-center justify-center">
+
+                <div class="bg-white rounded-xl shadow-lg w-full max-w-md mx-4 overflow-hidden">
+
+                    {{-- HEADER --}}
+                    <div class="flex justify-between items-center px-5 py-3 border-b border-gray-100">
+                        <h3 id="modal-title" class="text-base font-semibold text-gray-800">
+                            Add Color
+                        </h3>
+
+                        <button onClick="closeAddModal()"
+                            class="text-gray-400 hover:text-gray-600 text-2xl leading-none">
                             &times;
                         </button>
                     </div>
-                    <form id="crud-form" action="{{ route('ppic.color.store') }}" method="POST">
+
+                    {{-- FORM --}}
+                    <form id="crud-form" action="{{ route('ppic.color.store') }}" method="POST" class="p-5">
                         @csrf
+
                         <input type="hidden" name="_method" id="form-method" value="POST">
                         <input type="hidden" name="color_id" id="color_id">
+
+                        {{-- INPUT --}}
                         <div class="mb-4">
-                            <label for="name" class="block text-gray-700">Color Name</label>
+                            <label for="name" class="block text-sm text-gray-600 mb-1">
+                                Color Name
+                            </label>
+
                             <input type="text" name="name" id="name" required
-                                class="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1">
+                                class="w-full h-9 px-3 text-sm border border-gray-200 rounded-md
+                    focus:outline-none focus:ring-1 focus:ring-[#0f4f50] focus:border-[#0f4f50]">
                         </div>
-                        <button type="submit" class="px-4 py-2 bg-[#136566] text-white rounded-lg hover:bg-[#0f4f50]">
-                            Save
-                        </button>
+
+                        {{-- FOOTER --}}
+                         <div class="flex justify-between gap-2 pt-2">
+
+                                <button type="button" onClick="closeAddModal()"
+                                    class="px-4 py-2 text-sm rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 w-1/2">
+                                    Cancel
+                                </button>
+
+                                <button type="submit"
+                                    class="px-4 py-2 text-sm rounded-md bg-[#136566] text-white hover:bg-[#0f4f50] w-1/2">
+                                    Save
+                                </button>
+
+                            </div>
+
                     </form>
+
                 </div>
             </div>
         </div>

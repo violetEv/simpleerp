@@ -1,7 +1,8 @@
 @if (!$movementActive)
     <div class="bg-white shadow rounded-lg p-6 mb-6">
         <h3 class="text-lg font-medium text-gray-900 mb-4">Input Qty In</h3>
-        <form id="formIn" onsubmit="return handleSubmitIn()" action="{{ route('produksi.in.store', $traveler->id) }}" method="POST">
+        <form id="formIn" onsubmit="return handleSubmitIn()" action="{{ route('produksi.in.store', $traveler->id) }}"
+            method="POST">
             @csrf
             <input type="hidden" name="traveler_id" value="{{ $traveler->id }}">
             <input type="hidden" id="expected_qty" value="{{ $lastMovement ? $lastMovement->qty_out : 0 }}">

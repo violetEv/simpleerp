@@ -1,7 +1,4 @@
 <x-app-layout>
-    {{-- <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-    Customer
-</h2> --}}
     <div class="py-3">
         <div class="max-w-7xl mx-auto">
             <div class="bg-white shadow-sm rounded-lg mb-3 border border-gray-100 p-3">
@@ -143,49 +140,114 @@
                         @endif
                     </tbody>
                 </table>
-                <div class="p-3">
+                <div class="flex items-center justify-between p-3">
+                    <div class="text-sm text-gray-500">
+                        Showing {{ $customers->firstItem() }} to {{ $customers->lastItem() }} of
+                        {{ $customers->total() }} results
+                    </div>
+
                     {{ $customers->links() }}
                 </div>
                 {{-- </div> --}}
             </div>
             {{-- Modal Add & Edit Customer --}}
+            {{-- Modal Add & Edit Customer --}}
             <div id="addModal"
-                class="hidden fixed inset-0 z-50 bg-gray-600 bg-opacity-50 items-center justify-center">
-                <div class="bg-white rounded-lg p-6 w-full max-w-md">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 id="modal-title" class="text-lg font-medium">Add Customer</h3>
-                        <button onClick="closeAddModal()" class="text-gray-500 text-2xl hover:text-gray-700">
+                class="hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-sm items-center justify-center p-4">
+
+                <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
+
+                    {{-- HEADER (lebih compact) --}}
+                    <div class="flex items-center justify-between px-5 py-3 border-b">
+
+                        <div>
+                            <h3 id="modal-title" class="text-base font-semibold text-gray-800">
+                                Add Customer
+                            </h3>
+
+                            <p class="text-xs text-gray-500">
+                                Fill in the form below to add a new customer
+                            </p>
+                        </div>
+
+                        <button onClick="closeAddModal()"
+                            class="text-2xl text-gray-400 hover:text-red-500 transition leading-none">
                             &times;
                         </button>
+
                     </div>
+
+                    {{-- FORM --}}
                     <form id="crud-form" action="{{ route('ppic.customer.store') }}" method="POST">
+
                         @csrf
                         <input type="hidden" name="_method" id="form-method" value="POST">
                         <input type="hidden" name="customer_id" id="customer_id">
-                        <div class="mb-4">
-                            <label for="name" class="block text-gray-700">Customer Name</label>
-                            <input type="text" name="name" id="name" required
-                                class="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1">
+
+                        {{-- BODY (dipadatkan) --}}
+                        <div class="p-5 space-y-3">
+
+                            {{-- NAME --}}
+                            <div>
+                                <label class="block text-sm text-gray-700 mb-1">
+                                    Customer Name
+                                </label>
+
+                                <input type="text" name="name" id="name" required
+                                    class="w-full border border-gray-300 rounded-xl px-3 py-2
+                               focus:ring-2 focus:ring-[#136566]/30 focus:border-[#136566]">
+                            </div>
+
+                            {{-- ADDRESS --}}
+                            <div>
+                                <label class="block text-sm text-gray-700 mb-1">
+                                    Address
+                                </label>
+
+                                <input type="text" name="address" id="address"
+                                    class="w-full border border-gray-300 rounded-xl px-3 py-2
+                               focus:ring-2 focus:ring-[#136566]/30 focus:border-[#136566]">
+                            </div>
+
+                            {{-- PHONE --}}
+                            <div>
+                                <label class="block text-sm text-gray-700 mb-1">
+                                    Phone
+                                </label>
+
+                                <input type="text" name="phone" id="phone"
+                                    class="w-full border border-gray-300 rounded-xl px-3 py-2
+                               focus:ring-2 focus:ring-[#136566]/30 focus:border-[#136566]">
+                            </div>
+
+                            {{-- PIC --}}
+                            <div>
+                                <label class="block text-sm text-gray-700 mb-1">
+                                    PIC Name
+                                </label>
+
+                                <input type="text" name="attention" id="attention"
+                                    class="w-full border border-gray-300 rounded-xl px-3 py-2
+                               focus:ring-2 focus:ring-[#136566]/30 focus:border-[#136566]">
+                            </div>
+
                         </div>
-                        <div class="mb-4">
-                            <label for="address" class="block text-gray-700">Address</label>
-                            <input type="text" name="address" id="address"
-                                class="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1">
+
+                        {{-- FOOTER (compact) --}}
+                        <div class="border-t bg-gray-50 px-6 py-4 flex items-center justify-between">
+
+                            <button type="button" onclick="closeAddModal()"
+                                class="px-4 py-2 text-sm border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-100 transition">
+                                Cancel
+                            </button>
+
+                            <button type="submit" id="submit-button"
+                                class="px-4 py-2 text-sm bg-[#136566] text-white rounded-xl hover:bg-[#0f4f50] transition font-medium">
+                                Save
+                            </button>
+
                         </div>
-                        <div class="mb-4">
-                            <label for="phone" class="block text-gray-700">Phone</label>
-                            <input type="text" name="phone" id="phone"
-                                class="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1">
-                        </div>
-                        <div class="mb-4">
-                            <label for="attention" class="block text-gray-700">PIC Name</label>
-                            <input type="text" name="attention" id="attention"
-                                class="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1">
-                        </div>
-                        <button type="submit"
-                            class="bg-[#136566] text-white px-4 py-2 rounded-lg hover:bg-[#0f4f50]">
-                            Save
-                        </button>
+
                     </form>
 
                 </div>

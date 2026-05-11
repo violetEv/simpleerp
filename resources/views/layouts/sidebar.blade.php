@@ -6,8 +6,11 @@
 <aside
     class="fixed xl:fixed top-0 left-0 z-50 h-screen
           bg-[#0f4f50] text-white
-           transition-all duration-300 ease-in-out
-           shadow-xl"
+          transition-none
+          {{-- transition-all duration-300 --}}
+          transition-[width] duration-150
+          shadow-xl
+          flex flex-col"
     :class="[
         $store.sidebar.isExpanded ? 'w-64' : 'w-20',
         $store.sidebar.isMobileOpen ? 'translate-x-0' : '-translate-x-full xl:translate-x-0'
@@ -24,11 +27,13 @@
     </div>
 
     {{-- <div class="no-scrollbar"> --}}
-    <nav class="p-3 space-y-1 overflow-y-auto h-[calc(100vh-64px)]">
+    <nav class="flex-1 p-3 space-y-1 overflow-y-auto no-scrollbar">
 
         @foreach ($menus as $menu)
             @if (isset($menu['sub']))
-                <div x-data="{ open: false }">
+                <div x-data="{
+                    open: {{ collect($menu['sub'])->contains(fn($s) => request()->routeIs($s['route'])) ? 'true' : 'false' }}
+                }">
 
                     <button @click="open=!open"
                         class="w-full flex items-center justify-between px-3 py-2 rounded-md
@@ -74,4 +79,14 @@
 
     </nav>
     {{-- </div> --}}
+    <div class="border-t border-[#1b7a7b] px-3 py-3 text-center text-[11px] text-white/50">
+
+        <span x-show="$store.sidebar.isExpanded">
+            © 2026 IT ELHI
+        </span>
+
+        <span x-show="!$store.sidebar.isExpanded" x-transition>
+            ©
+        </span>
+    </div>
 </aside>

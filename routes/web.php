@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\KkpoController;
 use App\Http\Controllers\ManagerController;
 use App\Http\Controllers\PpicController;
 use App\Http\Controllers\ProductionController;
@@ -136,18 +137,13 @@ Route::middleware('role:ppic')->group(function () {
     Route::put('/ppic/currency/update/{id}', [PpicController::class, 'currencyUpdate'])->name('ppic.currency.update');
     Route::delete('/ppic/currency/delete/{id}', [PpicController::class, 'currencyDelete'])->name('ppic.currency.delete');
 
-    Route::get('/ppic/kkpo', [PpicController::class, 'kkpo'])->name('ppic.kkpo');
-    Route::post('/ppic/kkpo', [PpicController::class, 'kkpoStore'])->name('ppic.kkpo.store');
-    Route::get('/ppic/kkpo/check', [PpicController::class, 'getKkpoInfo']);
-    Route::put('/ppic/kkpo/update/{id}', [PpicController::class, 'kkpoUpdate'])->name('ppic.kkpo.update');
-    Route::delete('/ppic/kkpo/delete/{id}', [PpicController::class, 'kkpoDelete'])->name('ppic.kkpo.delete');
+    Route::get('/ppic/kkpo', [KkpoController::class, 'kkpo'])->name('ppic.kkpo');
+    Route::post('/ppic/kkpo', [KkpoController::class, 'kkpoStore'])->name('ppic.kkpo.store');
+    Route::get('/ppic/kkpo/check', [KkpoController::class, 'check'])->name('ppic.kkpo.check');
+    Route::put('/ppic/kkpo/update/{id}', [KkpoController::class, 'kkpoUpdate'])->name('ppic.kkpo.update');
+    Route::delete('/ppic/kkpo/delete/{id}', [KkpoController::class, 'kkpoDelete'])->name('ppic.kkpo.delete');
 
-    Route::get('/ppic/kkpomanagement', [PpicController::class, 'kkpoManagement'])->name('ppic.kkpomanagement');
-    Route::post('/ppic/kkpomanagement', [PpicController::class, 'kkpoManagementStore'])->name('ppic.kkpomanagement.store');
-    Route::get('/ppic/kkpomanagement/{id}', [PpicController::class, 'kkpoManagementShow'])->name('ppic.kkpomanagement.show');
-    // Route::get('/ppic/kkpomanagement/detail/{id}', [PpicController::class, 'kkpoDetail'])->name('ppic.kkpomanagement.detail');
-    Route::put('/ppic/kkpomanagement/update/{id}', [PpicController::class, 'kkpoManagementUpdate'])->name('ppic.kkpomanagement.update');
-    Route::delete('/ppic/kkpomanagement/delete/{id}', [PpicController::class, 'kkpoManagementDelete'])->name('ppic.kkpomanagement.delete');
+    Route::get('/ppic/kkpo/{id}', [KkpoController::class, 'kkpoDetailShow'])->name('ppic.kkpodetail.show');
 
     Route::get('/ppic/monitoring', [PpicController::class, 'travelerMonitoring'])->name('ppic.monitoring');
 
@@ -177,13 +173,16 @@ Route::middleware('role:warehouse')->group(function () {
     Route::put('/warehouse/pecah/update/{id}', [WarehouseController::class, 'pecahUpdate'])->name('warehouse.pecah.update');
     Route::delete('/warehouse/pecah/delete/{id}', [WarehouseController::class, 'pecahDelete'])->name('warehouse.pecah.delete');
 
-    Route::get('/warehouse/list', [WarehouseController::class, 'list'])->name('warehouse.list');
-    Route::put('/warehouse/list/update/{id}', [WarehouseController::class, 'editTraveler'])->name('warehouse.list.update');
-    Route::get('/warehouse/list/{id}', [WarehouseController::class, 'travelerDetail'])->name('warehouse.list.show');
-    Route::delete('/warehouse/list/delete/{id}', [WarehouseController::class, 'travelerDelete'])->name('warehouse.list.delete');
+    Route::get('/warehouse/list-new', [WarehouseController::class, 'list'])->name('warehouse.list-new');
+    Route::put('/warehouse/list-new/update/{id}', [WarehouseController::class, 'editTraveler'])->name('warehouse.list-new.update');
+    Route::get('/warehouse/list-new/{id}', [WarehouseController::class, 'travelerDetail'])->name('warehouse.list-new.show');
+    Route::delete('/warehouse/list-new/delete/{id}', [WarehouseController::class, 'travelerDelete'])->name('warehouse.list-new.delete');
     // Route::get('/warehouse/rework', [WarehouseController::class, 'rework'])->name('warehouse.rework');
+    Route::get('/warehouse/list-rework', [WarehouseController::class, 'rework'])->name('warehouse.list-rework');
 
-    Route::post('/warehouse/rework/{id}', [WarehouseController::class, 'reworkStore'])->name('warehouse.rework.store');
+    Route::post('/warehouse/list-rework/{id}', [WarehouseController::class, 'reworkStore'])->name('warehouse.rework.store');
+
+    Route::get('/warehouse/log-warehouse', [WarehouseController::class, 'logWarehouse'])->name('warehouse.log-warehouse');
 });
 
 /*
@@ -195,10 +194,13 @@ Route::middleware('role:produksi')->group(function () {
     Route::get('/produksi/dashboard', [ProductionController::class, 'dashboard'])->name('produksi.dashboard');
 
     Route::get('/produksi', [ProductionController::class, 'index'])->name('produksi.proses.index');
+    
     Route::get('/produksi/suratjalanout', [ProductionController::class, 'suratJalanOut'])->name('produksi.suratjalanout.index');
-    Route::post('/produksi/suratjalanout/create/', [ProductionController::class, 'suratJalanOutStore'])->name('produksi.suratjalanout.store');
+    Route::post('/produksi/suratjalanout/store', [ProductionController::class, 'suratJalanOutStore'])->name('produksi.suratjalanout.store');
+    Route::put('/produksi/suratjalanout/update/{id}', [ProductionController::class, 'updateSuratJalanOut'])->name('produksi.suratjalanout.update');
+    Route::delete('/produksi/suratjalanout/delete/{id}', [ProductionController::class, 'deleteSuratJalanOut'])->name('produksi.suratjalanout.delete');
 
-    Route::get('/produksi/suratjalanout/create/{id}', [ProductionController::class, 'createSuratJalanOut'])->name('produksi.suratjalanout.create');
+    // Route::get('/produksi/suratjalanout/create/{id}', [ProductionController::class, 'createSuratJalanOut'])->name('produksi.suratjalanout.create');
 
     Route::get('/produksi/log', [ProductionController::class, 'logProduction'])->name('produksi.logproduksi');
     Route::get('/produksi/log/{id}', [ProductionController::class, 'logDetail'])->name('produksi.logdetail');

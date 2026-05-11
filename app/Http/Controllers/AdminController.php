@@ -29,8 +29,12 @@ class AdminController extends Controller
         $totalDepartments = Departments::count();
         $activeUsers = User::where('status', 'active')->count();
         $inactiveUsers = User::where('status', 'inactive')->count();
-
-        return view('superadmin.dashboard', compact('totalUsers', 'totalDepartments', 'activeUsers', 'inactiveUsers'));
+        // menampilkan aktivitas user login terbaru
+        $recentActivities = TravelerMovement::with('user')
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
+        return view('superadmin.dashboard', compact('totalUsers', 'totalDepartments', 'activeUsers', 'inactiveUsers', 'recentActivities'));
     }
 
     public function users(Request $request)

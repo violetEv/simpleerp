@@ -8,8 +8,8 @@ class Currency extends Model
 {
     protected $fillable = ['name', 'code'];
 
-    public function details()
+    public function kkpos()
     {
-        return $this->hasMany(KkpoDetail::class);
+        return $this->hasMany(KkpoManagement::class);
     }
 }

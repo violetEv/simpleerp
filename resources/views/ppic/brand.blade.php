@@ -110,7 +110,12 @@
                         @endif
                     </tbody>
                 </table>
-                <div class="p-3">
+                <div class="flex items-center justify-between p-3">
+                    <div class="text-sm text-gray-500">
+                        Showing {{ $brands->firstItem() }} to {{ $brands->lastItem() }} of
+                        {{ $brands->total() }} results
+                    </div>
+
                     {{ $brands->links() }}
                 </div>
                 {{-- <livewire:ppic.brand /> --}}
@@ -118,27 +123,54 @@
         </div>
         {{-- MODAL ADD & EDIT BRAND --}}
         <div id="addModal" class="hidden fixed inset-0 z-50 bg-gray-600 bg-opacity-50 items-center justify-center">
-            <div class="bg-white rounded-lg p-6 w-full max-w-md">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 id="modal-title" class="text-lg font-medium">Add Brand</h3>
-                    <button onClick="closeAddModal()" class="text-gray-500 text-2xl hover:text-gray-700">
+
+            <div class="bg-white rounded-xl p-5 w-full max-w-md shadow-lg">
+
+                {{-- HEADER --}}
+                <div class="flex items-center justify-between mb-4 border-b pb-2">
+                    <h3 id="modal-title" class="text-lg font-semibold text-gray-800">
+                        Add Brand
+                    </h3>
+
+                    <button onClick="closeAddModal()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">
                         &times;
                     </button>
                 </div>
+
+                {{-- FORM --}}
                 <form id="brandForm" method="POST" action="{{ route('ppic.brand.store') }}">
                     @csrf
                     <input type="hidden" name="_method" id="brandMethod" value="POST">
                     <input type="hidden" name="brand_id" id="brandId">
+
                     <div class="mb-4">
-                        <label for="name" class="block text-gray-700 font-medium mb-2">Brand Name</label>
-                        <input type="text" name="name" id="name" required
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#136566]">
+                        <label class="block text-sm text-gray-700 mb-1">
+                            Brand Name
+                        </label>
+
+                        <input type="text" name="name" id="name"
+                            class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm
+                    focus:outline-none focus:ring-1 focus:ring-[#0f4f50] focus:border-[#0f4f50]"
+                            required>
                     </div>
-                    <button type="submit"
-                        class="bg-[#136566] text-white px-4 py-2 rounded-lg hover:bg-[#0f4f50]">
-                        Save
-                    </button>
+
+                    {{-- BUTTON --}}
+                    <div class="flex justify-between gap-2 mt-5">
+
+                        <button type="button" onClick="closeAddModal()"
+                            class="px-4 py-2 text-sm rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 w-1/2">
+                            Cancel
+                        </button>
+
+                        <button type="submit"
+                            class="px-4 py-2 text-sm rounded-md bg-[#136566] text-white hover:bg-[#0f4f50] w-1/2">
+                            Save
+                        </button>
+
+                    </div>
+
                 </form>
+
             </div>
         </div>
     </div>

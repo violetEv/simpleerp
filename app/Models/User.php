@@ -29,6 +29,10 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Departments::class);
     }
+    public function travelerMovements()
+    {
+        return $this->hasMany(TravelerMovement::class, 'created_by');
+    }
 
     public function isSuperAdmin()
     {
