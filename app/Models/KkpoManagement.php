@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class KkpoManagement extends Model
 {
     protected $table = 'kkpo_managements';
-    protected $fillable = ['no_kkpo', 'customer_id', 'kp_po', 'payment_terms', 'npwp', 'date', 'currency_id'];
+    protected $fillable = ['no_kkpo', 'customer_id', 'kp_po', 'payment_terms', 'npwp', 'date', 'currency_id', 'pic'];
 
     public function details()
     {

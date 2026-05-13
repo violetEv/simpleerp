@@ -60,7 +60,7 @@
                         class="bg-[#136566]/10 text-gray-700 border-b border-[#136566]/30 text-[11px] uppercase tracking-wide">
                         <tr>
                             <th class="px-4 py-2 text-left text-xs font-semibold uppercase">
-                                No Surat Jalan IN</th>
+                                No Surat Jalan Out</th>
                             {{-- <th class="px-4 py-2 text-left text-xs font-semibold uppercase">
                                 KKPO
                             </th> --}}

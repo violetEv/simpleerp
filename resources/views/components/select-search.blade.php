@@ -4,7 +4,7 @@
     'options' => [],
     'value' => null,
     'label' => null,
-    'placeholder' => 'Pilih data...',
+    'placeholder' => '',
     'searchPlaceholder' => '',
     'required' => false,
     'onChange' => null,

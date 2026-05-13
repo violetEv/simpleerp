@@ -82,7 +82,9 @@
                             <th class="px-4 py-2 text-left text-xs font-semibold">
                                 Phone</th>
                             <th class="px-4 py-2 text-left text-xs font-semibold">
-                                PIC Name</th>
+                                NPWP</th>
+                            <th class="px-4 py-2 text-left text-xs font-semibold">
+                                Payment Term
                             <th class="px-4 py-2 text-left text-xs font-semibold">
                                 Actions
                             </th>
@@ -96,10 +98,11 @@
                                     <td class="px-4 py-2 whitespace-wrap">{{ $customer->name ?? '-' }}</td>
                                     <td class="px-4 py-2 whitespace-wrap">{{ $customer->address ?? '-' }}</td>
                                     <td class="px-4 py-2 whitespace-nowrap">{{ $customer->phone ?? '-' }}</td>
-                                    <td class="px-4 py-2 whitespace-nowrap">{{ $customer->attention ?? '-' }}</td>
+                                    <td class="px-4 py-2 whitespace-nowrap">{{ $customer->npwp ?? '-' }}</td>
+                                    <td class="px-4 py-2 whitespace-nowrap">{{ $customer->payment_terms ?? '-' }}</td>
                                     <td class="px-4 py-2 whitespace-nowrap">
                                         <button
-                                            onClick="editCustomer({{ $customer->id }}, '{{ $customer->name }}', '{{ $customer->address }}', '{{ $customer->phone }}', '{{ $customer->attention }}')"
+                                            onClick="editCustomer({{ $customer->id }}, '{{ $customer->name }}', '{{ $customer->address }}', '{{ $customer->phone }}', '{{ $customer->npwp }}', '{{ $customer->payment_terms}}')"
                                             title="Edit" class="mr-2">
                                             {{-- Edit icon outline --}}
                                             <svg class="w-6 h-6 text-blue-500 hover:text-blue-700" aria-hidden="true"
@@ -150,7 +153,6 @@
                 </div>
                 {{-- </div> --}}
             </div>
-            {{-- Modal Add & Edit Customer --}}
             {{-- Modal Add & Edit Customer --}}
             <div id="addModal"
                 class="hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-sm items-center justify-center p-4">
@@ -220,15 +222,25 @@
                                focus:ring-2 focus:ring-[#136566]/30 focus:border-[#136566]">
                             </div>
 
-                            {{-- PIC --}}
+                            {{-- NPWP --}}
                             <div>
                                 <label class="block text-sm text-gray-700 mb-1">
-                                    PIC Name
+                                    NPWP
                                 </label>
 
-                                <input type="text" name="attention" id="attention"
+                                <input type="text" name="npwp" id="npwp" required
                                     class="w-full border border-gray-300 rounded-xl px-3 py-2
                                focus:ring-2 focus:ring-[#136566]/30 focus:border-[#136566]">
+                            </div>
+
+                            {{-- PAYMENT TERMS --}}
+                            <div>
+                                <label class="block text-sm text-gray-700 mb-1">Payment Terms</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="number" name="payment_terms" id="payment_terms" min="0" required
+                                        class="w-full border border-gray-300 rounded-xl px-4 py-2.5">
+                                    <span class="text-gray-500 text-sm">Days</span>
+                                </div>
                             </div>
 
                         </div>
@@ -271,14 +283,16 @@
             document.getElementById('name').value = '';
             document.getElementById('address').value = '';
             document.getElementById('phone').value = '';
-            document.getElementById('attention').value = '';
+            // document.getElementById('attention').value = '';
+            document.getElementById('npwp').value = '';
+            document.getElementById('payment_terms').value = '';
 
 
             document.getElementById('addModal').classList.remove('hidden');
             document.getElementById('addModal').classList.add('flex');
         }
 
-        function editCustomer(id, name, address, phone, attention) {
+        function editCustomer(id, name, address, phone, npwp, payment_terms) {
             document.getElementById('modal-title').textContent = 'Edit Customer';
             // document.getElementById('submit-button').textContent = 'Update Customer';
             let url = "{{ route('ppic.customer.update', ':id') }}";
@@ -293,7 +307,9 @@
             document.getElementById('name').value = name;
             document.getElementById('address').value = address;
             document.getElementById('phone').value = phone;
-            document.getElementById('attention').value = attention;
+            // document.getElementById('attention').value = attention;
+            document.getElementById('npwp').value = npwp;
+            document.getElementById('payment_terms').value = payment_terms;
 
 
             document.getElementById('addModal').classList.remove('hidden');

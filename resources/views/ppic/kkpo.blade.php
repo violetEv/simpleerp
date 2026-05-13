@@ -225,7 +225,7 @@
                                     {{-- PRICE --}}
                                     <td class="px-4 py-3 border-r border-gray-100 align-top">
                                         <div class="font-semibold">
-                                            {{ number_format($detail->price, 0, ',', '.') }}
+                                            {{ number_format($detail->price, 2, ',', '.') }}
                                         </div>
                                         <div class="text-gray-500 text-xs">
                                             {{ $detail->kkpo->currency->code ?? '-' }}
@@ -310,7 +310,6 @@
             </div>
 
             {{-- Modal Add & Edit KKPO --}}
-            {{-- Modal Add & Edit KKPO --}}
             <div id="addModal"
                 class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm items-center justify-center z-50 p-4">
 
@@ -355,12 +354,16 @@
                                             class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-[#136566]/30 focus:border-[#136566]">
                                     </div>
 
-                                    <div>
-                                        <x-select-search name="customer_id" id="customer_id" label="Customer"
-                                            :options="$customers->map(
-                                                fn($c) => ['value' => $c->id, 'label' => $c->name],
-                                            )" placeholder="Select Customer" />
-                                    </div>
+                                    <x-select-search name="customer_id" id="customer_id" label="Customer"
+                                        :options="$customers->map(
+                                            fn($c) => [
+                                                'value' => $c->id,
+                                                'label' => $c->name,
+                                                'npwp' => $c->npwp,
+                                                'payment_terms' => $c->payment_terms,
+                                            ],
+                                        )" placeholder="Select Customer"
+                                        searchPlaceholder="Search Customer" required />
 
                                 </div>
 
@@ -374,8 +377,9 @@
 
                                     <div>
                                         <label class="block text-sm text-gray-700 mb-1">NPWP</label>
-                                        <input type="text" name="npwp" id="npwp"
-                                            class="w-full border border-gray-300 rounded-xl px-4 py-2.5">
+
+                                        <input type="text" name="npwp" id="npwp" readonly
+                                            class="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-gray-100 text-gray-600 cursor-not-allowed">
                                     </div>
 
                                 </div>
@@ -389,25 +393,35 @@
                                                     'value' => $c->id,
                                                     'label' => $c->name . ' (' . $c->code . ')',
                                                 ],
-                                            )" />
+                                            )" placeholder="Select Currency"
+                                            searchPlaceholder="Search Currency" required />
                                     </div>
 
                                     <div>
                                         <label class="block text-sm text-gray-700 mb-1">Payment Terms</label>
                                         <div class="flex items-center gap-2">
-                                            <input type="number" name="payment_terms" id="payment_terms" min="0"
-                                                class="w-full border border-gray-300 rounded-xl px-4 py-2.5">
+                                            <input type="number" name="payment_terms" id="payment_terms" readonly
+                                                min="0"
+                                                class="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-gray-100 text-gray-600 cursor-not-allowed">
                                             <span class="text-gray-500 text-sm">Days</span>
                                         </div>
                                     </div>
 
+                                    <div>
+                                        <label class="block text-sm text-gray-700 mb-1">Issue Date</label>
+                                        <input type="date" name="date" id="date" required
+                                            class="w-full border border-gray-300 rounded-xl px-4 py-2.5">
+                                    </div>
+
+                                    {{-- PIC --}}
+                                    <div>
+                                        <label class="block text-sm text-gray-700 mb-1">PIC Name</label>
+                                        <input type="text" name="details[0][pic]" id="pic" required
+                                            class="w-full border border-gray-300 rounded-xl px-4 py-2.5">
+                                    </div>
+
                                 </div>
 
-                                <div>
-                                    <label class="block text-sm text-gray-700 mb-1">Issue Date</label>
-                                    <input type="date" name="date" id="date"
-                                        class="w-full border border-gray-300 rounded-xl px-4 py-2.5">
-                                </div>
 
                             </div>
 
@@ -426,22 +440,28 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                                     <x-select-search name="details[0][category_id]" id="category_id" label="Category"
-                                        :options="$categories->map(fn($c) => ['value' => $c->id, 'label' => $c->name])" />
+                                        :options="$categories->map(fn($c) => ['value' => $c->id, 'label' => $c->name])" placeholder="Select Category"
+                                        searchPlaceholder="Search Category" required />
 
                                     <x-select-search name="details[0][style_id]" id="style_id" label="Style"
-                                        :options="$styles->map(fn($s) => ['value' => $s->id, 'label' => $s->name])" />
+                                        :options="$styles->map(fn($s) => ['value' => $s->id, 'label' => $s->name])" placeholder="Select Style" searchPlaceholder="Search Style"
+                                        required />
 
                                     <x-select-search name="details[0][color_id]" id="color_id" label="Color"
-                                        :options="$colors->map(fn($c) => ['value' => $c->id, 'label' => $c->name])" />
+                                        :options="$colors->map(fn($c) => ['value' => $c->id, 'label' => $c->name])" placeholder="Select Color" searchPlaceholder="Search Color"
+                                        required />
 
                                     <x-select-search name="details[0][item_id]" id="item_id" label="Item"
-                                        :options="$items->map(fn($i) => ['value' => $i->id, 'label' => $i->name])" />
+                                        :options="$items->map(fn($i) => ['value' => $i->id, 'label' => $i->name])" placeholder="Select Item" searchPlaceholder="Search Item"
+                                        required />
 
                                     <x-select-search name="details[0][brand_id]" id="brand_id" label="Brand"
-                                        :options="$brands->map(fn($b) => ['value' => $b->id, 'label' => $b->name])" />
+                                        :options="$brands->map(fn($b) => ['value' => $b->id, 'label' => $b->name])" placeholder="Select Brand" searchPlaceholder="Search Brand"
+                                        required />
 
                                     <x-select-search name="details[0][unit_id]" id="unit_id" label="Unit"
-                                        :options="$units->map(fn($u) => ['value' => $u->id, 'label' => $u->name])" />
+                                        :options="$units->map(fn($u) => ['value' => $u->id, 'label' => $u->name])" placeholder="Select Unit" searchPlaceholder="Search Unit"
+                                        required />
 
                                 </div>
 
@@ -450,19 +470,20 @@
                                     <div>
                                         <label class="text-sm text-gray-700">Qty</label>
                                         <input type="number" name="details[0][qty]" id="qty" min="0"
-                                            class="w-full border border-gray-300 rounded-xl px-4 py-2.5">
+                                            required class="w-full border border-gray-300 rounded-xl px-4 py-2.5">
                                     </div>
 
                                     <div>
                                         <label class="text-sm text-gray-700">Unit Price</label>
                                         <input type="number" name="details[0][price]" id="price" min="0"
+                                            step="0.01" required
                                             class="w-full border border-gray-300 rounded-xl px-4 py-2.5">
                                     </div>
 
                                     <div>
                                         <label class="text-sm text-gray-700">Tolerance</label>
                                         <input type="number" name="details[0][reject_allowance]"
-                                            id="reject_allowance"  min="0"
+                                            id="reject_allowance" min="0" step="0.01" required
                                             class="w-full border border-gray-300 rounded-xl px-4 py-2.5">
                                     </div>
 
@@ -551,10 +572,11 @@
 
                 document.getElementById('kp_po').value = kkpo.kp_po ?? '';
 
-                document.getElementById('npwp').value = kkpo.npwp ?? '';
+                document.getElementById('npwp').value =
+                    kkpo.customer?.npwp ?? '';
 
                 document.getElementById('payment_terms').value =
-                    kkpo.payment_terms ?? '';
+                    kkpo.customer?.payment_terms ?? '';
 
                 document.getElementById('currency_id')._x_dataStack[0].selected =
                     kkpo.currency_id ?? '';
@@ -588,6 +610,8 @@
                 document.getElementById('reject_allowance').value =
                     detail.reject_allowance ?? '';
 
+                document.getElementById('pic').value = detail.pic ?? '';
+
                 document.getElementById('remark').value =
                     detail.remark ?? '';
 
@@ -596,61 +620,113 @@
 
             }, 150);
         }
-        document.getElementById('no_kkpo').addEventListener('blur', function() {
 
-            let noKkpo = this.value;
+        function setCustomerData() {
 
-            if (!noKkpo) return;
+            let customerEl = document.getElementById('customer_id');
 
-            fetch(`/ppic/kkpo/check?no_kkpo=${noKkpo}`)
-                .then(res => res.json())
-                .then(data => {
+            if (!customerEl || !customerEl._x_dataStack) return;
 
-                    let customerSelect = document.getElementById('customer_id');
-                    let currencySelect = document.getElementById('currency_id');
+            let alpineData = customerEl._x_dataStack[0];
 
-                    if (data.exists) {
+            let selectedId = alpineData.selected;
 
-                        let kkpo = data.data;
+            let options = alpineData.options || [];
 
-                        // AUTO FILL
-                        customerSelect._x_dataStack[0].selected =
-                            kkpo.customer_id ?? '';
+            let customer = options.find(opt => opt.value == selectedId);
 
-                        document.getElementById('kp_po').value =
-                            kkpo.kp_po ?? '';
+            // AUTO FILL NPWP
+            document.getElementById('npwp').value =
+                customer?.npwp ?? '';
 
-                        document.getElementById('npwp').value =
-                            kkpo.npwp ?? '';
+            // AUTO FILL PAYMENT TERMS
+            document.getElementById('payment_terms').value =
+                customer?.payment_terms ?? '';
+        }
 
-                        document.getElementById('payment_terms').value =
-                            kkpo.payment_terms ?? '';
+        // WATCH perubahan customer
+        document.addEventListener('alpine:init', () => {
 
-                        currencySelect._x_dataStack[0].selected =
-                            kkpo.currency_id ?? '';
+            setTimeout(() => {
 
-                        document.getElementById('date').value =
-                            kkpo.date ?? '';
+                let customerEl = document.getElementById('customer_id');
 
-                        // OPTIONAL LOCK
-                        customerSelect.setAttribute('disabled', true);
+                if (!customerEl || !customerEl._x_dataStack) return;
 
-                    } else {
+                Alpine.effect(() => {
 
-                        // RESET kalau tidak ada
-                        customerSelect.removeAttribute('disabled');
+                    customerEl._x_dataStack[0].selected;
 
-                        customerSelect._x_dataStack[0].selected = '';
-
-                        document.getElementById('kp_po').value = '';
-                        document.getElementById('npwp').value = '';
-                        document.getElementById('payment_terms').value = '';
-
-                        currencySelect._x_dataStack[0].selected = '';
-
-                        document.getElementById('date').value = '';
-                    }
+                    setCustomerData();
                 });
+
+            }, 300);
+
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const noKkpoInput = document.getElementById('no_kkpo');
+
+            if (!noKkpoInput) return;
+
+            noKkpoInput.addEventListener('blur', function() {
+
+                let noKkpo = this.value;
+
+                if (!noKkpo) return;
+
+                fetch(`/ppic/kkpo/check?no_kkpo=${noKkpo}`)
+                    .then(res => res.json())
+                    .then(data => {
+
+                        let customerSelect =
+                            document.getElementById('customer_id');
+
+                        let currencySelect =
+                            document.getElementById('currency_id');
+
+                        if (data.exists) {
+
+                            let kkpo = data.data;
+
+                            customerSelect._x_dataStack[0].selected =
+                                kkpo.customer_id ?? '';
+
+                            document.getElementById('kp_po').value =
+                                kkpo.kp_po ?? '';
+
+                            document.getElementById('npwp').value =
+                                kkpo.customer?.npwp ?? '';
+
+                            document.getElementById('payment_terms').value =
+                                kkpo.customer?.payment_terms ?? '';
+
+                            currencySelect._x_dataStack[0].selected =
+                                kkpo.currency_id ?? '';
+
+                            document.getElementById('date').value =
+                                kkpo.date ?? '';
+
+                            customerSelect.setAttribute('disabled', true);
+
+                        } else {
+
+                            customerSelect.removeAttribute('disabled');
+
+                            customerSelect._x_dataStack[0].selected = '';
+
+                            document.getElementById('kp_po').value = '';
+                            document.getElementById('npwp').value = '';
+                            document.getElementById('payment_terms').value = '';
+
+                            currencySelect._x_dataStack[0].selected = '';
+
+                            document.getElementById('date').value = '';
+                        }
+                    });
+            });
+
         });
     </script>
 </x-app-layout>

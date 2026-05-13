@@ -39,7 +39,7 @@
 
             <div>
                 <p class="text-gray-500 text-sm">
-                    Total KKPO
+                    Total KK/PO
                 </p>
 
                 <p class="text-gray-800 font-semibold text-xl">
@@ -64,7 +64,7 @@
 
             <div>
                 <p class="text-gray-500 text-sm">
-                    Total Items KKPO
+                    Total Items KK/PO
                 </p>
 
                 <p class="text-gray-800 font-semibold text-xl">
@@ -222,7 +222,7 @@
 
         <div class="flex justify-between items-center p-4 border-b">
             <h3 class="text-lg font-semibold text-gray-800">
-                Latest KKPO
+                Latest KK/PO
             </h3>
 
             <a href="{{ route('ppic.kkpo') }}" class="text-sm text-[#136566] hover:text-[#0f4f50] transition">

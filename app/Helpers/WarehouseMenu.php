@@ -15,10 +15,10 @@ class WarehouseMenu
                 'sub' => [
                     ['name' => 'Buat Traveler', 'route' => 'warehouse.pecah'],
                     ['name' => 'Daftar Traveler Baru', 'route' => 'warehouse.list-new'],
-                    ['name' => 'Daftar Traveler Rework', 'route' => 'warehouse.list-rework']
+                    ['name' => 'Daftar Traveler Turunan', 'route' => 'warehouse.list-rework']
                 ]
             ],
-            ['name' => 'Log Warehouse', 'route' => 'warehouse.log-warehouse', 'icon' => 'fas fa-history'],
+            // ['name' => 'Log Warehouse', 'route' => 'warehouse.log-warehouse', 'icon' => 'fas fa-history'],
         ];
     }
 }

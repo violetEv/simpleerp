@@ -257,12 +257,10 @@ class KkpoController extends Controller
             'no_kkpo' => 'required|string|max:255',
             'customer_id' => 'required|exists:customers,id',
             'kp_po' => 'nullable|string|max:255',
-            'payment_terms' => 'required|string|max:255',
-            // 'notes' => 'nullable|string|max:255',
-            'npwp' => 'required|string|max:255',
             'currency_id' => 'required|exists:currencies,id',
             'date' => 'required|date',
-
+            'npwp' => 'nullable|exists:customers,npwp',
+            'payment_terms' => 'required|exists:customers,payment_terms',
             'details' => 'required|array|min:1',
 
             // 'details.*.date' => 'required|date',
@@ -274,6 +272,7 @@ class KkpoController extends Controller
             'details.*.qty' => 'required|numeric|min:0',
             'details.*.price' => 'required|numeric|min:0',
             'details.*.reject_allowance' => 'required|numeric|min:0',
+            'details.*.pic' => 'required|string|max:255',
             'details.*.unit_id' => 'required|exists:units,id',
             // 'details.*.currency_id' => 'nullable|exists:currencies,id',
             'details.*.remark' => 'nullable|string|max:255'
@@ -349,6 +348,7 @@ class KkpoController extends Controller
                     'remark' => $detail['remark'] ?? null,
                     // 'currency_id' => $detail['currency_id'] ?? null,
                     'reject_allowance' => $detail['reject_allowance'],
+                    'pic' => $detail['pic'] ?? null,
                     // 'date' => $detail['date'] ?? null,
                 ]);
             }
@@ -378,9 +378,8 @@ class KkpoController extends Controller
             'no_kkpo' => 'required|string|max:255',
             'customer_id' => 'required|exists:customers,id',
             'kp_po' => 'nullable|string|max:255',
-            'payment_terms' => 'nullable|string|max:255',
-            // 'notes' => 'nullable|string|max:255',
-            'npwp' => 'nullable|string|max:255',
+            'payment_terms' => 'nullable|exists:customers,payment_terms',
+            'npwp' => 'required|exists:customers,npwp',
             'currency_id' => 'required|exists:currencies,id',
             'date' => 'required|date',
             'details' => 'required|array|min:1',
@@ -395,6 +394,7 @@ class KkpoController extends Controller
             'details.*.color_id' => 'required|exists:colors,id',
             'details.*.item_id' => 'required|exists:items,id',
             'details.*.brand_id' => 'required|exists:brands,id',
+            'details.*.pic' => 'required|string|max:255',
             // 'details.*.currency_id' => 'nullable|exists:currencies,id',
 
         ]);
@@ -435,6 +435,7 @@ class KkpoController extends Controller
                             'remark' => $detail['remark'] ?? null,
                             // 'currency_id' => $detail['currency_id'] ?? null,
                             'reject_allowance' => $detail['reject_allowance'] ?? 0,
+                            'pic' => $detail['pic'] ?? null,
                             // 'date' => $detail['date'] ?? null,
                         ]);
                     }
@@ -455,7 +456,7 @@ class KkpoController extends Controller
                         'remark' => $detail['remark'] ?? null,
                         // 'currency_id' => $detail['currency_id'] ?? null,
                         'reject_allowance' => $detail['reject_allowance'] ?? 0,
-                        // 'date' => $detail['date'] ?? null,
+                        'pic' => $detail['pic'] ?? null,
                     ]);
                 }
             }
@@ -508,7 +509,11 @@ class KkpoController extends Controller
     }
     public function check(Request $request)
     {
-        $kkpo = KkpoManagement::firstWhere('no_kkpo', strtoupper(trim($request->no_kkpo)));
+        $kkpo = KkpoManagement::with('customer')
+            ->firstWhere(
+                'no_kkpo',
+                strtoupper(trim($request->no_kkpo))
+            );
 
         if (!$kkpo) {
             return response()->json([
@@ -521,10 +526,14 @@ class KkpoController extends Controller
             'data' => [
                 'customer_id' => $kkpo->customer_id,
                 'kp_po' => $kkpo->kp_po,
-                'npwp' => $kkpo->npwp,
-                'payment_terms' => $kkpo->payment_terms,
                 'currency_id' => $kkpo->currency_id,
                 'date' => $kkpo->date,
+
+                // tambahin ini
+                'customer' => [
+                    'npwp' => $kkpo->customer->npwp ?? '',
+                    'payment_terms' => $kkpo->customer->payment_terms ?? '',
+                ]
             ]
         ]);
     }

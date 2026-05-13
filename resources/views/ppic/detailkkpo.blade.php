@@ -233,7 +233,7 @@
                                 </div>
 
                                 <div class="text-gray-800">
-                                    {{ $detail->kkpo->customer->attention ?? '-' }}
+                                    {{ $detail->pic ?? '-' }}
                                 </div>
                             </div>
 

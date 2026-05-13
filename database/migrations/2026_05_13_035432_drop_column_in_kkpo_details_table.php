@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //rename table kkpo_item to kkpo_management_item
-        Schema::rename('kkpo_item', 'kkpo_management_item');
+        Schema::table('kkpo_details', function (Blueprint $table) {
+            $table->dropColumn('pic');
+        });
     }
 
     /**
@@ -20,7 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //rename table kkpo_management_item back to kkpo_item
-        Schema::rename('kkpo_management_item', 'kkpo_item');
+        Schema::table('kkpo_details', function (Blueprint $table) {
+            $table->string('pic');
+        });
     }
 };

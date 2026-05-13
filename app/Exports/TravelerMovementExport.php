@@ -19,11 +19,11 @@ class TravelerMovementExport implements FromCollection, WithHeadings
     {
         $query = TravelerMovement::with([
             'traveler.suratJalan.kkpoManagement.customer',
-            'traveler.suratJalan.kkpoManagement.category',
-            'traveler.suratJalan.kkpoManagement.style',
-            'traveler.suratJalan.kkpoManagement.brand',
-            'traveler.suratJalan.kkpoManagement.item',
-            'traveler.suratJalan.kkpoManagement.color',
+            'traveler.suratJalan.kkpoManagement.details.category',
+            'traveler.suratJalan.kkpoManagement.details.style',
+            'traveler.suratJalan.kkpoManagement.details.brand',
+            'traveler.suratJalan.kkpoManagement.details.item',
+            'traveler.suratJalan.kkpoManagement.details.color',
         ])
 
         ->whereIn('id', function ($q) {
@@ -62,19 +62,19 @@ class TravelerMovementExport implements FromCollection, WithHeadings
         });
 
         $query->when($this->filters['style'] ?? null, function ($q, $style) {
-            $q->whereHas('traveler.suratJalan.kkpoManagement.style', function ($s) use ($style) {
+            $q->whereHas('traveler.suratJalan.kkpoManagement.details.style', function ($s) use ($style) {
                 $s->where('name', $style);
             });
         });
 
         $query->when($this->filters['category'] ?? null, function ($q, $category) {
-            $q->whereHas('traveler.suratJalan.kkpoManagement.category', function ($c) use ($category) {
+            $q->whereHas('traveler.suratJalan.kkpoManagement.details.category', function ($c) use ($category) {
                 $c->where('name', $category);
             });
         });
 
         $query->when($this->filters['color'] ?? null, function ($q, $color) {
-            $q->whereHas('traveler.suratJalan.kkpoManagement.color', function ($c) use ($color) {
+            $q->whereHas('traveler.suratJalan.kkpoManagement.details.color', function ($c) use ($color) {
                 $c->where('name', $color);
             });
         });
@@ -97,11 +97,11 @@ class TravelerMovementExport implements FromCollection, WithHeadings
                 'KKPO'        => $kkpo->no_kkpo ?? '-',
                 'Surat Jalan' => $suratJalan->no_surat_jalan ?? '-',
                 'Customer'    => optional($kkpo->customer)->name ?? '-',
-                'Category'    => optional($kkpo->category)->name ?? '-',
-                'Style'       => optional($kkpo->style)->name ?? '-',
-                'Brand'       => optional($kkpo->brand)->name ?? '-',
-                'Item'        => optional($kkpo->item)->name ?? '-',
-                'Color'       => optional($kkpo->color)->name ?? '-',
+                'Category'    => optional($kkpo->details->category)->name ?? '-',
+                'Style'       => optional($kkpo->details->style)->name ?? '-',
+                'Brand'       => optional($kkpo->details->brand)->name ?? '-',
+                'Item'        => optional($kkpo->details->item)->name ?? '-',
+                'Color'       => optional($kkpo->details->color)->name ?? '-',
                 'Qty In'      => $m->qty_in ?? 0,
                 'Qty Out'     => $m->qty_out ?? 0,
                 'Balance'     => $m->balance ?? 0,

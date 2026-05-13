@@ -30,8 +30,8 @@ Alpine.data('selectSearch', (config = {}) => ({
     options: config.options || [],
     selected: config.selected || '',
     selectedOption: null,
-    placeholder: config.placeholder || 'Pilih data...',
-    searchPlaceholder: config.searchPlaceholder || '...',
+    placeholder: config.placeholder || '',
+    searchPlaceholder: config.searchPlaceholder || '',
     disabled: false,
     onChange: config.onChange || null,
 

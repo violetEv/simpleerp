@@ -31,7 +31,8 @@ class CustomerImport implements
             'name'      => $row['name'],
             'address'   => $row['address'] ?? null,
             'phone'     => $row['phone'] ?? null,
-            'attention' => $row['attention'] ?? null,
+            'npwp' => $row['npwp'] ?? null,
+            'payment_terms' => $row['payment_terms'] ?? null
         ]);
     }
 }

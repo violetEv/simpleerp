@@ -154,7 +154,7 @@
                                 @endforeach
                             @else
                                 <tr>
-                                    <td colspan="5" class="px-4 py-2 text-center text-gray-500">
+                                    <td colspan="8" class="px-4 py-2 text-center text-gray-500">
                                         Nomor Surat Jalan Tidak Ditemukan.
                                     </td>
                                 </tr>

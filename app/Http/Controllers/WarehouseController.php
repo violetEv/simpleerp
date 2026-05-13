@@ -576,8 +576,18 @@ class WarehouseController extends Controller
             });
         }
 
-        $travelers = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
-        $reworkTravelers = TravelerMovement::with('traveler')->where('qty_reject', '>', 0)->orderBy('date_in', 'desc')->paginate(10)->withQueryString();
+        $travelers = $query
+            ->orderBy('created_at', 'desc')
+            ->orderBy('no_traveler', 'asc')
+            ->paginate(10)
+            ->withQueryString();
+
+        $reworkTravelers = TravelerMovement::with('traveler')
+            ->where('qty_reject', '>', 0)
+            ->orderBy('date_in', 'desc')
+            ->paginate(10)
+            ->withQueryString();
+
         return view('warehouse.list-new', compact('travelers', 'reworkTravelers'));
     }
 

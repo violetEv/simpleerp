@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('kkpo_color', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-            $table->foreignId('kkpo_management_id')->constrained()->onDelete('cascade');
-            $table->foreignId('color_id')->constrained()->onDelete('cascade');
+        Schema::table('customers', function (Blueprint $table) {
+            $table->dropColumn('attention');
         });
     }
 
@@ -24,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('kkpo_color');
+        Schema::table('customers', function (Blueprint $table) {
+            $table->string('attention');
+        });
     }
 };

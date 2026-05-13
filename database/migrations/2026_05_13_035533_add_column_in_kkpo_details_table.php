@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //rename table kkpo_style to kkpo_management_style
-        Schema::rename('kkpo_style', 'kkpo_management_style');
+        Schema::table('kkpo_details', function (Blueprint $table) {
+            $table->string('pic')->nullable()->after('reject_allowance');
+        });
     }
 
     /**
@@ -20,7 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //rename table kkpo_management_style back to kkpo_style
-        Schema::rename('kkpo_management_style', 'kkpo_style');
+        Schema::table('kkpo_details', function (Blueprint $table) {
+            $table->dropColumn('pic');
+        });
     }
 };

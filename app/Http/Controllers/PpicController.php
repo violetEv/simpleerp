@@ -36,6 +36,7 @@ class PpicController extends Controller
         $totalColors = Color::count();
         $totalStyles = Style::count();
         $totalCategories = Category::count();
+        //customer hanya muncul untuk kkpo yang masih aktif
         $totalCustomers = Customer::count();
         $totalProductionQty = KkpoDetail::sum('qty');
 
@@ -82,7 +83,9 @@ class PpicController extends Controller
             'name' => 'required|string|max:255',
             'address' => 'string|max:255|nullable',
             'phone' => 'string|max:255|nullable',
-            'attention' => 'string|max:255|nullable',
+            // 'attention' => 'string|max:255|nullable',
+            'payment_terms' => 'required|string|max:255',
+            'npwp' => 'required|string|max:255',
         ]);
 
         try {
@@ -106,7 +109,9 @@ class PpicController extends Controller
             'name' => 'required|string|max:255',
             'address' => 'string|max:255|nullable',
             'phone' => 'string|max:255|nullable',
-            'attention' => 'string|max:255|nullable',
+            // 'attention' => 'string|max:255|nullable',
+            'payment_terms' => 'required|string|max:255',
+            'npwp' => 'required|string|max:255',
         ]);
 
         try {

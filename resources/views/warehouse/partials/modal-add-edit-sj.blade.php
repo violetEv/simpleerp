@@ -1,26 +1,23 @@
 {{-- Modal Add & Edit Order --}}
-<div id="order-modal"
-    class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 items-center justify-center z-50 max-w-7xl mx-auto p-6">
+<div id="order-modal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm items-center justify-center z-50 p-4">
 
-    <div class="bg-white rounded-lg p-6 w-full max-w-2xl overflow-auto max-h-[90vh]">
+    <div class="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden">
 
         {{-- HEADER --}}
-        <div class="flex justify-between items-center mb-4">
-            <h3 id="modal-title" class="text-xl font-semibold">
+        <div class="flex items-center justify-between px-6 py-4 border-b bg-white">
+
+            <h3 id="modal-title" class="text-lg font-semibold text-gray-800">
                 Input Surat Jalan IN
             </h3>
 
-            <button type="button"
-                onClick="closeModal()"
-                title="Close"
-                class="text-gray-500 text-2xl hover:text-gray-700">
+            <button type="button" onclick="closeModal()" class="text-2xl text-gray-500 hover:text-red-500">
                 &times;
             </button>
+
         </div>
 
-        <form id="order-form"
-            action="{{ route('warehouse.suratjalan.store') }}"
-            method="POST">
+        {{-- FORM --}}
+        <form id="order-form" action="{{ route('warehouse.suratjalan.store') }}" method="POST">
 
             @csrf
 
@@ -28,188 +25,172 @@
             <input type="hidden" name="order_id" id="order_id">
 
             {{-- IMPORTANT --}}
-            <input type="hidden"
-                name="kkpo_detail_id"
-                id="kkpo_detail_id">
+            <input type="hidden" name="kkpo_detail_id" id="kkpo_detail_id">
 
-            <div class="grid grid-cols-3 gap-4">
+            <div class="p-6 overflow-y-auto max-h-[70vh]">
 
-                {{-- KKPO --}}
-                <x-select-search
-                    id="kkpo_management_id"
-                    name="kkpo_management_id"
-                    label="KKPO"
-                    :onChange="'handleKKPOChange'"
-                    :options="$kkpoManagements
-                        ->map(function ($k) {
+                <div class="border border-gray-200 rounded-2xl p-5 bg-gray-50">
 
-                            return [
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                                'value' => $k->id,
+                        {{-- KKPO --}}
+                        <div class="md:col-span-2">
 
-                                'label' => $k->no_kkpo,
-
-                                'data' => [
-
-                                    'customer' => $k->customer
-                                        ? [
-                                            'id' => $k->customer->id,
-                                            'name' => $k->customer->name,
-                                        ]
-                                        : null,
-
-                                    'kp_po' => $k->kp_po
-                                        ? [
-                                            'id' => $k->kp_po,
-                                            'name' => $k->kp_po,
-                                        ]
-                                        : null,
-
-                                    'details' => $k->details->map(function ($d) {
-
-                                        $used = $d->suratJalans->sum('qty');
-
+                            <x-select-search id="kkpo_management_id" name="kkpo_management_id" label="KKPO"
+                                :onChange="'handleKKPOChange'" :options="$kkpoManagements
+                                    ->map(function ($k) {
                                         return [
-
-                                            'id' => $d->id,
-
-                                            'style_id' => $d->style_id,
-                                            'style_name' => $d->style->name ?? '-',
-
-                                            'color_id' => $d->color_id,
-                                            'color_name' => $d->color->name ?? '-',
-
-                                            'category_id' => $d->category_id,
-                                            'category_name' => $d->category->name ?? '-',
-
-                                            'qty_awal' => $d->qty,
-
-                                            'qty_used' => $used,
-
-                                            'qty_sisa' => $d->qty - $used,
+                                            'value' => $k->id,
+                                
+                                            'label' => $k->no_kkpo,
+                                
+                                            'data' => [
+                                                'customer' => $k->customer
+                                                    ? [
+                                                        'id' => $k->customer->id,
+                                                        'name' => $k->customer->name,
+                                                    ]
+                                                    : null,
+                                
+                                                'kp_po' => $k->kp_po
+                                                    ? [
+                                                        'id' => $k->kp_po,
+                                                        'name' => $k->kp_po,
+                                                    ]
+                                                    : null,
+                                
+                                                'details' => $k->details
+                                                    ->map(function ($d) {
+                                                        $used = $d->suratJalans->sum('qty');
+                                
+                                                        return [
+                                                            'id' => $d->id,
+                                
+                                                            'style_id' => $d->style_id,
+                                                            'style_name' => $d->style->name ?? '-',
+                                
+                                                            'color_id' => $d->color_id,
+                                                            'color_name' => $d->color->name ?? '-',
+                                
+                                                            'category_id' => $d->category_id,
+                                                            'category_name' => $d->category->name ?? '-',
+                                
+                                                            'qty_awal' => $d->qty,
+                                
+                                                            'qty_used' => $used,
+                                
+                                                            'qty_sisa' => $d->qty - $used,
+                                                        ];
+                                                    })
+                                                    ->values()
+                                                    ->toArray(),
+                                            ],
                                         ];
+                                    })
+                                    ->values()
+                                    ->toArray()" placeholder="Select data"
+                                searchPlaceholder="Search..." />
 
-                                    })->values()->toArray(),
-                                ],
-                            ];
+                        </div>
 
-                        })
-                        ->values()
-                        ->toArray()" />
+                        {{-- CUSTOMER --}}
+                        <x-select-search id="customer" name="customer_id" label="Customer" :options="[]"
+                            :disabled="true" required placeholder="Select Customer"
+                            searchPlaceholder="Search Placeholder" />
 
-                {{-- CUSTOMER --}}
-                <x-select-search
-                    id="customer"
-                    name="customer_id"
-                    label="Customer"
-                    :options="[]"
-                    :disabled="true" />
+                        {{-- KP --}}
+                        <x-select-search id="kp_po" name="kp_po_id" label="KP" :options="[]"
+                            :disabled="true" required placeholder="Select KP / PO"
+                            searchPlaceholder="Search KP / PO" />
 
-                {{-- CATEGORY --}}
-                <x-select-search
-                    id="category"
-                    name="category_id"
-                    label="Category"
-                    :options="[]"
-                    :onChange="'updateDetailQty'" />
+                        {{-- CATEGORY --}}
+                        <x-select-search id="category" name="category_id" label="Category" :options="[]"
+                            :onChange="'updateDetailQty'" required placeholder="Select Category"
+                            searchPlaceholder="Search Category" />
 
-                {{-- STYLE --}}
-                <x-select-search
-                    id="style"
-                    name="style_id"
-                    label="Style"
-                    :options="[]"
-                    :onChange="'updateDetailQty'" />
+                        {{-- STYLE --}}
+                        <x-select-search id="style" name="style_id" label="Style" :options="[]"
+                            :onChange="'updateDetailQty'" required placeholder="Select Style" searchPlaceholder="Search Style" />
 
-                {{-- COLOR --}}
-                <x-select-search
-                    id="color"
-                    name="color_id"
-                    label="Color"
-                    :options="[]"
-                    :onChange="'updateDetailQty'" />
+                        {{-- COLOR --}}
+                        <x-select-search id="color" name="color_id" label="Color" :options="[]"
+                            :onChange="'updateDetailQty'" required placeholder="Select Color" searchPlaceholder="Search Color" />
 
-                {{-- KP --}}
-                <x-select-search
-                    id="kp_po"
-                    name="kp_po_id"
-                    label="KP"
-                    :options="[]"
-                    :disabled="true" />
+                        {{-- NO SJ --}}
+                        <div>
+                            <label for="no_surat_jalan" class="block text-sm text-gray-700 mb-1">
+                                No Surat Jalan
+                            </label>
 
-                {{-- NO SJ --}}
-                <div>
-                    <label for="no_surat_jalan"
-                        class="block text-gray-700">
-                        No Surat Jalan
-                    </label>
+                            <input type="text" name="no_surat_jalan" id="no_surat_jalan" required
+                                class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm
+                                focus:ring-2 focus:ring-[#136566]/30 focus:outline-none">
+                        </div>
 
-                    <input type="text"
-                        name="no_surat_jalan"
-                        id="no_surat_jalan"
-                        required
-                        class="w-full border mt-1 border-gray-300 rounded px-3 py-2
-                        focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
+                        {{-- QTY --}}
+                        <div>
+                            <label for="qty" class="block text-sm text-gray-700 mb-1">
+                                Qty
+                            </label>
 
-                {{-- QTY --}}
-                <div>
-                    <label for="qty"
-                        class="block text-gray-700">
-                        Qty
-                    </label>
+                            <input type="number" name="qty" id="qty" required min="1"
+                                oninput="checkQty()"
+                                class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm
+                                focus:ring-2 focus:ring-[#136566]/30 focus:outline-none">
 
-                    <input type="number"
-                        name="qty"
-                        id="qty"
-                        required
-                        min="1"
-                        oninput="checkQty()"
-                        class="w-full border mt-1 border-gray-300 rounded px-3 py-2
-                        focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <p id="qty-warning" class="text-red-500 text-sm mt-1 hidden">
+                                Qty melebihi sisa qty KKPO
+                            </p>
 
-                    <p id="qty-warning"
-                        class="text-red-500 text-sm mt-1 hidden">
-                        Qty melebihi sisa qty KKPO
-                    </p>
+                            <p class="text-gray-500 text-sm mt-1">
+                                Sisa Qty KKPO :
+                                <span id="sisa_qty_text" class="font-semibold text-gray-700">
+                                    0
+                                </span>
+                            </p>
+                        </div>
 
-                    <p class="text-gray-500 text-sm mt-1">
-                        Sisa Qty KKPO :
-                        <span id="sisa_qty_text">0</span>
-                    </p>
-                </div>
+                        {{-- TANGGAL --}}
+                        <div>
+                            <label for="tanggal" class="block text-sm text-gray-700 mb-1">
+                                Tanggal
+                            </label>
 
-                {{-- TANGGAL --}}
-                <div>
-                    <label for="tanggal"
-                        class="block text-gray-700">
-                        Tanggal
-                    </label>
+                            <input type="date" name="tanggal" id="tanggal" required
+                                class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm
+                                focus:ring-2 focus:ring-[#136566]/30 focus:outline-none">
+                        </div>
 
-                    <input type="date"
-                        name="tanggal"
-                        id="tanggal"
-                        required
-                        class="w-full border mt-1 border-gray-300 rounded px-3 py-2
-                        focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+
                 </div>
 
             </div>
 
-            <button type="submit"
-                id="submit-button"
-                onclick="return confirm('Apakah data yang Anda masukkan sudah benar?')"
-                class="bg-[#136566] mt-6 text-white w-full px-4 py-2 rounded-lg hover:bg-[#0f4f50]">
+            {{-- FOOTER --}}
+            <div class="border-t bg-gray-50 px-6 py-4 flex justify-between">
 
-                Simpan
-            </button>
+                <button type="button" onclick="closeModal()"
+                    class="px-5 py-2.5 border rounded-xl text-gray-700 hover:bg-gray-100">
+                    Batal
+                </button>
+
+                <button type="submit" id="submit-button"
+                    onclick="return confirm('Apakah data yang Anda masukkan sudah benar?')"
+                    class="px-5 py-2.5 bg-[#136566] text-white rounded-xl hover:bg-[#0f4f50]">
+
+                    Simpan
+                </button>
+
+            </div>
 
         </form>
+
     </div>
+
 </div>
 
 <script>
-
     let currentDetails = []
 
     let sisaQty = 0
@@ -286,7 +267,10 @@
             ).values()]
         )
 
-        resetQty()
+        // AUTO UPDATE IF ALL AUTO SELECTED
+        setTimeout(() => {
+            updateDetailQty()
+        }, 100)
     }
 
     // =========================
@@ -304,9 +288,9 @@
 
         const detail = currentDetails.find(d => {
 
-            return Number(d.style_id) === Number(style)
-                && Number(d.color_id) === Number(color)
-                && Number(d.category_id) === Number(category)
+            return Number(d.style_id) === Number(style) &&
+                Number(d.color_id) === Number(color) &&
+                Number(d.category_id) === Number(category)
         })
 
         if (!detail) {
@@ -416,11 +400,21 @@
 
             comp.options = opts
 
-            comp.selected = ''
-
-            comp.selectedOption = null
-
             comp.disabled = false
+
+            // AUTO SELECT IF ONLY 1
+            if (opts.length === 1) {
+
+                comp.selected = opts[0].value
+
+                comp.selectedOption = opts[0]
+
+            } else {
+
+                comp.selected = ''
+
+                comp.selectedOption = null
+            }
 
         } else {
 
@@ -432,6 +426,19 @@
 
             comp.disabled = true
         }
+
+        // trigger update qty kalau auto selected
+        setTimeout(() => {
+
+            if (
+                id === 'style' ||
+                id === 'color' ||
+                id === 'category'
+            ) {
+                updateDetailQty()
+            }
+
+        }, 50)
     }
 
     // =========================
@@ -534,5 +541,4 @@
 
         modal.classList.remove('flex')
     }
-
 </script>

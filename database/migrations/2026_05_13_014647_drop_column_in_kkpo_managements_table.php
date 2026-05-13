@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //rename table kkpo_category to kkpo_management_category
-        Schema::rename('kkpo_category', 'kkpo_management_category');
+        Schema::table('kkpo_managements', function (Blueprint $table) {
+            $table->dropcolumn('npwp');
+        });
     }
 
     /**
@@ -20,7 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //rename table kkpo_management_category back to kkpo_category
-        Schema::rename('kkpo_management_category', 'kkpo_category');
+        Schema::table('kkpo_managements', function (Blueprint $table) {
+             $table->string('npwp')->nullable();
+        });
     }
 };

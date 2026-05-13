@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('kkpo_style', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-            $table->foreignId('kkpo_management_id')->constrained()->onDelete('cascade');
-            $table->foreignId('style_id')->constrained()->onDelete('cascade');
+        Schema::table('kkpo_managements', function (Blueprint $table) {
+            $table->dropColumn('payment_terms')->nullable();
         });
     }
 
@@ -24,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('kkpo_style');
+        Schema::table('kkpo_managements', function (Blueprint $table) {
+            $table->integer('payment_terms');
+        });
     }
 };

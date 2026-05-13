@@ -90,7 +90,7 @@
 
                         {{-- NO SJ --}}
                         <div>
-                            <label class="block text-sm text-gray-700 mb-1">No Surat Jalan</label>
+                            <label class="block text-sm text-gray-700 mb-1">No Surat Jalan Out</label>
                             <input type="text" name="no_surat_jalan"
                                 class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#136566]/30">
                         </div>
