@@ -1,203 +1,185 @@
 <x-app-layout>
-    {{-- <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        Monitoring
-    </h2> --}}
-
-    <div class="py-3">
+    <div class="py-4">
         <div class="max-w-7xl mx-auto">
-            {{-- SEARCH & FILTER SECTION --}}
-            <div class="mb-4 flex items-center space-x-4">
-                <input type="text" name="search" id="search" placeholder="Search by KKPO, Customer, Category, Style"
-                    class="px-4 py-2 border rounded-lg w-full md:w-1/3">
-                <select name="no_surat_jalan" id="no_surat_jalan" class="px-4 py-2 border rounded-lg">
-                    <option value="">All Surat Jalan</option>
-                    @foreach (App\Models\SuratJalan::pluck('no_surat_jalan')->unique() as $no_surat_jalan)
-                        <option value="{{ $no_surat_jalan }}">{{ $no_surat_jalan }}</option>
-                    @endforeach
-                </select>
-                <select name="kkpo" id="kkpo" class="px-4 py-2 border rounded-lg">
-                    <option value="">All KKPO</option>
-                    @foreach (App\Models\KkpoManagement::pluck('no_kkpo')->unique() as $no_kkpo)
-                        <option value="{{ $no_kkpo }}">{{ $no_kkpo }}</option>
-                    @endforeach
-                </select>
-                <select name="customer" id="customer" class="px-4 py-2 border rounded-lg">
-                    <option value="">All Customers</option>
-                    @foreach (App\Models\Customer::pluck('name')->unique() as $customer)
-                        <option value="{{ $customer }}">{{ $customer }}</option>
-                    @endforeach
-                </select>
-                <select name="style" id="style" class="px-4 py-2 border rounded-lg">
-                    <option value="">All Styles</option>
-                    @foreach (App\Models\Style::pluck('name')->unique() as $style)
-                        <option value="{{ $style }}">{{ $style }}</option>
-                    @endforeach
-                </select>
-                {{-- <select name="category_process" id="category_process" class="px-4 py-2 border rounded-lg">
-                    <option value="">All Categories</option>
-                    @foreach (App\Models\Category::all() as $category)
-                        <option value="{{ $category->name }}">{{ ucfirst($category->name) }}</option>
-                    @endforeach
-                </select> --}}
-                {{-- <select name="status" id="status" class="px-4 py-2 border rounded-lg">
-                    <option value="">All Statuses</option>
-                    <option value="done">Completed</option>
-                    <option value="in_progress">In Progress</option>
-                    <option value="overdue">Overdue</option>        
-                </select> --}}
-                <button type="submit" onClick="filterData()"
-                    class="px-4 py-2 bg-blue-600 text-white rounded-lg">Filter</button>
-                <button type="button" class="px-4 py-2 bg-green-600 text-white rounded-lg">Export</button>
-            </div>
 
-            {{-- Tabel report akan ditampilkan di sini setelah implementasi filter dan pencarian selesai. --}}
-            <div class="bg-white shadow rounded-lg overflow-hidden p-2">
-                <table class="min-w-full table-fixed">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">KKPO
-                            </th>
-                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No
-                                Surat
-                                Jalan</th>
-                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Customer</th>
-                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Category Process</th>
-                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Style
-                            </th>
-                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Qty
-                                In
-                            </th>
-                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Qty
-                                Out
-                            </th>
-                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Balance</th>
-                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Action</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        {{-- Data report akan di-looping di sini dan hanya menampilkan satu data per kkpo --}}
-                        @foreach ($movements as $movement)
+            <div class="bg-white shadow-sm rounded-lg p-4">
+                {{-- <h2 class="text-xl font-semibold mb-4">
+                    Monitoring WIP Traveler
+                </h2> --}}
+                <div class="bg-white shadow-sm rounded-lg mb-3 border border-gray-100 p-3">
+
+                    <form method="GET">
+
+                        <div class="flex items-center gap-2">
+
+                            <div class="relative">
+
+                                <input type="text" name="search" value="{{ request('search') }}"
+                                    placeholder="Cari traveler / surat jalan..."
+                                    class="h-10 pl-10 pr-4 text-sm border border-gray-200 rounded-lg
+                    focus:ring-1 focus:ring-[#136566]
+                    focus:border-[#136566] w-72">
+
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="m21 21-4.35-4.35m1.85-5.65a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" />
+                                </svg>
+
+                            </div>
+
+                            <button class="h-10 px-4 bg-[#136566] text-white rounded-lg text-sm hover:bg-[#0f4f50]">
+
+                                Search
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+                <div class="w-full overflow-x-auto rounded-xl border border-gray-200">
+                    <table class="w-max min-w-full text-sm border-collapse">
+
+                        {{-- HEADER --}}
+                        <thead
+                            class="bg-[#136566]/10 text-gray-700 border-b border-[#136566]/30 text-[11px] uppercase tracking-wide">
+
                             <tr>
-                                <td class="px-4 py-2 whitespace-nowrap">
-                                    {{ $movement->traveler->suratJalan->kkpoManagement->no_kkpo ?? '-' }}</td>
-                                <td class="px-4 py-2 whitespace-nowrap">
-                                    {{ $movement->traveler->suratJalan->no_surat_jalan ?? '-' }}</td>
-                                <td class="px-4 py-2 whitespace-nowrap">
-                                    {{ $movement->traveler->suratJalan->kkpoManagement->customer->name ?? '-' }}</td>
-                                <td class="px-4 py-2 whitespace-nowrap">
-                                    {{ $movement->traveler->suratJalan->kkpoManagement->category->name ?? '-' }}
-                                </td>
-                                <td class="px-4 py-2 whitespace-nowrap">
-                                    {{ $movement->traveler->suratJalan->kkpoManagement->style->name ?? '-' }}</td>
-                                <td class="px-4 py-2 whitespace-nowrap">{{ $movement->qty_in }}</td>
-                                <td class="px-4 py-2 whitespace-nowrap">{{ $movement->qty_out }}</td>
-                                <td class="px-4 py-2 whitespace-nowrap">{{ $movement->balance }}</td>
-                                <td class="px-4 py-2 whitespace-nowrap">
-                                    <a href="{{ route('manager.detailmonitoring', $movement->id) }}"
-                                        class="px-3 py-1 bg-blue-600 text-white rounded-lg">View Detail</a>
-                                </td>
+                                <th
+                                    class="sticky left-0 z-20 bg-[#dff3f3] px-4 py-3 text-left font-semibold min-w-[220px]">
+                                    Traveler
+                                </th>
 
+                                @foreach ($departments as $dept)
+                                    <th class="px-3 py-3 text-center font-semibold min-w-[180px]">
+                                        {{ $dept}}
+                                    </th>
+                                @endforeach
+
+                                <th class="px-4 py-3 text-center font-semibold">
+                                    WIP
+                                </th>
                             </tr>
-                        @endforeach
+                        </thead>
 
-                    </tbody>
-                </table>
-                <div class="p-3">
-                    {{ $movements->links() }}
-                </div>
-                {{-- Pagination akan ditampilkan di sini jika diperlukan --}}
-                {{-- TABLE OF REPORTS --}}
-                {{-- <div class="bg-white shadow rounded-lg overflow-hidden">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr> --}}
-                {{-- <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No
-                                Traveler
-                            </th> --}}
-                {{-- <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">KKPO
-                            </th>
-                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No
-                                Surat
-                                Jalan</th>
-                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Customer</th>
-                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Category Process</th>
-                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Style
-                            </th> --}}
-                {{-- <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Current Department</th> --}}
-                {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Status</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Action</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @foreach ($reports as $report)
-                            <tr> --}}
-                {{-- <td class="px-6 py-4 whitespace-nowrap">{{ $report->traveler->no_traveler }}</td> --}}
-                {{-- <td class="px-6 py-4 whitespace-nowrap">{{ $report->traveler->kkpo ?? '-' }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $report->traveler->no_surat_jalan ?? '-' }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $report->traveler->customer ?? '-' }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $report->traveler->category_process ?? '-' }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $report->traveler->style ?? '-' }}</td> --}}
-                {{-- <td class="px-6 py-4 whitespace-nowrap">{{ $report->department->name ?? '-' }}</td> --}}
-                {{-- <td class="px-6 py-4 whitespace-nowrap">
-                                    @if ($report->traveler->status == 'done')
-                                        <span
-                                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Completed</span>
-                                    @elseif ($report->traveler->status == 'in_progress')
-                                        <span
-                                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">In
-                                            Progress</span>
-                                    @elseif ($report->traveler->status == 'overdue')
-                                        <span
-                                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Overdue</span>
-                                    @endif
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <a href="{{ route('manager.detailmonitoring', $report->id) }}"
-                                        class="px-3 py-1 bg-blue-600 text-white rounded-lg">View</a>
-                                </td>
+                        <tbody class="bg-white text-sm">
 
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-                <div class="p-3">
-                    {{ $reports->links() }}
+                            @forelse ($data as $row)
+
+                                <tr class="border-b hover:bg-gray-50 transition">
+
+                                    {{-- TRAVELER --}}
+                                    <td class="sticky left-0 z-10 px-4 py-3 align-top bg-white border-r min-w-[220px]">
+                                        <div class="font-semibold text-[#136566]">
+                                            {{ $row['traveler']->no_traveler }}
+                                        </div>
+
+                                        <div class="text-xs text-gray-500">
+                                            {{ $row['traveler']->suratJalan->no_surat_jalan ?? '-' }}
+                                        </div>
+
+                                        <div class="mt-1">
+                                            <span
+                                                class="px-2 py-1 rounded-full text-[10px]
+                        {{ $row['wip'] > 0 ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700' }}">
+
+                                                {{ $row['current_dept'] ?? 'Finished' }}
+                                            </span>
+                                        </div>
+
+                                    </td>
+
+                                    {{-- DEPARTMENT --}}
+                                    @foreach ($departments as $dept)
+                                        @php
+                                            $cell = $row['departments'][$dept] ?? null;
+
+                                            $isCurrent = $row['current_dept'] === $dept;
+                                        @endphp
+
+                                        <td
+                                            class="px-3 py-3 align-top border-l
+                    {{ $isCurrent ? 'bg-yellow-50' : '' }}">
+
+                                            @if ($cell)
+                                                <div class="space-y-1 text-xs">
+
+                                                    <div class="text-gray-500">
+                                                        IN :
+                                                        {{ $cell['date_in'] ? \Carbon\Carbon::parse($cell['date_in'])->format('d M Y') : '-' }}
+                                                    </div>
+
+                                                    <div class="text-gray-500">
+                                                        OUT :
+                                                        {{ $cell['date_out'] ? \Carbon\Carbon::parse($cell['date_out'])->format('d M Y') : '-' }}
+                                                    </div>
+
+                                                    <div class="font-medium text-green-600">
+                                                        Qty In :
+                                                        {{ $cell['qty_in'] }}
+                                                    </div>
+
+                                                    <div class="font-medium text-red-500">
+                                                        Qty Out :
+                                                        {{ $cell['qty_out'] }}
+                                                    </div>
+
+                                                    <div class="text-[10px] text-blue-600">
+                                                        Duration:
+                                                        {{ $cell['duration'] }}
+                                                    </div>
+
+                                                </div>
+                                            @else
+                                                <div class="text-gray-300 text-center">
+                                                    —
+                                                </div>
+                                            @endif
+
+                                        </td>
+                                    @endforeach
+
+                                    {{-- WIP --}}
+                                    <td class="px-4 py-3 text-center">
+
+                                        <span
+                                            class="px-3 py-1 rounded-full text-xs font-semibold
+                    {{ $row['wip'] > 0 ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700' }}">
+
+                                            {{ $row['wip'] }}
+
+                                        </span>
+
+                                    </td>
+
+                                </tr>
+
+                            @empty
+
+                                <tr>
+                                    <td colspan="{{ count($departments) + 2 }}"
+                                        class="py-10 text-center text-gray-400">
+
+                                        Tidak ada data monitoring
+
+                                    </td>
+                                </tr>
+
+                            @endforelse
+
+                        </tbody>
+
+                    </table>
+                    <div class="p-4 border-t bg-white">
+                        {{ $travelers->links() }}
+                    </div>
                 </div>
-            </div> --}}
             </div>
+
         </div>
     </div>
-    <script>
-        function filterData() {
-            const search = document.getElementById('search').value;
-            const noSuratJalan = document.getElementById('no_surat_jalan').value;
-            const kkpo = document.getElementById('kkpo').value;
-            const customer = document.getElementById('customer').value;
-            const style = document.getElementById('style').value;
-            // const categoryProcess = document.getElementById('category_process').value;
-            // const status = document.getElementById('status').value;
-
-            let queryParams = [];
-            if (search) queryParams.push(`search=${encodeURIComponent(search)}`);
-            if (noSuratJalan) queryParams.push(`no_surat_jalan=${encodeURIComponent(noSuratJalan)}`);
-            if (kkpo) queryParams.push(`kkpo=${encodeURIComponent(kkpo)}`);
-            if (customer) queryParams.push(`customer=${encodeURIComponent(customer)}`);
-            if (style) queryParams.push(`style=${encodeURIComponent(style)}`);
-            // if (categoryProcess) queryParams.push(`category_process=${encodeURIComponent(categoryProcess)}`);
-            // if (status) queryParams.push(`status=${encodeURIComponent(status)}`);
-
-            const queryString = queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
-            window.location.href = `{{ route('manager.monitoring') }}${queryString}`;
-        }
-    </script>
 </x-app-layout>

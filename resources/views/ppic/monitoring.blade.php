@@ -42,7 +42,7 @@
 
                 </div>
                 <div class="w-full overflow-x-auto rounded-xl border border-gray-200">
-                    <table class="w-max min-w-full text-sm border-collapse">
+                    <table class="w-max min-w-full text-sm border-collapse table-fixed">
 
                         {{-- HEADER --}}
                         <thead

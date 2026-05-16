@@ -68,8 +68,6 @@
 
                                 Filter
                             </button>
-
-                            {{-- APPLY --}}
                             {{-- APPLY --}}
                             <button
                                 class="h-9 px-4 text-sm rounded-md border border-[#136566]
@@ -149,7 +147,7 @@
                         <tr>
                             <th class="px-4 py-2 text-left font-semibold">
                                 <div class="flex flex-col">
-                                    <span class="text-gray-800">No KKPO</span>
+                                    <span class="text-gray-800">KK Bea Cukai - No KK/PO</span>
                                     <span class="text-gray-500 text-[10px]">Customer</span>
                                 </div>
                             </th>
@@ -349,10 +347,26 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                                     <div>
-                                        <label class="block text-sm text-gray-700 mb-1">No KKPO</label>
-                                        <input type="text" name="no_kkpo" id="no_kkpo" required
-                                            class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-[#136566]/30 focus:border-[#136566]">
-                                    </div>
+    <label class="block text-sm text-gray-700 mb-1">
+        KK Bea Cukai - KK/PO
+    </label>
+
+    <input type="text"
+        name="no_kkpo"
+        id="no_kkpo"
+        required
+        placeholder="KK Bea Cukai - KK/PO"
+        class="w-full border border-gray-300 rounded-xl px-4 py-2.5
+        focus:ring-2 focus:ring-[#136566]/30 focus:border-[#136566]">
+
+    <p class="mt-1 text-xs text-gray-500">
+    <span class="font-medium text-gray-700">
+        Format:
+    </span>
+    KK Bea Cukai - KK/PO.
+    If there is no KK Bea Cukai, enter the KK/PO number only.
+</p>
+</div>
 
                                     <x-select-search name="customer_id" id="customer_id" label="Customer"
                                         :options="$customers->map(

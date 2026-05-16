@@ -36,16 +36,17 @@ class PpicController extends Controller
         $totalColors = Color::count();
         $totalStyles = Style::count();
         $totalCategories = Category::count();
-        //customer hanya muncul untuk kkpo yang masih aktif
-        $totalCustomers = Customer::count();
+        $totalCustomers = Customer::whereHas('kkpos', function ($q) {
+            $q->doesntHave('suratJalan.suratJalanOut');
+        })->count();
         $totalProductionQty = KkpoDetail::sum('qty');
 
         // LATEST KKPO (HEADER)
-        $latestKKPO = KkpoManagement::with([
-            'customer',
-            'details.category',
-            'details.style',
-            'details.color'
+        $latestKKPO = KkpoDetail::with([
+            'kkpo.customer',
+            // 'details.category',
+            // 'details.style',
+            // 'details.color'
         ])
             ->latest()
             ->take(5)
@@ -840,7 +841,7 @@ class PpicController extends Controller
     {
         return Excel::download(
             new TravelerMovementExport($request->all()),
-            'report-traveler.xlsx'
+            'report.xlsx'
         );
     }
 

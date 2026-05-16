@@ -541,7 +541,7 @@ class WarehouseController extends Controller
                 'current_dept_id' => $request->dept_tujuan_id,
                 'parent_traveler_id' => $traveler->id,
                 'tanggal' => now(),
-                'notes' => 'Rework dari traveler ' . $traveler->no_traveler . ' (Movement ID: ' . $movement->id . ')',
+                'notes' => 'Turunan dari traveler ' . $traveler->no_traveler . ' (Movement ID: ' . $movement->id . ')',
                 'status' => 'open'
             ]);
 

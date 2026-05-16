@@ -36,8 +36,8 @@
                         {{-- KKPO --}}
                         <div class="md:col-span-2">
 
-                            <x-select-search id="kkpo_management_id" name="kkpo_management_id" label="KKPO"
-                                :onChange="'handleKKPOChange'" :options="$kkpoManagements
+                            <x-select-search id="kkpo_management_id" name="kkpo_management_id"
+                                label="KK/PO - KK BEA CUKAI" :onChange="'handleKKPOChange'" :options="$kkpoManagements
                                     ->map(function ($k) {
                                         return [
                                             'value' => $k->id,
@@ -88,33 +88,30 @@
                                         ];
                                     })
                                     ->values()
-                                    ->toArray()" placeholder="Select data"
-                                searchPlaceholder="Search..." />
+                                    ->toArray()"
+                                placeholder="Pilih data" searchPlaceholder="Cari..." />
 
                         </div>
 
                         {{-- CUSTOMER --}}
                         <x-select-search id="customer" name="customer_id" label="Customer" :options="[]"
-                            :disabled="true" required placeholder="Select Customer"
-                            searchPlaceholder="Search Placeholder" />
+                            :disabled="true" required placeholder="Pilih Customer" searchPlaceholder="Cari Customer" />
 
                         {{-- KP --}}
                         <x-select-search id="kp_po" name="kp_po_id" label="KP" :options="[]"
-                            :disabled="true" required placeholder="Select KP / PO"
-                            searchPlaceholder="Search KP / PO" />
+                            :disabled="true" required placeholder="Pilih KP / PO" searchPlaceholder="Cari KP / PO" />
 
                         {{-- CATEGORY --}}
                         <x-select-search id="category" name="category_id" label="Category" :options="[]"
-                            :onChange="'updateDetailQty'" required placeholder="Select Category"
-                            searchPlaceholder="Search Category" />
+                            :onChange="'updateDetailQty'" required placeholder="Pilih Category" searchPlaceholder="Cari Category" />
 
                         {{-- STYLE --}}
                         <x-select-search id="style" name="style_id" label="Style" :options="[]"
-                            :onChange="'updateDetailQty'" required placeholder="Select Style" searchPlaceholder="Search Style" />
+                            :onChange="'updateDetailQty'" required placeholder="Pilih Style" searchPlaceholder="Cari Style" />
 
                         {{-- COLOR --}}
                         <x-select-search id="color" name="color_id" label="Color" :options="[]"
-                            :onChange="'updateDetailQty'" required placeholder="Select Color" searchPlaceholder="Search Color" />
+                            :onChange="'updateDetailQty'" required placeholder="Pilih Color" searchPlaceholder="Cari Color" />
 
                         {{-- NO SJ --}}
                         <div>
@@ -451,14 +448,28 @@
         ) || 0
 
         const warn = document.getElementById('qty-warning')
+        const submitBtn = document.getElementById('submit-button')
+
 
         if (qty > sisaQty) {
 
             warn.classList.remove('hidden')
+            submitBtn.disabled = true
+
+            submitBtn.classList.add(
+                'opacity-50',
+                'cursor-not-allowed'
+            )
 
         } else {
 
             warn.classList.add('hidden')
+            submitBtn.disabled = false
+
+            submitBtn.classList.remove(
+                'opacity-50',
+                'cursor-not-allowed'
+            )
         }
     }
 
@@ -510,6 +521,15 @@
 
         document.getElementById('modal-title')
             .innerText = 'Tambah Surat Jalan'
+
+        document.getElementById('submit-button').disabled = false
+
+        document.getElementById('submit-button').classList.remove(
+            'opacity-50',
+            'cursor-not-allowed'
+        )
+        document.getElementById('order-form').reset();
+
 
         document.getElementById('order_id').value = ''
 

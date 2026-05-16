@@ -7,9 +7,9 @@ class ManagerMenu
     public static function items()
     {
         return [
-            ['name' => 'Dasbor', 'route' => 'dashboard', 'icon' => 'fas fa-tachometer-alt'],
-            ['name' => 'Monitoring Produksi', 'route' => 'manager.monitoring', 'icon' => 'fas fa-industry'],
-            ['name' => 'Laporan', 'route' => 'manager.report', 'icon' => 'fas fa-chart-bar']
+            ['name' => 'Dashboard', 'route' => 'dashboard', 'icon' => 'fas fa-tachometer-alt'],
+            ['name' => 'Monitoring', 'route' => 'manager.monitoring', 'icon' => 'fas fa-industry'],
+            ['name' => 'Report', 'route' => 'manager.report', 'icon' => 'fas fa-chart-bar']
             // 'sub' => [
                     // ['name' => 'Daily Report', 'route' => 'manager.report.daily', 'icon' => 'fas fa-calendar-day'],
                     // ['name' => 'Monthly Report', 'route' => 'manager.report.monthly', 'icon' => 'fas fa-calendar-alt'],

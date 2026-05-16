@@ -24,6 +24,7 @@ class TravelerMovementExport implements FromCollection, WithHeadings
             'traveler.suratJalan.kkpoManagement.details.brand',
             'traveler.suratJalan.kkpoManagement.details.item',
             'traveler.suratJalan.kkpoManagement.details.color',
+            'traveler.suratJalan.kkpoManagement.currency'
         ])
 
         ->whereIn('id', function ($q) {

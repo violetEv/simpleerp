@@ -18,9 +18,9 @@ class KkpoDetail extends Model
         'qty',
         'unit_id',
         'price',
-        // 'currency_id',
         'reject_allowance',
         'remark',
+        'pic'
     ];
 
     //  BALIK KE HEADER
@@ -63,8 +63,4 @@ class KkpoDetail extends Model
         return $this->belongsTo(Unit::class);
     }
 
-    // public function currency()
-    // {
-    //     return $this->belongsTo(Currency::class);
-    // }
 }

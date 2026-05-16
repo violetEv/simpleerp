@@ -54,7 +54,7 @@
                                         <td class="px-4 py-2 whitespace-nowrap">
                                             {{ $traveler->pic ?? '-' }}
                                         </td>
-                                        <td class="px-4 py-2 whitespace-nowrap">{{ $traveler->no_traveler }}</td>
+                                        <td class="px-4 py-2 whitespace-nowrap">{{ $traveler->no_traveler ?? '-' }}</td>
                                         <td class="px-4 py-2 whitespace-nowrap">
                                             {{ $traveler->suratJalan->no_surat_jalan ?? '-' }}</td>
                                         <td class="px-4 py-2 whitespace-nowrap">{{ $traveler->qty }}</td>

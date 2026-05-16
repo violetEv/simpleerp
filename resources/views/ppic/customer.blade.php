@@ -99,7 +99,7 @@
                                     <td class="px-4 py-2 whitespace-wrap">{{ $customer->address ?? '-' }}</td>
                                     <td class="px-4 py-2 whitespace-nowrap">{{ $customer->phone ?? '-' }}</td>
                                     <td class="px-4 py-2 whitespace-nowrap">{{ $customer->npwp ?? '-' }}</td>
-                                    <td class="px-4 py-2 whitespace-nowrap">{{ $customer->payment_terms ?? '-' }}</td>
+                                    <td class="px-4 py-2 whitespace-nowrap">{{ $customer->payment_terms ?? '-' }} Days</td>
                                     <td class="px-4 py-2 whitespace-nowrap">
                                         <button
                                             onClick="editCustomer({{ $customer->id }}, '{{ $customer->name }}', '{{ $customer->address }}', '{{ $customer->phone }}', '{{ $customer->npwp }}', '{{ $customer->payment_terms}}')"

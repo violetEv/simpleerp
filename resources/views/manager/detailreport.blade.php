@@ -1,122 +1,237 @@
 <x-app-layout>
 
-    {{-- HEADER --}}
-    <div class="mt-6 bg-white shadow rounded-lg p-6">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">Detail Report</h3>
+    @php
 
-        <div class="grid grid-cols-2 gap-y-3 text-sm">
+        $kkpo = $sj->kkpoManagement;
 
-            <span class="text-gray-500">No Surat Jalan</span>
-            <span>{{ $sj->no_surat_jalan }}</span>
+        $detail = $kkpo->details->first();
 
-            <span class="text-gray-500">KKPO</span>
-            <span>{{ $sj->kkpoManagement->no_kkpo ?? '-' }}</span>
+    @endphp
 
-            <span class="text-gray-500">Customer</span>
-            <span>{{ $sj->kkpoManagement->customer->name ?? '-' }}</span>
+    <div class="py-4">
 
-            <span class="text-gray-500">Item</span>
-            <span>{{ $sj->kkpoManagement->item->name ?? '-' }}</span>
+        {{-- HEADER --}}
+        <div class="bg-white rounded-xl shadow-sm border p-6 mb-4">
 
-            <span class="text-gray-500">Category</span>
-            <span>{{ $sj->kkpoManagement->category->name ?? '-' }}</span>
+            <div class="flex items-center justify-between mb-5">
 
-            <span class="text-gray-500">Style</span>
-            <span>{{ $sj->kkpoManagement->style->name ?? '-' }}</span>
+                <div>
 
-            <span class="text-gray-500">Color</span>
-            <span>{{ $sj->kkpoManagement->color->name ?? '-' }}</span>
+                    <h2 class="text-xl font-semibold text-gray-800">
 
-            <span class="text-gray-500">Brand</span>
-            <span>{{ $sj->kkpoManagement->brand->name ?? '-' }}</span>
+                        Production Tracking Detail
 
-            <span class="text-gray-500">Unit</span>
-            <span>{{ $sj->kkpoManagement->unit->name ?? '-' }}</span>
+                    </h2>
+
+                    <p class="text-sm text-gray-500 mt-1">
+
+                        Monitoring traveler movement and production status.
+
+                    </p>
+
+                </div>
+
+                <a href="{{ route('manager.report') }}"
+                    class="px-4 py-2 text-sm rounded-lg border border-gray-200
+                hover:bg-gray-50">
+
+                    Back
+
+                </a>
+
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+
+                <div>
+                    <div class="text-gray-500">KKPO</div>
+                    <div class="font-medium">
+                        {{ $kkpo->no_kkpo ?? '-' }}
+                    </div>
+                </div>
+
+                <div>
+                    <div class="text-gray-500">SJ IN</div>
+                    <div class="font-medium">
+                        {{ $sj->no_surat_jalan }}
+                    </div>
+                </div>
+
+                <div>
+                    <div class="text-gray-500">Customer</div>
+                    <div class="font-medium">
+                        {{ $kkpo->customer->name ?? '-' }}
+                    </div>
+                </div>
+
+                <div>
+                    <div class="text-gray-500">Style</div>
+                    <div class="font-medium">
+                        {{ $detail?->style?->name ?? '-' }}
+                    </div>
+                </div>
+
+                <div>
+                    <div class="text-gray-500">Color</div>
+                    <div class="font-medium">
+                        {{ $detail?->color?->name ?? '-' }}
+                    </div>
+                </div>
+
+                <div>
+                    <div class="text-gray-500">Category</div>
+                    <div class="font-medium">
+                        {{ $detail?->category?->name ?? '-' }}
+                    </div>
+                </div>
+
+                <div>
+                    <div class="text-gray-500">Item</div>
+                    <div class="font-medium">
+                        {{ $detail?->item?->name ?? '-' }}
+                    </div>
+                </div>
+
+                <div>
+                    <div class="text-gray-500">Brand</div>
+                    <div class="font-medium">
+                        {{ $detail?->brand?->name ?? '-' }}
+                    </div>
+                </div>
+            </div>
 
         </div>
-    </div>
 
-    {{-- TABLE MOVEMENT --}}
-    <div class="mt-6 bg-white shadow rounded-lg p-6">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">Movement History</h3>
+        {{-- TRAVELER --}}
+        <div class="space-y-4">
 
-        <div class="overflow-x-auto">
-            <table class="min-w-full table-fixed bg-white">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="py-2 px-4 border-b text-left text-sm text-gray-500">Traveler</th>
-                        <th class="py-2 px-4 border-b text-left text-sm text-gray-500">Department</th>
-                        <th class="py-2 px-4 border-b text-left text-sm text-gray-500">Qty In</th>
-                        <th class="py-2 px-4 border-b text-left text-sm text-gray-500">Qty Out</th>
-                        <th class="py-2 px-4 border-b text-left text-sm text-gray-500">Balance</th>
-                        <th class="py-2 px-4 border-b text-left text-sm text-gray-500">Status</th>
-                        <th class="py-2 px-4 border-b text-left text-sm text-gray-500">Tanggal In</th>
-                        <th class="py-2 px-4 border-b text-left text-sm text-gray-500">Tanggal Out</th>
-                    </tr>
-                </thead>
+            @foreach ($sj->travelers as $traveler)
+                @php
 
-                <tbody>
-                    @php
-                        $grandIn = 0;
-                        $grandOut = 0;
-                        $grandBalance = 0;
-                    @endphp
+                    $lastMovement = $traveler->movements->sortByDesc('created_at')->first();
 
-                    @foreach ($sj->travelers as $t)
+                    $isFinished =
+                        optional($lastMovement?->currentDepartment)->name == 'Warehouse Send' &&
+                        $traveler->suratJalanOuts->count() > 0;
 
-                        {{-- HEADER TRAVELER --}}
-                        <tr class="bg-gray-100">
-                            <td colspan="8" class="px-4 py-2 font-semibold">
-                                Traveler: {{ $t->no_traveler }}
-                            </td>
-                        </tr>
+                @endphp
 
-                        @foreach ($t->movements as $mov)
-                            @php
-                                $grandIn += $mov->qty_in;
-                                $grandOut += $mov->qty_out;
-                                $grandBalance += $mov->balance;
-                            @endphp
+                <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
 
-                            <tr>
-                                <td class="py-2 px-4 border-b">{{ $t->no_traveler }}</td>
-                                <td class="py-2 px-4 border-b">{{ $mov->currentDepartment->name ?? '-' }}</td>
-                                <td class="py-2 px-4 border-b">{{ $mov->qty_in }}</td>
-                                <td class="py-2 px-4 border-b">{{ $mov->qty_out }}</td>
-                                <td class="py-2 px-4 border-b">{{ $mov->balance }}</td>
+                    {{-- HEADER --}}
+                    <div class="px-5 py-4 border-b bg-gray-50">
 
-                                <td class="py-2 px-4 border-b">
-                                    @if ($t->status == 'in_progress')
-                                        <span class="bg-yellow-100 text-yellow-800 px-2 rounded text-xs">
-                                            In Progress
-                                        </span>
-                                    @else
-                                        <span class="bg-green-100 text-green-800 px-2 rounded text-xs">
-                                            Done
-                                        </span>
-                                    @endif
-                                </td>
+                        <div class="flex items-center justify-between">
 
-                                <td class="py-2 px-4 border-b">{{ $mov->date_in }}</td>
-                                <td class="py-2 px-4 border-b">{{ $mov->date_out }}</td>
-                            </tr>
-                        @endforeach
+                            <div>
 
-                    @endforeach
-                </tbody>
+                                <h3 class="font-semibold text-gray-800">
 
-                {{-- TOTAL --}}
-                <tfoot class="bg-gray-50 font-semibold">
-                    <tr>
-                        <td colspan="2" class="px-4 py-2 text-right">TOTAL</td>
-                        <td class="px-4 py-2">{{ $grandIn }}</td>
-                        <td class="px-4 py-2">{{ $grandOut }}</td>
-                        <td class="px-4 py-2">{{ $grandBalance }}</td>
-                        <td colspan="3"></td>
-                    </tr>
-                </tfoot>
+                                    {{ $traveler->no_traveler }}
 
-            </table>
+                                </h3>
+
+                                <p class="text-xs text-gray-500 mt-1">
+
+                                    Current Dept :
+                                    {{ optional($traveler->currentDepartment)->name ?? '-' }}
+
+                                </p>
+
+                            </div>
+
+                            <span
+                                class="px-3 py-1 rounded-full text-xs font-semibold
+                            {{ $isFinished ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700' }}">
+
+                                {{ $isFinished ? 'Finished' : 'In Progress' }}
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    {{-- MOVEMENT --}}
+                    <div class="overflow-x-auto">
+
+                        <table class="min-w-full text-sm">
+
+                            <thead class="bg-[#136566]/5">
+
+                                <tr>
+
+                                    <th class="px-4 py-3 text-left">
+                                        Department
+                                    </th>
+
+                                    <th class="px-4 py-3 text-left">
+                                        Qty In
+                                    </th>
+
+                                    <th class="px-4 py-3 text-left">
+                                        Qty Out
+                                    </th>
+
+                                    <th class="px-4 py-3 text-left">
+                                        Date In
+                                    </th>
+
+                                    <th class="px-4 py-3 text-left">
+                                        Date Out
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                @foreach ($traveler->movements->sortBy('created_at') as $mov)
+                                    <tr class="border-t">
+
+                                        <td class="px-4 py-3">
+
+                                            {{ $mov->currentDepartment->name ?? '-' }}
+
+                                        </td>
+
+                                        <td class="px-4 py-3 text-green-600">
+
+                                            {{ $mov->qty_in }}
+
+                                        </td>
+
+                                        <td class="px-4 py-3 text-red-500">
+
+                                            {{ $mov->qty_out }}
+
+                                        </td>
+
+                                        <td class="px-4 py-3">
+
+                                            {{ $mov->date_in ?? '-' }}
+
+                                        </td>
+
+                                        <td class="px-4 py-3">
+
+                                            {{ $mov->date_out ?? '-' }}
+
+                                        </td>
+
+                                    </tr>
+                                @endforeach
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+            @endforeach
+
         </div>
     </div>
 

@@ -30,7 +30,22 @@ class KkpoController extends Controller
             'brand',
             'unit',
             'kkpo.currency',
-        ]);
+        ])->select([
+        'id',
+        'kkpo_management_id',
+        'category_id',
+        'style_id',
+        'color_id',
+        'item_id',
+        'brand_id',
+        'unit_id',
+        'qty',
+        'price',
+        'reject_allowance',
+        'remark',
+        'pic'
+    ])
+    ->latest();
 
         // SEARCH
         if (request()->filled('search')) {
@@ -259,8 +274,8 @@ class KkpoController extends Controller
             'kp_po' => 'nullable|string|max:255',
             'currency_id' => 'required|exists:currencies,id',
             'date' => 'required|date',
-            'npwp' => 'nullable|exists:customers,npwp',
-            'payment_terms' => 'required|exists:customers,payment_terms',
+            'npwp' => 'nullable|string|max:255',
+            'payment_terms' => 'nullable|string|max:255',
             'details' => 'required|array|min:1',
 
             // 'details.*.date' => 'required|date',
@@ -321,9 +336,6 @@ class KkpoController extends Controller
                     'no_kkpo' => $request->no_kkpo,
                     'customer_id' => $request->customer_id,
                     'kp_po' => $request->kp_po,
-                    'payment_terms' => $request->payment_terms,
-                    // 'notes' => $request->notes,
-                    'npwp' => $request->npwp,
                     'currency_id' => $request->currency_id,
                     'date' => $request->date,
                 ]);
@@ -378,8 +390,8 @@ class KkpoController extends Controller
             'no_kkpo' => 'required|string|max:255',
             'customer_id' => 'required|exists:customers,id',
             'kp_po' => 'nullable|string|max:255',
-            'payment_terms' => 'nullable|exists:customers,payment_terms',
-            'npwp' => 'required|exists:customers,npwp',
+            'npwp' => 'nullable|string|max:255',
+            'payment_terms' => 'nullable|string|max:255',
             'currency_id' => 'required|exists:currencies,id',
             'date' => 'required|date',
             'details' => 'required|array|min:1',
@@ -407,9 +419,6 @@ class KkpoController extends Controller
                 'no_kkpo' => $request->no_kkpo,
                 'customer_id' => $request->customer_id,
                 'kp_po' => $request->kp_po,
-                'payment_terms' => $request->payment_terms,
-                // 'notes' => $request->notes,
-                'npwp' => $request->npwp,
                 'currency_id' => $request->currency_id,
                 'date' => $request->date,
             ]);

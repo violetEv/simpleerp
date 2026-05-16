@@ -128,6 +128,10 @@
                 <p class="text-gray-800 font-semibold text-xl">
                     {{ $totalCustomers }}
                 </p>
+
+                <p class="text-gray-400 text-xs">
+                    Total Active Customers
+                </p>
             </div>
         </div>
         {{-- total production qty --}}
@@ -240,7 +244,7 @@
 
                     <tr>
                         <th class="px-4 py-3 text-left font-semibold">
-                            No KKPO
+                            No KK/PO
                         </th>
 
                         <th class="px-4 py-3 text-left font-semibold">
@@ -273,39 +277,39 @@
 
                     @forelse ($latestKKPO as $kkpo)
 
-                        @foreach ($kkpo->details as $detail)
-                            <tr class="hover:bg-gray-50 transition">
+                        {{-- @foreach ($kkpo->details as $detail) --}}
+                            <tr  class="hover:bg-gray-50 even:bg-gray-50/40 transition">
 
                                 <td class="px-4 py-3 whitespace-nowrap">
-                                    {{ $kkpo->no_kkpo }}
+                                    {{ $kkpo->kkpo->no_kkpo }}
                                 </td>
 
                                 <td class="px-4 py-3 whitespace-nowrap">
-                                    {{ $kkpo->customer->name ?? '-' }}
+                                    {{ $kkpo->kkpo->customer->name ?? '-' }}
                                 </td>
 
                                 <td class="px-4 py-3 whitespace-nowrap">
-                                    {{ $detail->category->name ?? '-' }}
+                                    {{ $kkpo->category->name ?? '-' }}
                                 </td>
 
                                 <td class="px-4 py-3 whitespace-nowrap">
-                                    {{ $detail->style->name ?? '-' }}
+                                    {{ $kkpo->style->name ?? '-' }}
                                 </td>
 
                                 <td class="px-4 py-3 whitespace-nowrap">
-                                    {{ $detail->color->name ?? '-' }}
+                                    {{ $kkpo->color->name ?? '-' }}
                                 </td>
 
                                 <td class="px-4 py-3 whitespace-nowrap">
-                                    {{ $detail->kp ?? '-' }}
+                                    {{ $kkpo->kkpo->kp_po ?? '-' }}
                                 </td>
 
                                 <td class="px-4 py-3 whitespace-nowrap font-medium">
-                                    {{ $detail->qty ?? '-' }}
+                                    {{ $kkpo->qty ?? '-' }}
                                 </td>
 
                             </tr>
-                        @endforeach
+                        {{-- @endforeach --}}
 
                     @empty
 

@@ -75,7 +75,7 @@ Route::middleware('role:super_admin')->group(function () {
 Route::middleware('role:manager')->group(function () {
     Route::get('/manager/dashboard', [ManagerController::class, 'dashboard'])
         ->name('manager.dashboard');
-    Route::get('/manager/monitoring', [ManagerController::class, 'traveler'])
+    Route::get('/manager/monitoring', [ManagerController::class, 'travelerMonitoring'])
         ->name('manager.monitoring');
     Route::get('/manager/monitoring/{id}', [ManagerController::class, 'detailMonitoring'])
         ->name('manager.detailmonitoring');
