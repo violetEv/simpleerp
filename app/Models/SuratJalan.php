@@ -20,7 +20,7 @@ class SuratJalan extends Model
     {
         return $this->belongsTo(KkpoDetail::class);
     }
-    public function kkpoManagement()
+    public function kkpo()
     {
         return $this->belongsTo(KkpoManagement::class, 'kkpo_management_id');
     }

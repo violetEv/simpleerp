@@ -34,11 +34,11 @@ class WarehouseController extends Controller
     {
         $query = SuratJalan::with([
 
-            'kkpoManagement.customer',
+            'kkpo.customer',
 
-            'detail.style',
-            'detail.color',
-            'detail.category',
+            'kkpo.details.style',
+            'kkpo.details.color',
+            'kkpo.details.category',
         ]);
 
         // SEARCH
@@ -58,7 +58,7 @@ class WarehouseController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        $kkpoManagements = KkpoManagement::with([
+        $kkpo = KkpoManagement::with([
 
             'customer',
 
@@ -75,7 +75,7 @@ class WarehouseController extends Controller
             'warehouse.suratjalan',
             compact(
                 'orders',
-                'kkpoManagements'
+                'kkpo'
             )
         );
     }
@@ -386,7 +386,13 @@ class WarehouseController extends Controller
 
     public function pecah(Request $request)
     {
-        $query = SuratJalan::with(['kkpoManagement.customer', 'kkpoManagement.details.style', 'kkpoManagement.details.color', 'kkpoManagement.details.category', 'travelers'])
+        $query = SuratJalan::with([
+            'kkpo.customer',
+            'kkpo.details.style',
+            'kkpo.details.color',
+            'kkpo.details.category',
+            'travelers'
+        ])
             ->whereIn('status', ['open', 'in_process'])
             ->whereRaw('qty - COALESCE((SELECT SUM(qty) FROM travelers WHERE travelers.surat_jalan_id = surat_jalans.id), 0) > 0');
         if ($request->filled('search')) {
@@ -396,16 +402,55 @@ class WarehouseController extends Controller
             $query->where(function ($q) use ($search) {
 
                 $q->where('no_surat_jalan', 'like', "%{$search}%")
-                    ->orWhereHas('kkpoManagement.customer', function ($q2) use ($search) {
+                    ->orWhereHas('kkpo.customer', function ($q2) use ($search) {
                         $q2->where('name', 'like', "%{$search}%");
                     });
             });
         }
 
+
         $pecahTravelers = $query->paginate(10)->withQueryString();
 
+        $reworkQuery = TravelerMovement::with([
+            'traveler.children',
+            'deptAsal',
+            'deptTujuan'
+        ])
+            ->where('qty_reject', '>', 0)
+            ->get()
+            ->filter(function ($movement) {
 
-        return view('warehouse.pecah', compact('pecahTravelers'));
+                $traveler = $movement->traveler;
+
+                if (!$traveler) {
+                    return false;
+                }
+
+                $totalReworkDiproses =
+                    $traveler->children->sum('qty');
+
+                $sisaRework =
+                    $movement->qty_reject - $totalReworkDiproses;
+
+                return $sisaRework > 0;
+            });
+
+        $page = request()->query('page', 1);
+        $perPage = 10;
+
+        $reworkTravelers = new \Illuminate\Pagination\LengthAwarePaginator(
+            $reworkQuery->slice(($page - 1) * $perPage, $perPage)->values(),
+            $reworkQuery->count(),
+            $perPage,
+            $page,
+            [
+                'path' => route('warehouse.pecah'),
+                'query' => request()->query(),
+            ]
+        );
+
+
+        return view('warehouse.pecah', compact('pecahTravelers', 'reworkTravelers'));
     }
 
     public function pecahStore(Request $request)
@@ -525,35 +570,85 @@ class WarehouseController extends Controller
     public function reworkStore(Request $request, int $id)
     {
         $request->validate([
-            'no_traveler_turunan' => 'required|string|unique:travelers,no_traveler',
-            'dept_tujuan_id' => 'required|exists:departments,id',
+
+            'no_traveler' => 'required|array',
+            'no_traveler.*' => 'required|string|unique:travelers,no_traveler',
+
+            'qty_split' => 'required|array',
+
+            'qty_split.*' => 'required|integer|min:1',
+
+            'dept_tujuan_id' => 'required|array',
+
+            'dept_tujuan_id.*' =>
+            'required|exists:departments,id',
         ]);
+
         try {
+
             $movement = TravelerMovement::findOrFail($id);
+
             $traveler = $movement->traveler;
 
-            Traveler::create([
-                'no_traveler' => $request->no_traveler_turunan,
-                'qty' => $movement->qty_reject,
-                'surat_jalan_id' => $traveler->surat_jalan_id,
-                'dept_asal_id' => $movement->dept_tujuan_id,
-                'dept_tujuan_id' => $request->dept_tujuan_id,
-                'current_dept_id' => $request->dept_tujuan_id,
-                'parent_traveler_id' => $traveler->id,
-                'tanggal' => now(),
-                'notes' => 'Turunan dari traveler ' . $traveler->no_traveler . ' (Movement ID: ' . $movement->id . ')',
-                'status' => 'open'
-            ]);
+            $totalSplit = array_sum($request->qty_split);
+
+            // VALIDASI TOTAL
+            if ($totalSplit > $movement->qty_reject) {
+
+                return back()->with(
+                    'error',
+                    'Qty split melebihi qty rework'
+                );
+            }
+
+            foreach ($request->no_traveler as $index => $travelerNo) {
+
+                Traveler::create([
+
+                    'no_traveler' => $travelerNo,
+
+                    'qty' => $request->qty_split[$index],
+
+                    'surat_jalan_id' =>
+                    $traveler->surat_jalan_id,
+
+                    'dept_asal_id' =>
+                    $movement->dept_tujuan_id,
+
+                    'dept_tujuan_id' =>
+                    $request->dept_tujuan_id[$index],
+
+                    'current_dept_id' =>
+                    $request->dept_tujuan_id[$index],
+
+                    'parent_traveler_id' =>
+                    $traveler->id,
+
+                    'tanggal' => now(),
+
+                    'notes' =>
+                    'Rework split dari traveler '
+                        . $traveler->no_traveler,
+
+                    'status' => 'open',
+                ]);
+            }
 
             return redirect()
-                ->route('warehouse.list-rework')
-                ->with('success', 'Traveler rework berhasil dibuat');
+                ->route('warehouse.create-traveler')
+                ->with(
+                    'success',
+                    'Traveler rework berhasil dibuat'
+                );
         } catch (\Exception $e) {
-            return redirect()
-                ->route('warehouse.list-rework')
-                ->with('error', 'Gagal membuat traveler rework: ' . $e->getMessage());
+
+            return back()->with(
+                'error',
+                $e->getMessage()
+            );
         }
     }
+
 
     public function list(Request $request)
     {
@@ -570,7 +665,7 @@ class WarehouseController extends Controller
             $query->where(function ($q) use ($search) {
 
                 $q->where('no_traveler', 'like', "%{$search}%")
-                    ->orWhereHas('suratJalan.kkpoManagement.customer', function ($q2) use ($search) {
+                    ->orWhereHas('suratJalan.kkpo.customer', function ($q2) use ($search) {
                         $q2->where('name', 'like', "%{$search}%");
                     });
             });
@@ -593,7 +688,7 @@ class WarehouseController extends Controller
 
     public function travelerDetail(int $id)
     {
-        $traveler = Traveler::with(['suratJalan.kkpoManagement.customer', 'suratJalan.kkpoManagement.details.style', 'suratJalan.kkpoManagement.category', 'suratJalan.kkpoManagement.color', 'deptAsal', 'deptTujuan'])->findOrFail($id);
+        $traveler = Traveler::with(['suratJalan.kkpo.customer', 'suratJalan.kkpo.details.style', 'suratJalan.kkpo.category', 'suratJalan.kkpo.color', 'deptAsal', 'deptTujuan'])->findOrFail($id);
         $movements = TravelerMovement::with(['deptAsal', 'deptTujuan'])->where('traveler_id', $id)->orderBy('date_in', 'desc')->get();
 
         return view('warehouse.traveler_detail', compact('traveler', 'movements'));

@@ -60,12 +60,18 @@ Route::middleware('role:super_admin')->group(function () {
 
     Route::get('/superadmin/report', [AdminController::class, 'report'])
         ->name('superadmin.report');
-        Route::get('/superadmin/report/export', [AdminController::class, 'exportReport'])
+    Route::get('/superadmin/report/{id}', [AdminController::class, 'show'])
+        ->name('superadmin.report.show');
+    Route::get('/superadmin/report/export', [AdminController::class, 'exportReport'])
         ->name('superadmin.report.export');
-    Route::get('/superadmin/approval', [AdminController::class, 'approval'])
-        ->name('superadmin.approval');
-     // Route::get('/superadmin/activitylog', [AdminController::class, 'activityLog'])->name('superadmin.activitylog');
-     // Route::get('/superadmin/settings', [AdminController::class, 'settings'])->name('superadmin.settings');
+
+    Route::get('/superadmin/permission', [AdminController::class, 'permission'])
+        ->name('superadmin.permission');
+    Route::post('/superadmin/permission', [AdminController::class, 'updatePermission'])
+        ->name('superadmin.permission.store');
+
+    // Route::get('/superadmin/activitylog', [AdminController::class, 'activityLog'])->name('superadmin.activitylog');
+    // Route::get('/superadmin/settings', [AdminController::class, 'settings'])->name('superadmin.settings');
 });
 /*
     |--------------------------------------------------------------------------
@@ -86,6 +92,9 @@ Route::middleware('role:manager')->group(function () {
         ->name('manager.report.export');
     Route::get('/manager/report/{id}', [ManagerController::class, 'show'])
         ->name('manager.report.show');
+
+    Route::get('/manager/approval', [ManagerController::class, 'approval'])
+        ->name('manager.approval');
 });
 
 /*
@@ -179,6 +188,8 @@ Route::middleware('role:warehouse')->group(function () {
     Route::delete('/warehouse/list-new/delete/{id}', [WarehouseController::class, 'travelerDelete'])->name('warehouse.list-new.delete');
     // Route::get('/warehouse/rework', [WarehouseController::class, 'rework'])->name('warehouse.rework');
     Route::get('/warehouse/list-rework', [WarehouseController::class, 'rework'])->name('warehouse.list-rework');
+    Route::post('/warehouse/rework/{id}', [WarehouseController::class, 'reworkStore'])
+        ->name('warehouse.rework.store');
 
     Route::post('/warehouse/list-rework/{id}', [WarehouseController::class, 'reworkStore'])->name('warehouse.rework.store');
 
@@ -194,7 +205,7 @@ Route::middleware('role:produksi')->group(function () {
     Route::get('/produksi/dashboard', [ProductionController::class, 'dashboard'])->name('produksi.dashboard');
 
     Route::get('/produksi', [ProductionController::class, 'index'])->name('produksi.proses.index');
-    
+
     Route::get('/produksi/suratjalanout', [ProductionController::class, 'suratJalanOut'])->name('produksi.suratjalanout.index');
     Route::post('/produksi/suratjalanout/store', [ProductionController::class, 'suratJalanOutStore'])->name('produksi.suratjalanout.store');
     Route::put('/produksi/suratjalanout/update/{id}', [ProductionController::class, 'updateSuratJalanOut'])->name('produksi.suratjalanout.update');

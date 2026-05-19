@@ -20,7 +20,82 @@ class ManagerController extends Controller
 {
     function dashboard()
     {
-        return view('manager.dashboard');
+        $totalKKPO = KkpoManagement::count();
+
+        $totalCustomers = Customer::count();
+
+        $totalTravelers = Traveler::count();
+
+        $finishedTravelers = Traveler::whereHas('movements.currentDepartment', function ($q) {
+            $q->where('name', 'Warehouse Send');
+        })->count();
+
+        $ongoingTravelers = $totalTravelers - $finishedTravelers;
+
+        $pendingQty = TravelerMovement::sum(DB::raw('balance'));
+
+        /*
+    |--------------------------------------------------------------------------
+    | MONTHLY PRODUCTION CHART
+    |--------------------------------------------------------------------------
+    */
+        $monthlyProduction = TravelerMovement::selectRaw("
+            MONTH(created_at) as month,
+            SUM(qty_out) as total
+        ")
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('total', 'month');
+
+        $chartLabels = [];
+        $chartData = [];
+
+        for ($i = 1; $i <= 12; $i++) {
+
+            $chartLabels[] = date('M', mktime(0, 0, 0, $i, 1));
+
+            $chartData[] = $monthlyProduction[$i] ?? 0;
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | RECENT ACTIVITIES
+    |--------------------------------------------------------------------------
+    */
+        $recentMovements = TravelerMovement::with([
+            'traveler',
+            'currentDepartment'
+        ])
+            ->latest()
+            ->take(8)
+            ->get();
+
+        return view('manager.dashboard', compact(
+            'totalKKPO',
+            'totalCustomers',
+            'totalTravelers',
+            'finishedTravelers',
+            'ongoingTravelers',
+            'pendingQty',
+            'chartLabels',
+            'chartData',
+            'recentMovements'
+        ));
+    }
+
+    public function approval(Request $request)
+    {
+        $query = SuratJalan::with('kkpo', 'kkpo.customer', 'kkpo.details.category', 'kkpo.details.style', 'kkpo.details.color')
+            ->whereHas('travelers.movements', function ($q) {
+                $q->where('status', 'selisih'); //tambah status pending untuk approval, jadi yg muncul di approval hanya movement dengan status pending, nanti kalau approved baru statusnya berubah jadi approved dan tidak muncul di approval lagi
+            });
+        try {
+            $suratJalans = $query->paginate(10)->withQueryString();
+
+            return view('manager.approval', compact('suratJalans'));
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to load approval data: ' . $e->getMessage());
+        }
     }
 
     public function travelerMonitoring(Request $request)
@@ -362,5 +437,4 @@ class ManagerController extends Controller
             'report.xlsx'
         );
     }
-  
 }

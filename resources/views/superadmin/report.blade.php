@@ -5,8 +5,10 @@
     {{-- data count --}}
     {{-- {{ $data->count() }} data ditemukan. --}}
     <p class="text-sm text-gray-500 mb-4">
-        Menampilkan data KKPO yang telah selesai (memiliki surat jalan keluar). Klik "Detail" untuk melihat informasi
-        traveler dan pergerakannya.
+        Displaying KKPO data that has been completed (has an outgoing delivery order). Click "Detail" to view traveler
+        information and its movements.
+        {{-- Menampilkan data KKPO yang telah selesai (memiliki surat jalan keluar). Klik "Detail" untuk melihat informasi
+        traveler dan pergerakannya. --}}
     </p>
 
     <div class="py-3">
@@ -91,124 +93,212 @@
                     {{-- ADVANCED FILTER --}}
                     <div x-show="open" x-transition class="grid grid-cols-3 md:grid-cols-3 gap-2 pt-2 border-t">
 
-                        <x-select-search name="kkpo" :value="request('kkpo')" :options="$kkpo->map(fn($k) => ['value' => $k, 'label' => $k])" placeholder="KKPO" />
+                        <x-select-search name="kkpo" :value="request('kkpo')" :options="$filterKkpo->map(fn($k) => ['value' => $k, 'label' => $k])" placeholder="KKPO" />
 
-                        <x-select-search name="no_surat_jalan" :value="request('no_surat_jalan')" :options="$suratJalan->map(fn($s) => ['value' => $s, 'label' => $s])"
+                        <x-select-search name="no_surat_jalan" :value="request('no_surat_jalan')" :options="$filterSuratJalan->map(fn($s) => ['value' => $s->id, 'label' => $s->no_surat_jalan])"
                             placeholder="Surat Jalan" />
 
-                        <x-select-search name="customer" :value="request('customer')" :options="$customer->map(fn($c) => ['value' => $c, 'label' => $c])" placeholder="Customer" />
+                        <x-select-search name="customer" :value="request('customer')" :options="$filterCustomer->map(fn($c) => ['value' => $c->id, 'label' => $c->name])" placeholder="Customer" />
 
-                        <x-select-search name="style" :value="request('style')" :options="$style->map(fn($s) => ['value' => $s, 'label' => $s])" placeholder="Style" />
+                        <x-select-search name="style" :value="request('style')" :options="$filterStyle->map(fn($s) => ['value' => $s->id, 'label' => $s->name])" placeholder="Style" />
 
-                        <x-select-search name="category" :value="request('category')" :options="$category->map(fn($c) => ['value' => $c, 'label' => $c])"
+                        <x-select-search name="category" :value="request('category')" :options="$filterCategory->map(fn($c) => ['value' => $c->id, 'label' => $c->name])"
                             placeholder="Category Process" />
 
-                        <x-select-search name="color" :value="request('color')" :options="$color->map(fn($c) => ['value' => $c, 'label' => $c])" placeholder="Color" />
+                        <x-select-search name="color" :value="request('color')" :options="$filterColor->map(fn($c) => ['value' => $c->id, 'label' => $c->name])" placeholder="Color" />
 
                     </div>
 
                 </form>
             </div>
 
+            <div
+                class="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition overflow-visible">
 
-            <div class="bg-white shadow rounded-lg overflow-hidden p-2">
+                <table class="min-w-full table-fixed text-gray-800">
 
-                <div class="overflow-x-auto">
-                    <table class="min-w-full table-fixed text-gray-800">
-                        <thead class="bg-gray-50 text-gray-700 uppercase tracking wider">
-                            <tr>
-                                <th class="px-4 py-2 text-left text-xs font-semibold">
-                                    KKPO
-                                </th>
-                                <th class="px-4 py-2 text-left text-xs font-semibold">
-                                    No
-                                    Surat
-                                    Jalan IN</th>
-                                <th class="px-4 py-2 text-left text-xs font-semibold">
-                                    Pelanggan</th>
-                                <th class="px-4 py-2 text-left text-xs font-semibold">
-                                    Kategori Proses</th>
-                                <th class="px-4 py-2 text-left text-xs font-semibold">
-                                    Model
-                                </th>
-                                <th class="px-4 py-2 text-left text-xs font-semibold">
-                                    Qty
-                                    In
-                                </th>
-                                <th class="px-4 py-2 text-left text-xs font-semibold">
-                                    Qty
-                                    Out
-                                </th>
-                                <th class="px-4 py-2 text-left text-xs font-semibold">
-                                    Balance</th>
-                                <th class="px-4 py-2 text-left text-xs font-semibold">
-                                    Aksi</th>
+                    {{-- THEAD --}}
+                    <thead
+                        class="bg-[#136566]/10 text-gray-700 border-b border-[#136566]/30 text-[11px] uppercase tracking-wide">
+                        <tr>
+                            <th class="px-4 py-2 text-left text-xs font-semibold">
+                                KKPO
+                            </th>
+                            <th class="px-4 py-2 text-left text-xs font-semibold">
+                                No
+                                SJ IN</th>
+                            <th class="px-4 py-2 text-left text-xs font-semibold">
+                                No
+                                SJ OUT</th>
+                            <th class="px-4 py-2 text-left text-xs font-semibold">
+                                Customer</th>
+                            <th class="px-4 py-2 text-left text-xs font-semibold">
+                                Style</th>
+                            <th class="px-4 py-2 text-left text-xs font-semibold">
+                                Color
+                            </th>
+                            <th class="px-4 py-2 text-left text-xs font-semibold">
+                                Qty
+                                In
+                            </th>
+                            <th class="px-4 py-2 text-left text-xs font-semibold">
+                                Qty
+                                Out
+                            </th>
+                            <th class="px-4 py-2 text-left text-xs font-semibold">
+                                Balance</th>
+                            <th class="px-4 py-2 text-left text-xs font-semibold">
+                                Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200 text-sm">
+
+                        @forelse ($data as $sj)
+                            @php
+
+                                $totalIn = 0;
+                                $totalOut = 0;
+
+                                $totalTraveler = $sj->travelers->count();
+
+                                $finishedTraveler = 0;
+
+                                $sjOut = '-';
+
+                                foreach ($sj->travelers as $traveler) {
+                                    if ($traveler->suratJalanOuts->count() > 0 && $sjOut == '-') {
+                                        $sjOut = $traveler->suratJalanOuts->first()->no_surat_jalan;
+                                    }
+
+                                    $lastMovement = $traveler->movements->sortByDesc('created_at')->first();
+
+                                    $isFinished =
+                                        optional($lastMovement?->currentDepartment)->name == 'Warehouse Send' &&
+                                        $traveler->suratJalanOuts->count() > 0;
+
+                                    if ($isFinished) {
+                                        $finishedTraveler++;
+                                    }
+
+                                    foreach ($traveler->movements as $mov) {
+                                        $totalIn += $mov->qty_in ?? 0;
+                                        $totalOut += $mov->qty_out ?? 0;
+                                    }
+                                }
+
+                                $balance = max($totalIn - $totalOut, 0);
+
+                                $progressTraveler = $totalTraveler - $finishedTraveler;
+
+                                $detail = $sj->kkpo->details->first();
+
+                            @endphp
+
+                            <tr class="hover:bg-gray-50 transition">
+
+                                {{-- KKPO --}}
+                                <td class="px-4 py-3">
+                                    {{ $sj->kkpo->no_kkpo ?? '-' }}
+                                </td>
+
+                                {{-- SJ IN --}}
+                                <td class="px-4 py-3">
+                                    {{ $sj->no_surat_jalan ?? '-' }}
+                                </td>
+
+                                {{-- SJ OUT --}}
+                                <td class="px-4 py-3">
+                                    {{ $sjOut }}
+                                </td>
+
+                                {{-- CUSTOMER --}}
+                                <td class="px-4 py-3">
+                                    {{ $sj->kkpo->customer->name ?? '-' }}
+                                </td>
+
+                                {{-- STYLE --}}
+                                <td class="px-4 py-3">
+                                    {{ $detail?->style?->name ?? '-' }}
+                                </td>
+
+                                {{-- COLOR --}}
+                                <td class="px-4 py-3">
+                                    {{ $detail?->color?->name ?? '-' }}
+                                </td>
+
+                                {{-- QTY IN --}}
+                                <td class="px-4 py-3 text-green-600 font-medium">
+                                    {{ $totalIn }}
+                                </td>
+
+                                {{-- QTY OUT --}}
+                                <td class="px-4 py-3 text-red-500 font-medium">
+                                    {{ $totalOut }}
+                                </td>
+
+                                {{-- BALANCE --}}
+                                <td class="px-4 py-3">
+
+                                    <div class="flex flex-col gap-1">
+
+                                        <span
+                                            class="text-xs font-semibold
+                        {{ $balance > 0 ? 'text-yellow-600' : 'text-green-600' }}">
+
+                                            Balance : {{ $balance }}
+
+                                        </span>
+
+                                        <span class="text-[11px] text-gray-500">
+
+                                            {{ $finishedTraveler }}/{{ $totalTraveler }}
+                                            Traveler Finished
+
+                                        </span>
+
+                                    </div>
+
+                                </td>
+
+                                {{-- ACTION --}}
+                                <td class="px-4 py-3">
+
+                                    <a href="{{ route('superadmin.report.show', $sj->id) }}"
+                                        class="px-3 py-1.5 rounded-lg border border-blue-200
+                    text-blue-600 hover:bg-blue-50 text-sm transition">
+
+                                        Detail
+
+                                    </a>
+
+                                </td>
+
                             </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200 text-sm">
-                            {{-- Data report akan di-looping di sini dan hanya menampilkan satu data per kkpo --}}
-                            @if ($data->count())
-                                @foreach ($data as $sj)
-                                    <tr>
-                                        <td class="px-4 py-2 whitespace-nowrap">
-                                            {{ $sj->kkpoManagements->no_kkpo ?? '-' }}</td>
-                                        <td class="px-4 py-2 whitespace-nowrap">
-                                            {{ $sj->no_surat_jalan ?? '-' }}</td>
-                                        <td class="px-4 py-2 whitespace-nowrap">
-                                            {{ $sj->kkpoManagements->customer->name ?? '-' }}
-                                        </td>
-                                        <td class="px-4 py-2 whitespace-nowrap">
-                                            {{ $sj->kkpoManagements->category->name ?? '-' }}
-                                        </td>
-                                        <td class="px-4 py-2 whitespace-nowrap">
-                                            {{ $sj->kkpoManagements->style->name ?? '-' }}
-                                        </td>
 
-                                        @php
-                                            $totalIn = 0;
-                                            $totalOut = 0;
-                                            $totalBalance = 0;
+                        @empty
 
-                                            foreach ($sj->travelers as $t) {
-                                                foreach ($t->movements as $m) {
-                                                    $totalIn += $m->qty_in;
-                                                    $totalOut += $m->qty_out;
-                                                    $totalBalance += $m->balance;
-                                                }
-                                            }
-                                        @endphp
+                            <tr>
+                                <td colspan="10" class="px-4 py-10 text-center text-gray-400">
 
-                                        <td class="px-4 py-2 whitespace-nowrap">{{ $totalIn }}</td>
-                                        <td class="px-4 py-2 whitespace-nowrap">{{ $totalOut }}</td>
-                                        <td class="px-4 py-2 whitespace-nowrap">{{ $totalBalance }}</td>
-                                        <td class="px-4 py-2 whitespace-nowrap">
-                                            <a href="{{ route('superadmin.report.show', ['id' => $sj->id]) }}"
-                                                class="text-blue-500 border border-blue-500 rounded-xl py-1 px-4 hover:bg-blue-50">
-                                                Detail</a>
-                                        </td>
+                                    No data found.
 
-                                    </tr>
-                                @endforeach
-                            @else
-                                <tr>
-                                    <td colspan="10" class="px-4 py-2 text-center text-gray-500">Data tidak
-                                        tersedia.
-                                    </td>
-                                </tr>
-                            @endif
-                        </tbody>
-                    </table>
-                    <div class="flex items-center justify-between p-3">
+                                </td>
+                            </tr>
+                        @endforelse
+
+                    </tbody>
+                </table>
+                <div class="flex items-center justify-between p-3">
                     <div class="text-sm text-gray-500">
-                        Showing 
-                         {{ $data->firstItem() }} to {{ $data->lastItem() }} of 
-                         {{ $data->total() }} results
+                        Showing {{ $data->firstItem() }} to {{ $data->lastItem() }} of
+                        {{ $data->total() }} results
                     </div>
 
                     {{ $data->links() }}
                 </div>
-                </div>
             </div>
+
+
         </div>
     </div>
     {{-- auto filter tanggal tanpa submit --}}

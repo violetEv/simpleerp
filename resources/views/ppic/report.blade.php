@@ -190,7 +190,7 @@
 
                                 $progressTraveler = $totalTraveler - $finishedTraveler;
 
-                                $detail = $sj->kkpoManagement->details->first();
+                                $detail = $sj->kkpo->details->first();
 
                             @endphp
 
@@ -198,7 +198,7 @@
 
                                 {{-- KKPO --}}
                                 <td class="px-4 py-3">
-                                    {{ $sj->kkpoManagement->no_kkpo ?? '-' }}
+                                    {{ $sj->kkpo->no_kkpo ?? '-' }}
                                 </td>
 
                                 {{-- SJ IN --}}
@@ -213,7 +213,7 @@
 
                                 {{-- CUSTOMER --}}
                                 <td class="px-4 py-3">
-                                    {{ $sj->kkpoManagement->customer->name ?? '-' }}
+                                    {{ $sj->kkpo->customer->name ?? '-' }}
                                 </td>
 
                                 {{-- STYLE --}}

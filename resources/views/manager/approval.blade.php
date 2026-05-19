@@ -28,7 +28,7 @@
                                     <td class="px-4 py-2 border">{{ $sj->tujuan }}</td>
                                     <td class="px-4 py-2 border">{{ $sj->status }}</td>
                                     <td class="px-4 py-2 border">
-                                        <a href="{{ route('superadmin.approval.show', ['id' => $sj->id]) }}"
+                                        <a href="{{ route('manager.approval.show', ['id' => $sj->id]) }}"
                                             class="text-blue-500 border border-blue-500 rounded-xl py-1 px-4 hover:bg-blue-50">
                                             Detail</a>  
                                     </td>

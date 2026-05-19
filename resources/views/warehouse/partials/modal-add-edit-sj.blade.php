@@ -37,7 +37,7 @@
                         <div class="md:col-span-2">
 
                             <x-select-search id="kkpo_management_id" name="kkpo_management_id"
-                                label="KK/PO - KK BEA CUKAI" :onChange="'handleKKPOChange'" :options="$kkpoManagements
+                                label="KK/PO - KK BEA CUKAI" :onChange="'handleKKPOChange'" :options="$kkpo
                                     ->map(function ($k) {
                                         return [
                                             'value' => $k->id,
@@ -99,7 +99,7 @@
 
                         {{-- KP --}}
                         <x-select-search id="kp_po" name="kp_po_id" label="KP" :options="[]"
-                            :disabled="true" required placeholder="Pilih KP / PO" searchPlaceholder="Cari KP / PO" />
+                            :disabled="true" placeholder="Pilih KP / PO" searchPlaceholder="Cari KP / PO" />
 
                         {{-- CATEGORY --}}
                         <x-select-search id="category" name="category_id" label="Category" :options="[]"

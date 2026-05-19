@@ -347,26 +347,23 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                                     <div>
-    <label class="block text-sm text-gray-700 mb-1">
-        KK Bea Cukai - KK/PO
-    </label>
+                                        <label class="block text-sm text-gray-700 mb-1">
+                                            KK Bea Cukai - KK/PO
+                                        </label>
 
-    <input type="text"
-        name="no_kkpo"
-        id="no_kkpo"
-        required
-        placeholder="KK Bea Cukai - KK/PO"
-        class="w-full border border-gray-300 rounded-xl px-4 py-2.5
+                                        <input type="text" name="no_kkpo" id="no_kkpo" required
+                                            placeholder="KK Bea Cukai - KK/PO"
+                                            class="w-full border border-gray-300 rounded-xl px-4 py-2.5
         focus:ring-2 focus:ring-[#136566]/30 focus:border-[#136566]">
 
-    <p class="mt-1 text-xs text-gray-500">
-    <span class="font-medium text-gray-700">
-        Format:
-    </span>
-    KK Bea Cukai - KK/PO.
-    If there is no KK Bea Cukai, enter the KK/PO number only.
-</p>
-</div>
+                                        <p class="mt-1 text-xs text-gray-500">
+                                            <span class="font-medium text-gray-700">
+                                                Format:
+                                            </span>
+                                            KK Bea Cukai - KK/PO.
+                                            If there is no KK Bea Cukai, enter the KK/PO number only.
+                                        </p>
+                                    </div>
 
                                     <x-select-search name="customer_id" id="customer_id" label="Customer"
                                         :options="$customers->map(

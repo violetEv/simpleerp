@@ -168,18 +168,18 @@
                             </td>
 
                             <td class="px-4 py-3 whitespace-nowrap">
-                                {{ $activity->kkpoManagement->customer->name ?? '-' }}
+                                {{ $activity->kkpo->customer->name ?? '-' }}
                             </td>
 
                             <td class="px-4 py-3 whitespace-nowrap">
-                                {{ $activity->kkpoManagement->details->first()->category->name ?? '-' }}
+                                {{ $activity->kkpo->details->first()->category->name ?? '-' }}
                             </td>
 
                             <td class="px-4 py-3 whitespace-nowrap">
-                                {{ $activity->kkpoManagement->details->first()->style->name ?? '-' }}
+                                {{ $activity->kkpo->details->first()->style->name ?? '-' }}
                             </td>
                             <td class="px-4 py-3 whitespace-nowrap">
-                                {{ $activity->kkpoManagement->details->first()->color->name ?? '-' }}
+                                {{ $activity->kkpo->details->first()->color->name ?? '-' }}
                             </td>
 
                             <td class="px-4 py-3 whitespace-nowrap">

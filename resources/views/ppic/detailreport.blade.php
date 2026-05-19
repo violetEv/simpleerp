@@ -2,7 +2,7 @@
 
     @php
 
-        $kkpo = $sj->kkpoManagement;
+        $kkpo = $sj->kkpo;
 
         $detail = $kkpo->details->first();
 

@@ -14,11 +14,11 @@ class SuperAdminMenu
             //     'sub' => [
             ['name' => 'User', 'route' => 'superadmin.user', 'icon' => 'fas fa-users'],
             ['name' => 'Department', 'route' => 'superadmin.department', 'icon' => 'fas fa-building'],
+            ['name' => 'Permission', 'route' => 'superadmin.permission', 'icon' => 'fas fa-check-circle'],
             ['name' => 'Machine', 'route' => 'superadmin.machine', 'icon' => 'fas fa-cogs'],
 
             //     ]
             // ],
-            ['name' => 'Approval', 'route' => 'superadmin.approval', 'icon' => 'fas fa-check-circle'],
             ['name' => 'Monitoring', 'route' => 'superadmin.monitoring', 'icon' => 'fas fa-industry'],
             ['name' => 'Report', 'route' => 'superadmin.report', 'icon' => 'fas fa-chart-bar'],
             // ['name' => 'Activity Log', 'route' => 'superadmin.activitylog', 'icon' => 'fas fa-clipboard-list'],

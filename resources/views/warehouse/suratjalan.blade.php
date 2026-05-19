@@ -86,15 +86,15 @@
                                 <tr>
                                     <td class="px-4 py-2 whitespace-nowrap">{{ $order->no_surat_jalan }}</td>
                                     {{-- <td class="px-4 py-2 whitespace-nowrap">
-                                        {{ $order->kkpoManagement->no_kkpo ?? '-' }}</td> --}}
+                                        {{ $order->kkpo->no_kkpo ?? '-' }}</td> --}}
                                     <td class="px-4 py-2 whitespace-nowrap">
-                                        {{ $order->kkpoManagement->customer->name ?? '-' }}</td>
+                                        {{ $order->kkpo->customer->name ?? '-' }}</td>
                                     <td class="px-4 py-2 whitespace-nowrap">
-                                        {{ $order->kkpoManagement->details->first()->style->name ?? '-' }}</td>
+                                        {{ $order->kkpo->details->first()->style->name ?? '-' }}</td>
                                     <td class="px-4 py-2 whitespace-nowrap">
-                                        {{ $order->kkpoManagement->details->first()->color->name ?? '-' }}</td>
+                                        {{ $order->kkpo->details->first()->color->name ?? '-' }}</td>
                                     <td class="px-4 py-2 whitespace-nowrap">
-                                        {{ $order->kkpoManagement->details->first()->category->name ?? '-' }}</td>
+                                        {{ $order->kkpo->details->first()->category->name ?? '-' }}</td>
                                     <td class="px-4 py-2 whitespace-nowrap">{{ $order->qty }}</td>
                                         {{-- format tanggal 12 Maret 2024 --}}
                                         <td class="px-4 py-2 whitespace-nowrap">
@@ -117,13 +117,13 @@
                                         {{-- <button onClick='openEditOrderModal(@json($order))'
                                                 class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Edit</button> --}}
                                         <button onclick="openDetail(this)" title="Lihat Detail"
-                                            data-kkpo="{{ $order->kkpoManagement->no_kkpo ?? '-' }}"
-                                            data-customer="{{ $order->kkpoManagement->customer->name ?? '-' }}"
+                                            data-kkpo="{{ $order->kkpo->no_kkpo ?? '-' }}"
+                                            data-customer="{{ $order->kkpo->customer->name ?? '-' }}"
                                             data-sj="{{ $order->no_surat_jalan ?? '-' }}"
                                             data-qty="{{ $order->qty }}"
-                                            data-style="{{ $order->kkpoManagement->details->first()->style->name ?? '-' }}"
-                                            data-color="{{ $order->kkpoManagement->details->first()->color->name ?? '-' }}"
-                                            data-category="{{ $order->kkpoManagement->details->first()->category->name ?? '-' }}"
+                                            data-style="{{ $order->kkpo->details->first()->style->name ?? '-' }}"
+                                            data-color="{{ $order->kkpo->details->first()->color->name ?? '-' }}"
+                                            data-category="{{ $order->kkpo->details->first()->category->name ?? '-' }}"
                                             {{-- data-dept="{{ $order->deptTujuan->name ?? '-' }}" --}} data-tanggal="{{ $order->tanggal }}"
                                             data-status="{{ $order->status }}"
                                             data-notes="{{ $order->notes ?? '-' }}">

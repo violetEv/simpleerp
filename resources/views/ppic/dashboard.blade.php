@@ -9,31 +9,12 @@
         {{-- TOTAL KKPO --}}
         <div class="bg-white rounded-lg shadow p-4 flex items-center">
             <div class="bg-[#136566] text-white rounded-full p-3 mr-4">
-                {{-- icon documents --}}
+                {{-- icon document --}}
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="w-6 h-6">
 
                     <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .375a2.25
-                        2.25 0 1 1-4.5 0
-                        2.25 2.25 0 0 1 4.5 0zM19.5
-                        3h-5.625c-.621
-                        0-1.125-.504-1.125-1.125V3zM18
-                        14v-.375c0-.621-.504-1.125-1.125-1.125H13.5m-2.625
-                        0H10.5c-.621
-                        0-1.125-.504-1.125-1.125V10m0
-                        4v-.375c0-.621-.504-1.125-1.125-1.125H3m16.5
-                        -9h-5.625c-.621
-                        0-1.125-.504-1.125-1.125V3m0
-                        4v-.375c0-.621-.504-1.125-1.125-1.125H10m8.25
-                        -5H12a2.25
-                        2.25 0 00-2.25
-                        2.25v16A2.25
-                        2.25 0 0012
-                        21h8a2.25
-                        2.25 0 002.25-2.25V5A2.25
-                        2.25 0 0018
-                        .75z" />
+                        d="M19.5 14.25v-8.625a2.625 2.625 0 0 0-2.625-2.625H7.125A2.625 2.625 0 0 0 4.5 5.625v12.75A2.625 2.625 0 0 0 7.125 21h9.75a2.625 2.625 0 0 0 2.625-2.625V14.25ZM8.25 7.5h7.5M8.25 11.25h7.5M8.25 15h4.5" />
                 </svg>
             </div>
 
@@ -110,8 +91,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="w-6 h-6">
 
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M15.75 6a3.75 3.75 0 1 1-7.5 0
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0
                         3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5
                         7.5 0 0 1 14.998 0A17.933
                         17.933 0 0 1 12
@@ -276,39 +256,38 @@
                 <tbody class="bg-white divide-y divide-gray-200 text-sm">
 
                     @forelse ($latestKKPO as $kkpo)
-
                         {{-- @foreach ($kkpo->details as $detail) --}}
-                            <tr  class="hover:bg-gray-50 even:bg-gray-50/40 transition">
+                        <tr class="hover:bg-gray-50 even:bg-gray-50/40 transition">
 
-                                <td class="px-4 py-3 whitespace-nowrap">
-                                    {{ $kkpo->kkpo->no_kkpo }}
-                                </td>
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                {{ $kkpo->kkpo->no_kkpo }}
+                            </td>
 
-                                <td class="px-4 py-3 whitespace-nowrap">
-                                    {{ $kkpo->kkpo->customer->name ?? '-' }}
-                                </td>
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                {{ $kkpo->kkpo->customer->name ?? '-' }}
+                            </td>
 
-                                <td class="px-4 py-3 whitespace-nowrap">
-                                    {{ $kkpo->category->name ?? '-' }}
-                                </td>
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                {{ $kkpo->category->name ?? '-' }}
+                            </td>
 
-                                <td class="px-4 py-3 whitespace-nowrap">
-                                    {{ $kkpo->style->name ?? '-' }}
-                                </td>
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                {{ $kkpo->style->name ?? '-' }}
+                            </td>
 
-                                <td class="px-4 py-3 whitespace-nowrap">
-                                    {{ $kkpo->color->name ?? '-' }}
-                                </td>
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                {{ $kkpo->color->name ?? '-' }}
+                            </td>
 
-                                <td class="px-4 py-3 whitespace-nowrap">
-                                    {{ $kkpo->kkpo->kp_po ?? '-' }}
-                                </td>
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                {{ $kkpo->kkpo->kp_po ?? '-' }}
+                            </td>
 
-                                <td class="px-4 py-3 whitespace-nowrap font-medium">
-                                    {{ $kkpo->qty ?? '-' }}
-                                </td>
+                            <td class="px-4 py-3 whitespace-nowrap font-medium">
+                                {{ $kkpo->qty ?? '-' }}
+                            </td>
 
-                            </tr>
+                        </tr>
                         {{-- @endforeach --}}
 
                     @empty
@@ -320,7 +299,6 @@
 
                             </td>
                         </tr>
-
                     @endforelse
 
                 </tbody>

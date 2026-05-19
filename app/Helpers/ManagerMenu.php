@@ -8,6 +8,7 @@ class ManagerMenu
     {
         return [
             ['name' => 'Dashboard', 'route' => 'dashboard', 'icon' => 'fas fa-tachometer-alt'],
+            ['name' => 'Approval', 'route' => 'manager.approval', 'icon' => 'fas fa-check-circle'],
             ['name' => 'Monitoring', 'route' => 'manager.monitoring', 'icon' => 'fas fa-industry'],
             ['name' => 'Report', 'route' => 'manager.report', 'icon' => 'fas fa-chart-bar']
             // 'sub' => [

@@ -174,11 +174,12 @@ class PpicController extends Controller
             return back()->with('error', 'Failed to import: ' . $e->getMessage());
         }
     }
-    public function category()
+    public function category(Request $request)
     {
-        $query = Category::query()->orderBy('name', 'asc');
-        if (request()->filled('search')) {
-            $search = request()->search;
+        $query = Category::query()->latest();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
 
             $query->where('name', 'like', "%{$search}%");
         }
@@ -242,11 +243,12 @@ class PpicController extends Controller
             return back()->with('error', 'Failed to delete Category Process');
         }
     }
-    public function style()
+    public function style(Request $request)
     {
-        $query = Style::query()->orderBy('name', 'asc');
-        if (request()->filled('search')) {
-            $search = request()->search;
+        $query = Style::query()->latest();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
 
             $query->where('name', 'like', "%{$search}%");
         }
@@ -311,11 +313,12 @@ class PpicController extends Controller
             return back()->with('error', 'Failed to delete Style');
         }
     }
-    public function color()
+    public function color(Request $request)
     {
-        $query = Color::query()->orderBy('name', 'asc');
-        if (request()->filled('search')) {
-            $search = request()->search;
+        $query = Color::query()->latest();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
 
             $query->where('name', 'like', "%{$search}%");
         }
@@ -381,11 +384,12 @@ class PpicController extends Controller
         }
     }
 
-    public function item()
+    public function item(Request $request)
     {
-        $query = Item::query()->orderBy('name', 'asc');
-        if (request()->filled('search')) {
-            $search = request()->search;
+        $query = Item::query()->latest();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
 
             $query->where('name', 'like', "%{$search}%");
         }
@@ -447,11 +451,12 @@ class PpicController extends Controller
             return back()->with('error', 'Failed to delete Item');
         }
     }
-    public function brand()
+    public function brand(Request $request)
     {
-        $query = Brand::query()->orderBy('name', 'asc');
-        if (request()->filled('search')) {
-            $search = request()->search;
+        $query = Brand::query()->latest();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
 
             $query->where('name', 'like', "%{$search}%");
         }
@@ -515,11 +520,12 @@ class PpicController extends Controller
         }
     }
 
-    public function unit()
+    public function unit(Request $request)
     {
-        $query = Unit::query()->orderBy('name', 'asc');
-        if (request()->filled('search')) {
-            $search = request()->search;
+        $query = Unit::query()->latest();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
 
             $query->where('name', 'like', "%{$search}%");
         }
@@ -582,14 +588,14 @@ class PpicController extends Controller
         }
     }
 
-    public function currency()
+    public function currency(Request $request)
     {
-        $query = Currency::query()->orderBy('name', 'asc');
-        if (request()->filled('search')) {
-            $search = request()->search;
+        $query = Currency::query()->latest();
 
-            $query->where('name', 'like', "%{$search}%")
-                ->orWhere('code', 'like', "%{$search}%");
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $query->where('name', 'like', "%{$search}%");
         }
 
         $currencies = $query->paginate(10)->withQueryString();
@@ -660,10 +666,10 @@ class PpicController extends Controller
         $query = SuratJalan::with([
 
             // KKPO
-            'kkpoManagement.customer',
-            'kkpoManagement.details.style',
-            'kkpoManagement.details.color',
-            'kkpoManagement.details.category',
+            'kkpo.customer',
+            'kkpo.details.style',
+            'kkpo.details.color',
+            'kkpo.details.category',
 
             // traveler
             'travelers.currentDepartment',
@@ -698,12 +704,12 @@ class PpicController extends Controller
 
                     $query->where('no_surat_jalan', 'like', "%{$search}%")
 
-                        ->orWhereHas('kkpoManagement', function ($k) use ($search) {
+                        ->orWhereHas('kkpo', function ($k) use ($search) {
 
                             $k->where('no_kkpo', 'like', "%{$search}%");
                         })
 
-                        ->orWhereHas('kkpoManagement.customer', function ($c) use ($search) {
+                        ->orWhereHas('kkpo.customer', function ($c) use ($search) {
 
                             $c->where('name', 'like', "%{$search}%");
                         })
@@ -722,7 +728,7 @@ class PpicController extends Controller
     */
             ->when($request->kkpo, function ($q, $kkpo) {
 
-                $q->whereHas('kkpoManagement', function ($k) use ($kkpo) {
+                $q->whereHas('kkpo', function ($k) use ($kkpo) {
 
                     $k->where('no_kkpo', $kkpo);
                 });
@@ -735,7 +741,7 @@ class PpicController extends Controller
 
             ->when($request->customer, function ($q, $customer) {
 
-                $q->whereHas('kkpoManagement.customer', function ($c) use ($customer) {
+                $q->whereHas('kkpo.customer', function ($c) use ($customer) {
 
                     $c->where('id', $customer);
                 });
@@ -743,7 +749,7 @@ class PpicController extends Controller
 
             ->when($request->style, function ($q, $style) {
 
-                $q->whereHas('kkpoManagement.details.style', function ($s) use ($style) {
+                $q->whereHas('kkpo.details.style', function ($s) use ($style) {
 
                     $s->where('id', $style);
                 });
@@ -751,7 +757,7 @@ class PpicController extends Controller
 
             ->when($request->category, function ($q, $category) {
 
-                $q->whereHas('kkpoManagement.details.category', function ($c) use ($category) {
+                $q->whereHas('kkpo.details.category', function ($c) use ($category) {
 
                     $c->where('id', $category);
                 });
@@ -759,7 +765,7 @@ class PpicController extends Controller
 
             ->when($request->color, function ($q, $color) {
 
-                $q->whereHas('kkpoManagement.details.color', function ($c) use ($color) {
+                $q->whereHas('kkpo.details.color', function ($c) use ($color) {
 
                     $c->where('id', $color);
                 });
@@ -819,10 +825,10 @@ class PpicController extends Controller
         $sj = SuratJalan::with([
 
             // KKPO
-            'kkpoManagement.customer',
-            'kkpoManagement.details.style',
-            'kkpoManagement.details.color',
-            'kkpoManagement.details.category',
+            'kkpo.customer',
+            'kkpo.details.style',
+            'kkpo.details.color',
+            'kkpo.details.category',
 
             // traveler
             'travelers.currentDepartment',
