@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\DB;
 
 class KkpoController extends Controller
 {
-    public function kkpo()
+    public function kkpo(Request $request)
     {
 
         $query = KkpoDetail::with([
@@ -48,7 +48,7 @@ class KkpoController extends Controller
     ->latest();
 
         // SEARCH
-        if (request()->filled('search')) {
+        if ($request->filled('search')) {
 
             $search = request('search');
 

@@ -1,11 +1,4 @@
-{{-- @extends('layouts.app')
-
-@section('content') --}}
 <x-app-layout>
-    {{-- <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        Surat Jalan IN
-    </h2> --}}
-
     <div class="py-2">
         <div class="max-w-7xl mx-auto">
             {{-- Search, filter section, button add order --}}
@@ -96,8 +89,8 @@
                                     <td class="px-4 py-2 whitespace-nowrap">
                                         {{ $order->kkpo->details->first()->category->name ?? '-' }}</td>
                                     <td class="px-4 py-2 whitespace-nowrap">{{ $order->qty }}</td>
-                                        {{-- format tanggal 12 Maret 2024 --}}
-                                        <td class="px-4 py-2 whitespace-nowrap">
+                                    {{-- format tanggal 12 Maret 2024 --}}
+                                    <td class="px-4 py-2 whitespace-nowrap">
                                         {{ \Carbon\Carbon::parse($order->tanggal)->format('d F Y') }}
                                     </td>
                                     {{-- <td class="px-4 py-2 whitespace-nowrap">
@@ -179,5 +172,4 @@
         </div>
     </div>
 
-    {{-- @endsection --}}
 </x-app-layout>

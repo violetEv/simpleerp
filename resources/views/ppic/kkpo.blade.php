@@ -532,36 +532,51 @@
             </div>
         </div>
     </div>
-    {{-- ambil script kkpo --}}
     <script>
+        let isEditMode = false;
+
         function closeModal() {
             document.getElementById('addModal').classList.add('hidden');
             document.getElementById('addModal').classList.remove('flex');
         }
 
+        function resetSelectSearch() {
+
+            document.querySelectorAll('[x-data]').forEach(el => {
+
+                if (el._x_dataStack && el._x_dataStack[0].hasOwnProperty('selected')) {
+
+                    el._x_dataStack[0].selected = null;
+                }
+            });
+        }
+
         function openAddModal() {
+
+            isEditMode = false;
+
             document.getElementById('modal-title').textContent = 'Add KKPO';
-            // document.getElementById('submit-button').textContent = 'Save';
-            document.getElementById('crud-form').action = "{{ route('ppic.kkpo.store') }}";
+
+            document.getElementById('crud-form').action =
+                "{{ route('ppic.kkpo.store') }}";
 
             document.getElementById('form-method').value = 'POST';
-            // reset form
+
             document.getElementById('crud-form').reset();
+
+            resetSelectSearch();
 
             document.getElementById('addModal').classList.remove('hidden');
             document.getElementById('addModal').classList.add('flex');
-            setTimeout(() => {
-                document.querySelectorAll('[x-data]').forEach(el => {
-                    if (el._x_dataStack) {
-                        el._x_dataStack[0].selected = null;
-                    }
-                });
-            }, 150);
         }
 
         function openEditModal(detail) {
 
+            // buka modal dulu
             openAddModal();
+
+            // set edit mode lagi
+            isEditMode = true;
 
             document.getElementById('modal-title').textContent = 'Edit KKPO';
 
@@ -571,17 +586,25 @@
             url = url.replace(':id', kkpo.id);
 
             document.getElementById('crud-form').action = url;
+
             document.getElementById('form-method').value = 'PUT';
 
             setTimeout(() => {
 
-                // HEADER
-                document.getElementById('no_kkpo').value = kkpo.no_kkpo ?? '';
+                /*
+                |--------------------------------------------------------------------------
+                | HEADER
+                |--------------------------------------------------------------------------
+                */
+
+                document.getElementById('no_kkpo').value =
+                    kkpo.no_kkpo ?? '';
 
                 document.getElementById('customer_id')._x_dataStack[0].selected =
                     kkpo.customer_id ?? '';
 
-                document.getElementById('kp_po').value = kkpo.kp_po ?? '';
+                document.getElementById('kp_po').value =
+                    kkpo.kp_po ?? '';
 
                 document.getElementById('npwp').value =
                     kkpo.customer?.npwp ?? '';
@@ -592,12 +615,17 @@
                 document.getElementById('currency_id')._x_dataStack[0].selected =
                     kkpo.currency_id ?? '';
 
-                document.getElementById('date').value = kkpo.date ?? '';
+                document.getElementById('date').value =
+                    kkpo.date ?? '';
 
-                // document.getElementById('notes').value = kkpo.notes ?? '';
+                /*
+                |--------------------------------------------------------------------------
+                | DETAIL
+                |--------------------------------------------------------------------------
+                */
 
-                // DETAIL
-                document.getElementById('detail-id').value = detail.id ?? '';
+                document.getElementById('detail-id').value =
+                    detail.id ?? '';
 
                 document.getElementById('category_id')._x_dataStack[0].selected =
                     detail.category_id ?? '';
@@ -614,20 +642,23 @@
                 document.getElementById('brand_id')._x_dataStack[0].selected =
                     detail.brand_id ?? '';
 
-                document.getElementById('qty').value = detail.qty ?? '';
+                document.getElementById('unit_id')._x_dataStack[0].selected =
+                    detail.unit_id ?? '';
 
-                document.getElementById('price').value = detail.price ?? '';
+                document.getElementById('qty').value =
+                    detail.qty ?? '';
+
+                document.getElementById('price').value =
+                    detail.price ?? '';
 
                 document.getElementById('reject_allowance').value =
                     detail.reject_allowance ?? '';
 
-                document.getElementById('pic').value = detail.pic ?? '';
+                document.getElementById('pic').value =
+                    detail.pic ?? '';
 
                 document.getElementById('remark').value =
                     detail.remark ?? '';
-
-                document.getElementById('unit_id')._x_dataStack[0].selected =
-                    detail.unit_id ?? '';
 
             }, 150);
         }
@@ -646,16 +677,31 @@
 
             let customer = options.find(opt => opt.value == selectedId);
 
-            // AUTO FILL NPWP
+            /*
+            |--------------------------------------------------------------------------
+            | AUTO FILL NPWP
+            |--------------------------------------------------------------------------
+            */
+
             document.getElementById('npwp').value =
                 customer?.npwp ?? '';
 
-            // AUTO FILL PAYMENT TERMS
+            /*
+            |--------------------------------------------------------------------------
+            | AUTO FILL PAYMENT TERMS
+            |--------------------------------------------------------------------------
+            */
+
             document.getElementById('payment_terms').value =
                 customer?.payment_terms ?? '';
         }
 
-        // WATCH perubahan customer
+        /*
+        |--------------------------------------------------------------------------
+        | WATCH CUSTOMER
+        |--------------------------------------------------------------------------
+        */
+
         document.addEventListener('alpine:init', () => {
 
             setTimeout(() => {
@@ -675,6 +721,12 @@
 
         });
 
+        /*
+        |--------------------------------------------------------------------------
+        | AUTO CHECK KKPO
+        |--------------------------------------------------------------------------
+        */
+
         document.addEventListener('DOMContentLoaded', () => {
 
             const noKkpoInput = document.getElementById('no_kkpo');
@@ -683,12 +735,18 @@
 
             noKkpoInput.addEventListener('blur', function() {
 
+                // IMPORTANT
+                // jangan jalan saat edit
+                if (isEditMode) return;
+
                 let noKkpo = this.value;
 
                 if (!noKkpo) return;
 
-                fetch(`/ppic/kkpo/check?no_kkpo=${noKkpo}`)
+                fetch(`/ppic/kkpo/check?no_kkpo=${encodeURIComponent(noKkpo)}`)
+
                     .then(res => res.json())
+
                     .then(data => {
 
                         let customerSelect =
@@ -719,22 +777,34 @@
                             document.getElementById('date').value =
                                 kkpo.date ?? '';
 
-                            customerSelect.setAttribute('disabled', true);
+                            // JANGAN DISABLED
+                            // customerSelect.setAttribute('disabled', true);
+
+                            customerSelect.style.pointerEvents = 'none';
+                            customerSelect.style.opacity = '0.7';
 
                         } else {
 
-                            customerSelect.removeAttribute('disabled');
+                            customerSelect.style.pointerEvents = 'auto';
+                            customerSelect.style.opacity = '1';
 
                             customerSelect._x_dataStack[0].selected = '';
 
                             document.getElementById('kp_po').value = '';
+
                             document.getElementById('npwp').value = '';
+
                             document.getElementById('payment_terms').value = '';
 
                             currencySelect._x_dataStack[0].selected = '';
 
                             document.getElementById('date').value = '';
                         }
+                    })
+
+                    .catch(err => {
+
+                        console.error(err);
                     });
             });
 

@@ -1,8 +1,5 @@
 <x-app-layout>
-{{-- 
-    <h2 class="font-semibold text-xl text-gray-800 leading-tight mb-6">
-        Warehouse Dasbor
-    </h2> --}}
+
     {{-- CARD STATISTIC --}}
     <div class="grid grid-cols-1 mt-6 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
@@ -65,7 +62,7 @@
             </div>
         </div>
 
-        {{-- BALANCE BONGKAR --}}
+        {{-- BALANCE --}}
         <div class="bg-white rounded-lg shadow p-4 flex items-center">
             <div class="bg-[#136566] text-white rounded-full p-3 mr-4">
 
@@ -96,7 +93,7 @@
 
     </div>
 
-    {{-- TABLE SURAT JALAN --}}
+    {{-- TABLE --}}
     <div class="bg-white rounded-lg shadow pb-3 mt-6 mb-10">
 
         <div class="flex justify-between items-center p-4 border-b">
@@ -126,6 +123,7 @@
                     class="bg-[#136566]/10 text-gray-700 border-b border-[#136566]/30 text-[11px] uppercase tracking-wide">
 
                     <tr>
+
                         <th class="px-4 py-3 text-left font-semibold">
                             No. Surat Jalan
                         </th>
@@ -137,9 +135,11 @@
                         <th class="px-4 py-3 text-left font-semibold">
                             Category Process
                         </th>
+
                         <th class="px-4 py-3 text-left font-semibold">
                             Style
                         </th>
+
                         <th class="px-4 py-3 text-left font-semibold">
                             Color
                         </th>
@@ -153,64 +153,90 @@
                         </th>
 
                         <th class="px-4 py-3 text-left font-semibold">
+                            Sisa
+                        </th>
+
+                        <th class="px-4 py-3 text-left font-semibold">
                             Status
                         </th>
+
                     </tr>
+
                 </thead>
 
                 <tbody class="bg-white divide-y divide-gray-200 text-sm">
 
                     @forelse ($recentActivities as $activity)
+                        @php
+                            $totalTraveler = $activity->travelers->whereNull('parent_traveler_id')->sum('qty');
+
+                            $sisa = $activity->qty - $totalTraveler;
+                        @endphp
+
                         <tr class="hover:bg-gray-50 transition">
 
+                            {{-- NO SURAT --}}
                             <td class="px-4 py-3 whitespace-nowrap">
                                 {{ $activity->no_surat_jalan }}
                             </td>
 
-                            <td class="px-4 py-3 whitespace-nowrap">
+                            {{-- CUSTOMER --}}
+                            <td class="px-4 py-3 whitespace-wrap">
                                 {{ $activity->kkpo->customer->name ?? '-' }}
                             </td>
 
+                            {{-- CATEGORY --}}
                             <td class="px-4 py-3 whitespace-nowrap">
                                 {{ $activity->kkpo->details->first()->category->name ?? '-' }}
                             </td>
 
+                            {{-- STYLE --}}
                             <td class="px-4 py-3 whitespace-nowrap">
                                 {{ $activity->kkpo->details->first()->style->name ?? '-' }}
                             </td>
+
+                            {{-- COLOR --}}
                             <td class="px-4 py-3 whitespace-nowrap">
                                 {{ $activity->kkpo->details->first()->color->name ?? '-' }}
                             </td>
 
+                            {{-- TANGGAL --}}
                             <td class="px-4 py-3 whitespace-nowrap">
                                 {{ Carbon\Carbon::parse($activity->tanggal)->locale('id')->isoFormat('D MMMM YYYY') }}
                             </td>
 
+                            {{-- QTY --}}
                             <td class="px-4 py-3 whitespace-nowrap font-medium">
                                 {{ number_format($activity->qty) }}
                             </td>
 
+                            {{-- SISA --}}
+                            <td class="px-4 py-3 whitespace-nowrap font-medium">
+                                {{ number_format($sisa) }}
+                            </td>
+
+                            {{-- STATUS --}}
                             <td class="px-4 py-3 whitespace-nowrap">
 
-                                @if ($activity->status == 'open')
+                                @if ($sisa <= 0)
                                     <span
-                                        class="px-2.5 py-1 inline-flex text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                        class="px-2.5 py-1 inline-flex text-xs font-semibold rounded-full bg-green-100 text-green-800">
 
-                                        Belum Dibongkar
+                                        Sudah Dibongkar
 
                                     </span>
-                                @elseif ($activity->status == 'in_process')
+                                @elseif ($totalTraveler > 0)
                                     <span
                                         class="px-2.5 py-1 inline-flex text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
 
                                         Sedang Dibongkar
 
                                     </span>
-                                @elseif ($activity->status == 'closed')
+                                @else
                                     <span
-                                        class="px-2.5 py-1 inline-flex text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                        class="px-2.5 py-1 inline-flex text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
 
-                                        Sudah Dibongkar
+                                        Belum Dibongkar
 
                                     </span>
                                 @endif
@@ -222,11 +248,13 @@
                     @empty
 
                         <tr>
-                            <td colspan="8" class="px-4 py-4 text-center text-sm text-gray-500">
+
+                            <td colspan="9" class="px-4 py-4 text-center text-sm text-gray-500">
 
                                 Tidak ada surat jalan terbaru.
 
                             </td>
+
                         </tr>
                     @endforelse
 

@@ -17,18 +17,35 @@ class WarehouseController extends Controller
 {
     public function dashboard()
     {
-        // total qty harusnya dari total qty suratjalan
         $totalQtyTraveler = SuratJalan::sum('qty');
-        $totalQtyKeluar = Traveler::sum('qty');
-        $balanceBongkar = $totalQtyTraveler - $totalQtyKeluar;
-        //recent activities, ambil dari surat jalan yang belum dipecah, urutkan berdasarkan tanggal terbaru, ambil 5 data terbaru
-        //
-        $recentActivities = SuratJalan::whereRaw('qty - COALESCE((SELECT SUM(qty) FROM travelers WHERE travelers.surat_jalan_id = surat_jalans.id), 0) > 0')
+
+        // hanya traveler utama
+        $totalQtyKeluar = Traveler::whereNull('parent_traveler_id')
+            ->sum('qty');
+
+        $balanceBongkar =
+            $totalQtyTraveler - $totalQtyKeluar;
+
+        $recentActivities = SuratJalan::with([
+            'travelers',
+            'kkpo.customer',
+            'kkpo.details.style',
+            'kkpo.details.color',
+            'kkpo.details.category',
+        ])
             ->latest()
             ->take(5)
             ->get();
 
-        return view('warehouse.dashboard', compact('totalQtyTraveler', 'totalQtyKeluar', 'balanceBongkar', 'recentActivities'));
+        return view(
+            'warehouse.dashboard',
+            compact(
+                'totalQtyTraveler',
+                'totalQtyKeluar',
+                'balanceBongkar',
+                'recentActivities'
+            )
+        );
     }
     public function order(Request $request)
     {
@@ -87,8 +104,8 @@ class WarehouseController extends Controller
             'kkpo_management_id' =>
             'required|exists:kkpo_managements,id',
 
-            'kkpo_detail_id' =>
-            'required|exists:kkpo_details,id',
+            // 'kkpo_detail_id' =>
+            // 'required|exists:kkpo_details,id',
 
             'style_id' =>
             'required|exists:styles,id',
@@ -115,34 +132,44 @@ class WarehouseController extends Controller
         try {
 
             // DETAIL KKPO
-            $detail = KkpoDetail::with([
-                'style',
-                'color',
-                'category',
-                'suratJalans',
-            ])->findOrFail(
-                $request->kkpo_detail_id
-            );
+            $detail = KkpoDetail::where(
+                'kkpo_management_id',
+                $request->kkpo_management_id
+            )
+                ->where('style_id', $request->style_id)
+                ->where('color_id', $request->color_id)
+                ->where('category_id', $request->category_id)
+                ->first();
 
-            // VALIDASI DETAIL HARUS SESUAI
-            if (
+            if (!$detail) {
 
-                $detail->style_id != $request->style_id ||
-
-                $detail->color_id != $request->color_id ||
-
-                $detail->category_id != $request->category_id
-
-            ) {
-
-                return redirect()
-                    ->back()
+                return back()
                     ->withInput()
                     ->with(
                         'error',
-                        'Detail KKPO tidak sesuai'
+                        'Detail KKPO tidak valid'
                     );
             }
+
+            // VALIDASI DETAIL HARUS SESUAI
+            // if (
+
+            //     $detail->style_id != $request->style_id ||
+
+            //     $detail->color_id != $request->color_id ||
+
+            //     $detail->category_id != $request->category_id
+
+            // ) {
+
+            //     return redirect()
+            //         ->back()
+            //         ->withInput()
+            //         ->with(
+            //             'error',
+            //             'Detail KKPO tidak sesuai'
+            //         );
+            // }
 
             // TOTAL TERPAKAI
             $usedQty = $detail
@@ -499,6 +526,7 @@ class WarehouseController extends Controller
             $deptTujuan = $request->dept_tujuan_id[$index] ?? null;
 
             try {
+
                 $travelerBaru = Traveler::create([
                     'no_traveler' => $traveler,
                     'qty' => $request->qty_split[$index],
@@ -506,10 +534,9 @@ class WarehouseController extends Controller
                     'dept_asal_id' => FacadesAuth::user()->department_id,
                     'dept_tujuan_id' => $deptTujuan,
                     'current_dept_id' => $deptTujuan,
-                    // 'parent_traveler_id' => null,
                     'tanggal' => $request->tanggal[$index],
                     'notes' => $request->notes,
-                    'status' => $status,
+                    'status' => 'open',
                     'pic' => $request->pic
                 ]);
 
@@ -522,17 +549,43 @@ class WarehouseController extends Controller
                     'date_out' => $request->tanggal[$index],
                 ]);
             } catch (QueryException $e) {
+
                 if ($e->errorInfo[1] == 1062) {
+
                     return redirect()
                         ->route('warehouse.pecah')
                         ->with('error', 'No traveler sudah ada: ' . $traveler);
                 } else {
+
                     return redirect()
                         ->route('warehouse.pecah')
                         ->with('error', 'Gagal membuat traveler: ' . $e->getMessage());
                 }
             }
         }
+
+        // HITUNG ULANG SETELAH CREATE
+        $totalTravelerQty = Traveler::where(
+            'surat_jalan_id',
+            $suratJalan->id
+        )->sum('qty');
+
+        $sisaQty = $suratJalan->qty - $totalTravelerQty;
+
+        if ($sisaQty <= 0) {
+
+            $status = 'closed';
+        } elseif ($totalTravelerQty > 0) {
+
+            $status = 'in_process';
+        } else {
+
+            $status = 'open';
+        }
+
+        $suratJalan->update([
+            'status' => $status
+        ]);
         return redirect()
             ->route('warehouse.pecah')
             ->with('success', 'Traveler berhasil dibuat');
